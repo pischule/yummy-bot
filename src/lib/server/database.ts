@@ -12,6 +12,10 @@ export const getMenu = async () => {
 	}
 	const menu = <Menu>JSON.parse(file.toString());
 
+	if (!menu.items) {
+		return null;
+	}
+
 	const updateDate = util.dateToLocalDateString(new Date(menu.updateDate));
 	const today = util.dateToLocalDateString();
 	if (today !== updateDate) {
