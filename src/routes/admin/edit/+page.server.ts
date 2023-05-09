@@ -25,7 +25,8 @@ const save = async (request: Request) => {
 	const itemsString = <string>data.get('items');
 	const items = itemsString.trim()
 		.split('\n')
-		.map(item => item.trim());
+		.map(item => item.trim())
+		.filter(item => item);
 
 	const menu = {
 		updateDate: new Date().toJSON(),
