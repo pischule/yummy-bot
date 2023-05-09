@@ -2,35 +2,31 @@
 	import Button from '$lib/Button.svelte';
 	import { createEventDispatcher } from 'svelte';
 
-	export let orderedItems;
+	export let orderedItems: Item[];
 
 	const dispatch = createEventDispatcher();
-
 	const nonce = crypto.randomUUID();
-	let name = '';
+	let name = localStorage.getItem('name') || '';
 
 	const sendOrder = async () => {
+		const order = { nonce, name, orderedItems } satisfies Order;
 		try {
 			const response = await fetch('/order', {
 				method: 'POST',
-				body: JSON.stringify({
-					nonce,
-					name,
-					items: orderedItems
-				}),
-				headers: {
-					'Content-Type': 'application/json'
-				}
+				body: JSON.stringify(order),
+				headers: { 'content-Type': 'application/json' }
 			});
 
 			if (!response.ok) {
-				throw new Error(`bad response status: ${response.status}`);
+				alert(`Bad response status: ${response.status}`);
+				return;
 			}
 
+			localStorage.setItem('name', name);
 			dispatch('confirm');
 		} catch (e) {
 			console.error(e);
-			alert('Something went wrong, try again');
+			alert(`Something went wrong: ${e}`);
 		}
 	};
 
@@ -41,19 +37,19 @@
 
 <h2>Ваш заказ</h2>
 
-<form>
+<form on:submit|preventDefault={handleMainBtnClick}>
 	<label>
 		Имя:
 		<input required autocomplete='name' minlength='3' bind:value={name}>
 	</label>
-
 	<ul>
 		{#each orderedItems as item (item.name)}
 			<li>{item.name} {item.qty > 1 ? `x${item.qty}` : ''}</li>
 		{/each}
 	</ul>
-	<Button main fullwidth on:click={handleMainBtnClick}>Подтвердить</Button>
+	<Button main fullwidth>Подтвердить</Button>
 </form>
+
 <style>
     li {
         list-style-type: none;

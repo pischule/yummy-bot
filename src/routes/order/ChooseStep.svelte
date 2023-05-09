@@ -2,7 +2,8 @@
 	import Button from '$lib/Button.svelte';
 	import { createEventDispatcher } from 'svelte';
 
-	export let items;
+	export let items: Item[];
+	export let weekday: string;
 
 	const dispatch = createEventDispatcher();
 
@@ -18,10 +19,10 @@
 	};
 </script>
 
-<h2>Меню на вторник</h2>
+<h2>Меню на {weekday}</h2>
 
 <div class='items-container'>
-	{#each items as item (item.name)}
+	{#each items as item}
 		<div class='item'>
 			<span class='item-title'>{ item.name }</span>
 
@@ -41,7 +42,6 @@
 </div>
 
 <Button main fullwidth disabled={orderedItems.length === 0} on:click={handleMainBtnClick}>Далее</Button>
-
 
 <style>
     .item {

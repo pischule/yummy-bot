@@ -2,11 +2,12 @@
 	export let main = false;
 	export let fullwidth = false;
 	export let flex = false;
+	export let formaction = undefined;
 
 	export let disabled = false;
 </script>
 
-<button class:main class:fullwidth class:flex on:click {disabled}>
+<button class:main class:fullwidth class:flex on:click {disabled} {formaction}>
 	<slot />
 </button>
 
@@ -27,7 +28,7 @@
         box-shadow: 2px 2px var(--fg);
         color: var(--bg);
         font-weight: bold;
-				border: none;
+        border: none;
     }
 
     .main:active {

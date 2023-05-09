@@ -1,18 +1,16 @@
 import type { RequestHandler } from './$types';
 
-import { sendOrderToChat } from '$lib/server/telegramService';
+import * as bot from '$lib/server/bot';
 
 const usedNonces = new Set();
 
-export const POST = (async ({ request }) => {
-	const { nonce, items, name } = await request.json();
-	if (usedNonces.has(nonce)) {
+export const POST = (async ({ request , locals}) => {
+	const order = <Order>await request.json();
+	if (usedNonces.has(order.nonce)) {
 		return new Response(null, { status: 201 });
 	}
 
-	console.log({ nonce, items, name });
-
-	await sendOrderToChat(name, items);
-	usedNonces.add(nonce);
+	await bot.sendOrder(order, locals.userId);
+	usedNonces.add(order.nonce);
 	return new Response(null, { status: 201 });
 }) satisfies RequestHandler;

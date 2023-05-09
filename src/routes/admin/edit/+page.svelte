@@ -3,35 +3,31 @@
 	import type { PageData } from './$types';
 
 	export let data: PageData;
-
-	let date = data.date;
-	let items = data.items;
 </script>
 
 <h2>Редактирование</h2>
 
-<form method='post'>
+<form method='POST'>
 	<div>
-		<label for='date'>
+		<label for='receiptDate'>
 			Дата
 		</label>
-		<input id='date' name='date' type='date' bind:value={date}>
+		<input id='receiptDate' name='receiptDate' type='date' value={data.receiptDate} required>
 	</div>
 
 	<div>
 		<label for='items'>
 			Меню
 		</label>
-		<textarea id='items' name='items' rows='15' cols='35' bind:value={items}></textarea>
+		<textarea id='items' name='items' rows='15' cols='35'>{data.itemsString}</textarea>
 	</div>
 
 	<div class='buttons-container'>
 		<div class='main-btn'>
-			<Button main fullwidth>Сохранить и отправить</Button>
+			<Button formaction='?/saveAndSend' main fullwidth>Сохранить и отправить</Button>
 		</div>
-		<Button fullwidth>Сохранить</Button>
-		<Button fullwidth>Отправить</Button>
-		<Button fullwidth>Сбросить</Button>
+		<Button formaction='?/save' fullwidth>Сохранить</Button>
+		<Button formaction='?/send' fullwidth>Отправить</Button>
 	</div>
 </form>
 
@@ -47,20 +43,20 @@
         line-height: 1.4;
         max-width: 100%;
         display: block;
+        font-family: sans-serif;
     }
 
     .buttons-container {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
 
     .main-btn {
-        grid-column: 1 / 4;
+        grid-column: 1 / 3;
     }
 
     form > div {
         padding-bottom: 10px;
     }
-
 </style>
