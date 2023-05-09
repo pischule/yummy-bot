@@ -21,8 +21,6 @@ jobs:
         cache: 'pnpm'
     - name: Install dependencies
       run: pnpm install
-    - name: Generate prisma client
-      run: npx prisma generate
     - name: Build the app
       run: npm run build
     - name: Docker Login
