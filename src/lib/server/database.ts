@@ -12,7 +12,7 @@ export const getMenu = async () => {
 	}
 	const menu = <Menu>JSON.parse(file.toString());
 
-	if (!menu.items) {
+	if (menu.items.length === 0) {
 		return null;
 	}
 
