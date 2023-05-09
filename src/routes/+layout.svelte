@@ -2,8 +2,7 @@
 
 <style>
     :global(:root) {
-        --fg: #444;
-        /*--bg: #f5f5f5;*/
+        --fg: #000000;
         --bg: #ffff;
 				--accent: hsl(328, 100%, 54%);
 				--accent-pressed: hsl(328, 100%, 45%);
