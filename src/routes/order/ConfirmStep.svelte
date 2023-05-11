@@ -9,12 +9,15 @@
 	let name = localStorage.getItem('name') || '';
 
 	const sendOrder = async () => {
-		const order = { nonce, name, orderedItems } satisfies Order;
+		const order = { name, orderedItems } satisfies Order;
 		try {
 			const response = await fetch('/order', {
 				method: 'POST',
 				body: JSON.stringify(order),
-				headers: { 'content-Type': 'application/json' }
+				headers: {
+					'Content-Type': 'application/json',
+					'Idempotency-Key': nonce
+				}
 			});
 
 			if (!response.ok) {

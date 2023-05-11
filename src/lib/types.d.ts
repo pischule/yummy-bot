@@ -10,7 +10,6 @@ interface Menu {
 }
 
 interface Order {
-	nonce: string,
 	name: string,
 	orderedItems: {
 		name: string,

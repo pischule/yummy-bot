@@ -1,9 +1,20 @@
-import type { Actions, PageServerLoad } from './$types';
+import type { Actions, PageServerLoad, RouteParams } from './$types';
 import * as db from '$lib/server/database';
 import * as bot from '$lib/server/bot';
 import * as util from '$lib/server/util';
+import { env } from '$env/dynamic/private';
+import { error } from '@sveltejs/kit';
 
-export const load = (async ({ url, locals }) => {
+const { SECRET } = env;
+
+const checkSecret = (params: RouteParams) => {
+	if (SECRET !== params.secret) throw error(404, 'Not Found');
+};
+
+
+export const load = (async ({ params, locals }) => {
+	checkSecret(params);
+
 	const menu = await db.getMenu();
 	let itemsString = menu?.items.join('\n') ?? '';
 
@@ -38,13 +49,16 @@ const save = async (request: Request) => {
 };
 
 export const actions = {
-	save: async ({ request }) => {
+	save: async ({ request, params }) => {
+		checkSecret(params);
 		await save(request);
 	},
-	send: async ({ request }) => {
+	send: async ({ params }) => {
+		checkSecret(params);
 		await bot.sendOrderButton();
 	},
-	saveAndSend: async ({ request }) => {
+	saveAndSend: async ({ request, params }) => {
+		checkSecret(params);
 		await save(request);
 		await bot.sendOrderButton();
 	}

@@ -2,7 +2,7 @@ import { createHash, createHmac } from 'node:crypto';
 import { env } from '$env/dynamic/private';
 import { Context, Telegraf } from 'telegraf';
 
-const { BOT_TOKEN, GROUP_CHAT_ID, APP_URL, ADMIN_CHAT_ID } = env;
+const { BOT_TOKEN, GROUP_CHAT_ID, APP_URL } = env;
 
 let bot: Telegraf<Context>;
 
@@ -24,10 +24,6 @@ export const sendOrder = async (order: Order, userId: string) => {
 	await bot.telegram.sendMessage(GROUP_CHAT_ID, message, { parse_mode: 'MarkdownV2' });
 };
 
-export const isAdmin = (userId: string) => {
-	return ADMIN_CHAT_ID === userId;
-};
-
 export const sendOrderButton = async () => {
 	const button = {
 		text: 'Создать заказ',
@@ -38,16 +34,17 @@ export const sendOrderButton = async () => {
 	await bot.telegram.sendMessage(GROUP_CHAT_ID, 'Нажмите на кнопку ниже, чтобы создать заказ', { reply_markup: { inline_keyboard: [[button]] } });
 };
 
-export const checkSignature = (auth: Map<string, string>) => {
+export const isSignatureValid = (auth: Map<string, string>) => {
 	if (!auth) return false;
+	const hash = auth.get('hash');
+	if (!hash) return false;
+
 	const hashedKeys = [...auth.keys()].filter(key => key !== 'hash');
 	hashedKeys.sort();
 	const dataCheckString = hashedKeys.map((key) => `${key}=${auth.get(key)}`).join('\n');
 	const secretKey = createHash('sha256').update(BOT_TOKEN).digest();
 	const hmac = createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
-
-	const hash = auth.get('hash');
-	return !!hash && hash === hmac;
+	return hash === hmac;
 };
 
 export const init = () => {
@@ -59,16 +56,6 @@ export const init = () => {
 			return;
 		}
 		await ctx.deleteMessage(reply.message_id);
-	});
-
-	bot.command('admin', async (ctx) => {
-		const button = {
-			text: 'Редактировать меню',
-			login_url: {
-				url: `${APP_URL}/admin/edit`
-			}
-		};
-		await ctx.reply('Админские ссылки', { reply_markup: { inline_keyboard: [[button]] } });
 	});
 
 	bot.launch().then(() => console.log('bot started'));

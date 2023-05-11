@@ -1,21 +1,23 @@
 import type { PageServerLoad } from './$types';
 import * as db from '$lib/server/database';
+import { error } from '@sveltejs/kit';
 
-const weekdayString = (day: number) => {
-	return [
-		'воскресенье',
-		'понедельник',
-		'вторник',
-		'среду',
-		'четверг',
-		'пятницу',
-		'субботу'
-	][day];
-};
+const WEEKDAYS = [
+	'воскресенье',
+	'понедельник',
+	'вторник',
+	'среду',
+	'четверг',
+	'пятницу',
+	'субботу'
+];
 
-export const load = (async ({ url }) => {
+export const load = (async ({ locals }) => {
+	if (!locals.userId) {
+		throw error(401, 'Unauthorized');
+	}
+
 	const menu = await db.getMenu();
-
 	if (!menu) {
 		return {
 			menu: null,
@@ -23,7 +25,7 @@ export const load = (async ({ url }) => {
 		};
 	}
 
-	const weekday = weekdayString(new Date(menu.receiptDate).getDay());
+	const weekday = WEEKDAYS[new Date(menu.receiptDate).getDay()];
 
 	return {
 		menu: await db.getMenu(),

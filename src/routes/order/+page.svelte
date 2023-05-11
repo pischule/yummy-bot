@@ -18,7 +18,7 @@
 		currentStep = steps[1];
 	};
 
-	const handleConfirm = (event) => {
+	const handleConfirm = () => {
 		currentStep = steps[2];
 	};
 
