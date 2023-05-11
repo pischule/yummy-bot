@@ -3,6 +3,10 @@
 	import type { PageData } from './$types';
 
 	export let data: PageData;
+
+	let { receiptDate, itemsString } = data;
+
+	$: isNoItems = !itemsString.trim();
 </script>
 
 <h2>Редактирование</h2>
@@ -12,22 +16,22 @@
 		<label for='receiptDate'>
 			Дата
 		</label>
-		<input id='receiptDate' name='receiptDate' type='date' value={data.receiptDate} required>
+		<input id='receiptDate' name='receiptDate' type='date' bind:value={receiptDate} required>
 	</div>
 
 	<div>
 		<label for='items'>
 			Меню
 		</label>
-		<textarea id='items' name='items' rows='15' cols='35'>{data.itemsString}</textarea>
+		<textarea id='items' name='items' rows='15' cols='35' bind:value={itemsString}></textarea>
 	</div>
 
 	<div class='buttons-container'>
 		<div class='main-btn'>
-			<Button formaction='?/saveAndSend' main fullwidth>Сохранить и отправить</Button>
+			<Button disabled={isNoItems} formaction='?/saveAndSend' main fullwidth>Сохранить и отправить</Button>
 		</div>
 		<Button formaction='?/save' fullwidth>Сохранить</Button>
-		<Button formaction='?/send' fullwidth>Отправить</Button>
+		<Button disabled={isNoItems} formaction='?/send' fullwidth>Отправить</Button>
 	</div>
 </form>
 
