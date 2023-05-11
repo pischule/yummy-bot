@@ -4,8 +4,23 @@
     :global(:root) {
         --fg: #000000;
         --bg: #ffff;
+				--border: #464646;
+
 				--accent: hsl(328, 100%, 54%);
-				--accent-pressed: hsl(328, 100%, 45%);
+				--accent-text: #ffff;
+    }
+
+		@media(prefers-color-scheme: dark) {
+        :global(:root) {
+            --fg: #d9d9d9;
+            --bg: #121212;
+            --border: #626262;
+        }
+
+				:global(textarea, input) {
+						background-color: #333333;
+						color: var(--fg);
+				}
     }
 
     :global(body) {
@@ -21,5 +36,4 @@
 		:global(h1, h2, h3) {
         line-height: 1.2;
 		}
-
 </style>

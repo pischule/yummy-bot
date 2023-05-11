@@ -14,8 +14,9 @@
 <style>
     button {
         background-color: var(--bg);
-        border: solid var(--fg) 1px;
-        box-shadow: 2px 2px var(--fg);
+        color: var(--fg);
+        border: solid var(--border) 1px;
+        box-shadow: 2px 2px var(--border);
     }
 
     button:active {
@@ -23,16 +24,21 @@
         box-shadow: none;
     }
 
-    .main {
+    button.main {
         background-color: var(--accent);
-        box-shadow: 2px 2px var(--fg);
-        color: var(--bg);
+        color: var(--accent-text);
+        border: var(--accent);
         font-weight: bold;
-        border: none;
     }
 
+		button:disabled {
+				opacity: 60%;
+				box-shadow: none;
+        transform: translate(2px, 2px);
+		}
+
     .main:active {
-        background-color: var(--accent-pressed);
+        box-shadow: none;
     }
 
     .fullwidth {

@@ -46,7 +46,7 @@
     }
 
     .item:not(:last-child) {
-        border-bottom: solid 1px;
+        border-bottom: solid 1px var(--border);
     }
 
     .item-title {
