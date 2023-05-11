@@ -22,9 +22,15 @@ export const load = (async ({ params, locals }) => {
 	if (menu?.receiptDate) {
 		receiptDate = util.dateToLocalDateString(new Date(menu.receiptDate));
 	} else {
-		const tomorrow = new Date();
-		tomorrow.setDate(tomorrow.getDate() + 1);
-		receiptDate = util.dateToLocalDateString(tomorrow);
+		const suggestedDate = new Date();
+		let daysAdded = 1;
+		if (suggestedDate.getDay() == 5) {
+			daysAdded = 3;
+		} else if (suggestedDate.getDate() == 6) {
+			daysAdded = 2;
+		}
+		suggestedDate.setDate(suggestedDate.getDate() + daysAdded);
+		receiptDate = util.dateToLocalDateString(suggestedDate);
 	}
 
 	return { receiptDate, itemsString };
