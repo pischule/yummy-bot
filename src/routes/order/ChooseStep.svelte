@@ -26,16 +26,12 @@
 		<div class='item'>
 			<span class='item-title'>{ item.name }</span>
 
-			{#if item.qty > 0}
-				<span class='item-qty-indicator'>{item.qty}</span>
-			{/if}
+			<span class='item-qty-indicator'>{item.qty || ''}</span>
 			<div class='item-qty-buttons'>
-				{#if item.qty === 0}
-					<Button flex on:click={() => updateItemQty(item, 1)}>Добавить</Button>
-				{:else }
+				{#if item.qty > 0}
 					<Button flex on:click={() => updateItemQty(item, -1)}>-</Button>
-					<Button flex on:click={() => updateItemQty(item, 1)}>+</Button>
 				{/if}
+				<Button flex on:click={() => updateItemQty(item, 1)}>{item.qty === 0 ? 'Добавить' : '+'}</Button>
 			</div>
 		</div>
 	{/each}
@@ -71,7 +67,9 @@
     }
 
     .item-qty-indicator {
+				min-width: 18px;
         padding-inline: 6px;
         font-weight: bold;
+				text-align: end;
     }
 </style>
