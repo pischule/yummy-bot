@@ -12,7 +12,7 @@ const checkSecret = (params: RouteParams) => {
 };
 
 
-export const load = (async ({ params, locals }) => {
+export const load = (async ({ params }) => {
 	checkSecret(params);
 
 	const menu = await db.getMenu();
@@ -58,10 +58,6 @@ export const actions = {
 	save: async ({ request, params }) => {
 		checkSecret(params);
 		await save(request);
-	},
-	send: async ({ params }) => {
-		checkSecret(params);
-		await bot.sendOrderButton();
 	},
 	saveAndSend: async ({ request, params }) => {
 		checkSecret(params);

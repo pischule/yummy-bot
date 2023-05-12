@@ -27,11 +27,8 @@
 	</div>
 
 	<div class='buttons-container'>
-		<div class='main-btn'>
-			<Button disabled={isNoItems} formaction='?/saveAndSend' main fullwidth>Сохранить и отправить</Button>
-		</div>
+		<Button disabled={isNoItems} formaction='?/saveAndSend' main fullwidth>Сохранить и отправить</Button>
 		<Button formaction='?/save' fullwidth>Сохранить</Button>
-		<Button disabled={isNoItems} formaction='?/send' fullwidth>Отправить</Button>
 	</div>
 </form>
 
@@ -51,13 +48,9 @@
     }
 
     .buttons-container {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        display: flex;
         gap: 8px;
-    }
-
-    .main-btn {
-        grid-column: 1 / 3;
+        flex-direction: column;
     }
 
     form > div {
