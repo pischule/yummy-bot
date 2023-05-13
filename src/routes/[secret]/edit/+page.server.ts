@@ -26,7 +26,7 @@ export const load = (async ({ params }) => {
 		let daysAdded = 1;
 		if (suggestedDate.getDay() == 5) {
 			daysAdded = 3;
-		} else if (suggestedDate.getDate() == 6) {
+		} else if (suggestedDate.getDay() == 6) {
 			daysAdded = 2;
 		}
 		suggestedDate.setDate(suggestedDate.getDate() + daysAdded);
