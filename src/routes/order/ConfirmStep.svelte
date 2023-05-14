@@ -50,7 +50,7 @@
 			<li>{item.name} {item.qty > 1 ? `x${item.qty}` : ''}</li>
 		{/each}
 	</ul>
-	<Button main fullwidth>Подтвердить</Button>
+	<Button main fullwidth>Отправить</Button>
 </form>
 
 <style>
