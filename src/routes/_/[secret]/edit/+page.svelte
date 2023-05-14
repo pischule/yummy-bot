@@ -27,18 +27,23 @@
 	</div>
 
 	<div class='buttons-container'>
-		<Button disabled={isNoItems} formaction='?/saveAndSend' main fullwidth>Сохранить и отправить</Button>
-		<Button formaction='?/save' fullwidth>Сохранить</Button>
+		<Button disabled={isNoItems} formaction='?/saveAndSend' block primary>Сохранить и отправить</Button>
+		<Button formaction='?/save' block>Сохранить</Button>
 	</div>
 </form>
 
 <style>
-    textarea {
+    input, textarea {
+        font-size: 1em;
         padding: 8px;
-        width: calc(100% - 16px);
-        display: block;
+        border-radius: var(--border-radius);
+        border: solid var(--color-fg) var(--border-width);
+    }
 
-				font-family: inherit;
+    textarea {
+        font-family: inherit;
+        width: calc(100% - 20px);
+        display: block;
         line-height: 1.25;
     }
 

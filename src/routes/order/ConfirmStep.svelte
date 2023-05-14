@@ -21,7 +21,7 @@
 			});
 
 			if (!response.ok) {
-				alert(`Bad response status: ${response.status}`);
+				alert(`Ошибка: ${response.status}`);
 				return;
 			}
 
@@ -29,7 +29,7 @@
 			dispatch('confirm');
 		} catch (e) {
 			console.error(e);
-			alert(`Something went wrong: ${e}`);
+			alert(`Ошибка: ${e}`);
 		}
 	};
 
@@ -41,16 +41,18 @@
 <h2>Ваш заказ</h2>
 
 <form on:submit|preventDefault={handleMainBtnClick}>
-	<label>
-		Имя:
-		<input required autocomplete='name' minlength='3' bind:value={name}>
-	</label>
+	<input placeholder='Имя' required autocomplete='name' minlength='3' bind:value={name} aria-label='Имя'>
 	<ul>
 		{#each orderedItems as item (item.name)}
-			<li>{item.name} {item.qty > 1 ? `x${item.qty}` : ''}</li>
+			<li>
+				<span>{item.name}</span>
+				{#if item.qty > 1}
+					<span class='qty'> x{item.qty}</span>
+				{/if}
+			</li>
 		{/each}
 	</ul>
-	<Button main fullwidth>Отправить</Button>
+	<Button primary block>Отправить</Button>
 </form>
 
 <style>
@@ -62,7 +64,14 @@
         padding-inline-start: 0;
     }
 
-		input {
-				font-size: 1em;
+		.qty {
+				font-weight: bold;
 		}
+
+    input {
+        font-size: 1em;
+        padding: 8px;
+        border-radius: var(--border-radius);
+        border: solid var(--color-fg) var(--border-width);
+    }
 </style>

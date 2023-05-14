@@ -1,47 +1,50 @@
 <script lang='ts'>
-	export let main = false;
-	export let fullwidth = false;
+	export let primary = false;
+	export let block = false;
 	export let flex = false;
 	export let formaction = undefined;
+	export let sm = false;
 
 	export let disabled = false;
 </script>
 
-<button class:main class:fullwidth class:flex on:click {disabled} {formaction}>
+<button class:primary class:block class:flex on:click class:sm {disabled} {formaction}>
 	<slot />
 </button>
 
 <style>
     button {
+        padding: 14px;
+        font-size: 1.125rem;
         background-color: var(--color-bg);
-        border: solid var(--color-border) 1px;
-        box-shadow: 2px 2px var(--color-border);
+        border: solid var(--color-border) var(--border-width);
+        border-radius: var(--border-radius);
+
+        transition: 100ms linear;
     }
 
     button:active {
-        transform: translate(2px, 2px);
-        box-shadow: none;
+        transform: translate(0px, 2px);
     }
 
-    button.main {
+    button.primary {
         background-color: var(--color-accent);
         color: var(--color-accent-text);
         border: none;
         font-weight: bold;
     }
 
-		button:disabled {
-				opacity: 60%;
-				box-shadow: none;
-        transform: translate(2px, 2px);
-		}
-
-    .main:active {
-        box-shadow: none;
+    button:disabled {
+        opacity: 60%;
+        transform: translate(0px, 2px);
     }
 
-    .fullwidth {
-        height: 2rem;
+    .sm {
+        font-size: 1rem;
+        padding: 6px 8px;
+    }
+
+    .block {
         width: 100%;
     }
 
