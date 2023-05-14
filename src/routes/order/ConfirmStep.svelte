@@ -7,10 +7,12 @@
 	const dispatch = createEventDispatcher();
 	const nonce = crypto.randomUUID();
 	let name = localStorage.getItem('name') || '';
+	let sending = false;
 
 	const sendOrder = async () => {
 		const order = { name, orderedItems } satisfies Order;
 		try {
+			sending = true;
 			const response = await fetch('/order', {
 				method: 'POST',
 				body: JSON.stringify(order),
@@ -30,6 +32,8 @@
 		} catch (e) {
 			console.error(e);
 			alert(`Ошибка: ${e}`);
+		} finally {
+			sending = false;
 		}
 	};
 
@@ -52,7 +56,7 @@
 			</li>
 		{/each}
 	</ul>
-	<Button primary block>Отправить</Button>
+	<Button primary block disabled={sending}>{sending ? 'Отправляю...' : 'Отправить'}</Button>
 </form>
 
 <style>
