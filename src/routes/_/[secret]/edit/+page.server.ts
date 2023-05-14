@@ -40,10 +40,11 @@ const save = async (request: Request) => {
 	const data = await request.formData();
 	const receiptDate = <string>data.get('receiptDate');
 	const itemsString = <string>data.get('items');
-	const items = itemsString.trim()
+	let items = itemsString.trim()
 		.split('\n')
 		.map(item => item.trim())
 		.filter(item => item);
+	items = [...new Set(items)]
 
 	const menu = {
 		updateDate: new Date().toJSON(),

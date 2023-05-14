@@ -61,4 +61,8 @@
     ul {
         padding-inline-start: 0;
     }
+
+		input {
+				font-size: 1em;
+		}
 </style>

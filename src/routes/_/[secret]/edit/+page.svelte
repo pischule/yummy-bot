@@ -33,18 +33,13 @@
 </form>
 
 <style>
-    label {
-        display: block;
-        margin-bottom: 4px;
-    }
-
     textarea {
-        width: calc(100% - 20px);
-        padding: 10px;
-        line-height: 1.4;
-        max-width: 100%;
+        padding: 8px;
+        width: calc(100% - 16px);
         display: block;
-        font-family: sans-serif;
+
+				font-family: inherit;
+        line-height: 1.25;
     }
 
     .buttons-container {

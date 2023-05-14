@@ -1,39 +1,36 @@
-<slot />
+<div class='container'>
+	<slot />
+</div>
 
 <style>
     :global(:root) {
-        --fg: #000000;
-        --bg: #ffff;
-				--border: #464646;
+        --color-bg: hsl(0, 0%, 100%);
+        --color-border: hsl(0, 0%, 27%);
 
-				--accent: hsl(328, 100%, 54%);
-				--accent-text: #ffff;
+        --color-accent: hsl(328, 100%, 54%);
+        --color-accent-text: hsl(0, 0%, 100%);
     }
 
-		@media(prefers-color-scheme: dark) {
+    @media (prefers-color-scheme: dark) {
         :global(:root) {
-            --fg: #d9d9d9;
-            --bg: #121212;
-            --border: #626262;
+            --color-bg: hsl(0, 0%, 10%);
         }
+    }
 
-				:global(textarea, input) {
-						background-color: #333333;
-						color: var(--fg);
-				}
+    :global(html) {
+        color-scheme: light dark;
     }
 
     :global(body) {
-        font-size: 16px;
-        font-family: sans-serif;
-        max-width: 650px;
-        margin: 20px auto;
-        padding: 0 10px;
-        color: var(--fg);
-        background-color: var(--bg);
+        font-size: 1rem;
+        font-family: system-ui;
+        line-height: 1.5;
+
+				background-color: var(--color-bg);
     }
 
-		:global(h1, h2, h3) {
-        line-height: 1.2;
+		.container {
+        max-width: min(65ch, 100% - 1rem);
+				margin-inline: auto;
 		}
 </style>

@@ -46,7 +46,7 @@
     }
 
     .item:not(:last-child) {
-        border-bottom: solid 1px var(--border);
+        border-bottom: solid 1px var(--color-border);
     }
 
     .item-title {
@@ -59,15 +59,15 @@
 
     .item-qty-buttons {
         display: flex;
-        width: 5.2rem;
-        height: 1.6rem;
+        width: 8ch;
+        height: 1.6em;
         justify-content: space-between;
         gap: 4px;
         flex-shrink: 0;
     }
 
     .item-qty-indicator {
-				min-width: 18px;
+				min-width: 1ch;
         padding-inline: 6px;
         font-weight: bold;
 				text-align: end;

@@ -13,10 +13,9 @@
 
 <style>
     button {
-        background-color: var(--bg);
-        color: var(--fg);
-        border: solid var(--border) 1px;
-        box-shadow: 2px 2px var(--border);
+        background-color: var(--color-bg);
+        border: solid var(--color-border) 1px;
+        box-shadow: 2px 2px var(--color-border);
     }
 
     button:active {
@@ -25,9 +24,9 @@
     }
 
     button.main {
-        background-color: var(--accent);
-        color: var(--accent-text);
-        border: var(--accent);
+        background-color: var(--color-accent);
+        color: var(--color-accent-text);
+        border: none;
         font-weight: bold;
     }
 
