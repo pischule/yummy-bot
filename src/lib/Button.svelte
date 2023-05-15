@@ -24,9 +24,11 @@
         box-shadow: 3px 3px 0 0 var(--color-border);
     }
 
-    button:hover:not(:disabled):not(:focus) {
-        transform: translate(3px, 3px);
-        box-shadow: none;
+    @media (hover: hover) {
+        button:hover:not(:disabled) {
+            transform: translate(3px, 3px);
+            box-shadow: none;
+        }
     }
 
     button.primary {
