@@ -20,23 +20,24 @@
         border: solid var(--color-border) var(--border-width);
         border-radius: var(--border-radius);
 
-        transition: 100ms linear;
+        transition: .2s ease;
+        box-shadow: 3px 3px 0 0 var(--color-border);
     }
 
-    button:active {
-        transform: translate(0px, 2px);
+    button:hover:not(:disabled):not(:focus) {
+        transform: translate(3px, 3px);
+        box-shadow: none;
     }
 
     button.primary {
         background-color: var(--color-accent);
         color: var(--color-accent-text);
-        border: none;
         font-weight: bold;
     }
 
     button:disabled {
         opacity: 60%;
-        transform: translate(0px, 2px);
+        cursor: not-allowed;
     }
 
     .sm {

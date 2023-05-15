@@ -42,7 +42,7 @@
 	};
 </script>
 
-<h2>Ваш заказ</h2>
+<h1>Ваш заказ</h1>
 
 <form on:submit|preventDefault={handleMainBtnClick}>
 	<input placeholder='Имя' required autocomplete='name' minlength='3' bind:value={name} aria-label='Имя'>

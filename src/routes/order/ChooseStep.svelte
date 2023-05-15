@@ -19,7 +19,7 @@
 	};
 </script>
 
-<h2>Меню на {weekday}</h2>
+<h1>Меню на {weekday}</h1>
 
 <div class='items-container'>
 	{#each items as item}

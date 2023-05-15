@@ -9,7 +9,7 @@
 	$: isNoItems = !itemsString.trim();
 </script>
 
-<h2>Редактирование</h2>
+<h1>Редактирование</h1>
 
 <form method='POST'>
 	<div>
