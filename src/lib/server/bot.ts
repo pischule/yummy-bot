@@ -1,4 +1,3 @@
-import { createHash, createHmac } from 'node:crypto';
 import { env } from '$env/dynamic/private';
 import { Telegraf } from 'telegraf';
 
@@ -37,7 +36,7 @@ export const sendOrderButton = async () => {
 	await bot.telegram.sendMessage(GROUP_CHAT_ID, 'Нажмите на кнопку ниже, чтобы создать заказ', { reply_markup: { inline_keyboard: [[button]] } });
 };
 
-export const isSignatureValid = (auth: Map<string, string>) => {
+export const isSignatureValid = async (auth: Map<string, string>) => {
 	if (!auth) return false;
 	const hash = auth.get('hash');
 	if (!hash) return false;
@@ -45,8 +44,15 @@ export const isSignatureValid = (auth: Map<string, string>) => {
 	const hashedKeys = [...auth.keys()].filter(key => key !== 'hash');
 	hashedKeys.sort();
 	const dataCheckString = hashedKeys.map((key) => `${key}=${auth.get(key)}`).join('\n');
-	const secretKey = createHash('sha256').update(BOT_TOKEN).digest();
-	const hmac = createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
-	return hash === hmac;
+
+	const enc = new TextEncoder();
+	const algorithm = { name: 'HMAC', hash: 'SHA-256' };
+	const secretKey = await crypto.subtle.digest(algorithm.hash, enc.encode(BOT_TOKEN));
+	const key = await crypto.subtle.importKey('raw', secretKey, algorithm, false, ['sign']);
+	const signature = await crypto.subtle.sign(algorithm.name, key, enc.encode(dataCheckString));
+	const binaryDigest = new Uint8Array(signature);
+	const hexDigest = Array.prototype.map.call(binaryDigest, x => x.toString(16).padStart(2, '0')).join('');
+
+	return hash === hexDigest;
 };
 

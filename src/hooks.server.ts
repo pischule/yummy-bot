@@ -1,7 +1,7 @@
 import * as bot from '$lib/server/bot';
 import type { Handle } from '@sveltejs/kit';
 
-export const handle = (({ event, resolve }) => {
+export const handle = (async ({ event, resolve }) => {
 	if (event.url.searchParams.has('hash')) {
 		event.cookies.set('tg-auth', event.url.search, { path: '/', maxAge: 60 * 60 * 24 });
 	}
@@ -9,7 +9,7 @@ export const handle = (({ event, resolve }) => {
 	const auth = event.cookies.get('tg-auth');
 	if (auth) {
 		const authData = new Map(new URLSearchParams(auth).entries());
-		if (bot.isSignatureValid(authData)) {
+		if (await bot.isSignatureValid(authData)) {
 			event.locals.userId = <string>authData.get('id');
 		}
 	}
