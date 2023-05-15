@@ -17,10 +17,13 @@ export const sendOrder = async (order: Order, userId: string) => {
 		order.name
 	)}](tg://user?id=${userId})`;
 	const itemsString = order.orderedItems
-		.map(item => `- ${item.name}${item.qty > 1 ? ` x${item.qty}` : ''}`)
-		.join('\n');
+		.map(item => {
+			const title = escapeMarkdown(`- ${item.name}`);
+			const quantity = item.qty > 1 ? ` *x${item.qty}*` : '';
+			return `${title}${quantity}`;
+		}).join('\n');
 
-	const message = `${mention}:\n${escapeMarkdown(itemsString)}`;
+	const message = `${mention}:\n${itemsString}`;
 	await bot.telegram.sendMessage(GROUP_CHAT_ID, message, { parse_mode: 'MarkdownV2' });
 };
 
