@@ -1,10 +1,10 @@
 import { createHash, createHmac } from 'node:crypto';
 import { env } from '$env/dynamic/private';
-import { Context, Telegraf } from 'telegraf';
+import { Telegraf } from 'telegraf';
 
 const { BOT_TOKEN, GROUP_CHAT_ID, APP_URL } = env;
 
-let bot: Telegraf<Context>;
+const bot = new Telegraf(BOT_TOKEN);
 
 const escapeMarkdown = (s: string) => {
 	const SPECIAL_CHARACTERS = '_*[]()~`>#+-=|{}.!'.split('');
@@ -50,19 +50,3 @@ export const isSignatureValid = (auth: Map<string, string>) => {
 	return hash === hmac;
 };
 
-export const init = () => {
-	bot = new Telegraf(BOT_TOKEN);
-
-	bot.command('del', async (ctx) => {
-		const reply = ctx.message?.reply_to_message;
-		if (!reply || reply.from?.id !== ctx.botInfo.id) {
-			return;
-		}
-		await ctx.deleteMessage(reply.message_id);
-	});
-
-	bot.launch().then(() => console.log('bot started'));
-
-	process.once('SIGINT', () => bot.stop('SIGINT'));
-	process.once('SIGTERM', () => bot.stop('SIGTERM'));
-};
