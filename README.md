@@ -24,9 +24,9 @@
 </table>
 
 Для запуска нужны следующие переменные окружения
-- BOT_TOKEN - токер телеграм-бота
+- BOT_TOKEN - токен телеграм-бота
 - GROUP_CHAT_ID - id чата, в который бот отправляет сообщения
 - APP_URL - url приложение
 - SECRET - секрет для доступа к админке (APP_URL/_/SECRET/edit)
 
-Собраный контейнер с приложением можно найти [здесь](https://github.com/pischule/yummy-bot-4/pkgs/container/yummy-bot-4)
+Собранный контейнер с приложением можно найти [здесь](https://github.com/pischule/yummy-bot-4/pkgs/container/yummy-bot-4)
