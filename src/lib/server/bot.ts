@@ -1,9 +1,9 @@
 import { env } from '$env/dynamic/private';
-import { Telegraf } from 'telegraf';
+import { Bot } from 'grammy';
 
 const { BOT_TOKEN, GROUP_CHAT_ID, APP_URL } = env;
 
-const bot = new Telegraf(BOT_TOKEN);
+const bot = new Bot(BOT_TOKEN);
 
 const escapeMarkdown = (s: string) => {
 	const SPECIAL_CHARACTERS = '_*[]()~`>#+-=|{}.!'.split('');
@@ -23,7 +23,7 @@ export const sendOrder = async (order: Order, userId: string) => {
 		}).join('\n');
 
 	const message = `${mention}:\n${itemsString}`;
-	await bot.telegram.sendMessage(GROUP_CHAT_ID, message, { parse_mode: 'MarkdownV2' });
+	await bot.api.sendMessage(GROUP_CHAT_ID, message, { parse_mode: 'MarkdownV2' });
 };
 
 export const sendOrderButton = async () => {
@@ -33,7 +33,7 @@ export const sendOrderButton = async () => {
 			url: `${APP_URL}/order`
 		}
 	};
-	await bot.telegram.sendMessage(GROUP_CHAT_ID, 'Нажмите на кнопку ниже, чтобы создать заказ', { reply_markup: { inline_keyboard: [[button]] } });
+	await bot.api.sendMessage(GROUP_CHAT_ID, 'Нажмите на кнопку ниже, чтобы создать заказ', { reply_markup: { inline_keyboard: [[button]] } });
 };
 
 export const isSignatureValid = async (auth: Map<string, string>) => {
