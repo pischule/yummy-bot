@@ -1,38 +1,32 @@
-# create-svelte
+# yummy-bot-4
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+Веб-приложение для заказа еды. Авторизация по телеграму, заказы отправляются в заданный чат
 
-## Creating a project
+<table>
+  <tr>
+    <td>
+      <img src="https://github.com/pischule/yummy-bot-4/assets/41614960/4628fda2-fcab-48bc-ac38-eeddf74de45d"/>
+    </td>
+    <td>
+      <img src="https://github.com/pischule/yummy-bot-4/assets/41614960/c48a375f-d618-44e4-bee4-243112fc28bf"/>
+    </td>
+    <td>
+      <img src="https://github.com/pischule/yummy-bot-4/assets/41614960/b6debea7-a813-47c5-a10a-b317318880d2"/>
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>
+      <img src="https://github.com/pischule/yummy-bot-4/assets/41614960/72748835-6b0b-4d34-a9a8-408d94f23e7b"/>
+    </td>
+    <td></td>
+  </tr>
+</table>
 
-If you're seeing this, you've probably already done this step. Congrats!
+Для запуска нужны следующие переменные окружения
+- BOT_TOKEN - токер телеграм-бота
+- GROUP_CHAT_ID - id чата, в который бот отправляет сообщения
+- APP_URL - url приложение
+- SECRET - секрет для доступа к админке (APP_URL/_/SECRET/edit)
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+Собраный контейнер с приложением можно найти [здесь](https://github.com/pischule/yummy-bot-4/pkgs/container/yummy-bot-4)
