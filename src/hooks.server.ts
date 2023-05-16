@@ -1,6 +1,8 @@
 import * as bot from '$lib/server/bot';
 import type { Handle } from '@sveltejs/kit';
 
+bot.init();
+
 export const handle = (async ({ event, resolve }) => {
 	if (event.url.searchParams.has('hash')) {
 		event.cookies.set('tg-auth', event.url.search, { path: '/', maxAge: 60 * 60 * 24 });

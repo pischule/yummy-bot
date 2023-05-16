@@ -1,9 +1,9 @@
 import { env } from '$env/dynamic/private';
-import { Bot } from 'grammy';
+import { Api, Bot, Context } from 'grammy';
 
 const { BOT_TOKEN, GROUP_CHAT_ID, APP_URL } = env;
 
-const bot = new Bot(BOT_TOKEN);
+let bot: Bot<Context, Api>;
 
 const escapeMarkdown = (s: string) => {
 	const SPECIAL_CHARACTERS = '_*[]()~`>#+-=|{}.!'.split('');
@@ -56,3 +56,6 @@ export const isSignatureValid = async (auth: Map<string, string>) => {
 	return hash === hexDigest;
 };
 
+export const init = () => {
+	bot = new Bot(BOT_TOKEN);
+};
