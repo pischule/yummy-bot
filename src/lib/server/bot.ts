@@ -1,9 +1,9 @@
 import { env } from '$env/dynamic/private';
-import { Api, Bot, Context } from 'grammy';
+import { Bot } from 'grammy';
 
 const { BOT_TOKEN, GROUP_CHAT_ID, APP_URL } = env;
 
-let bot: Bot<Context, Api>;
+let bot: Bot;
 
 const escapeMarkdown = (s: string) => {
 	const SPECIAL_CHARACTERS = '_*[]()~`>#+-=|{}.!'.split('');
