@@ -38,7 +38,6 @@
 		}
 
     button:disabled {
-        transform: translate(3px, 3px);
         box-shadow: none;
         opacity: 60%;
         cursor: not-allowed;
