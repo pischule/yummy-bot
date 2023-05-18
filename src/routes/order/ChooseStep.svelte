@@ -62,7 +62,7 @@
 
     .item-qty-buttons {
         display: flex;
-        min-width: 10ch;
+        min-width: 11ch;
         justify-content: space-between;
         gap: 4px;
         flex-shrink: 0;
