@@ -19,27 +19,35 @@
         background-color: var(--color-bg);
         border: solid var(--color-border) var(--border-width);
         border-radius: var(--border-radius);
+				cursor: pointer;
 
         transition: .2s ease;
         box-shadow: 3px 3px 0 0 var(--color-border);
     }
 
     @media (hover: hover) {
-        button:hover:not(:disabled) {
+        button:hover {
             transform: translate(3px, 3px);
             box-shadow: none;
         }
+    }
+
+		button:active {
+				transform: translate(3px, 3px);
+				box-shadow: none;
+		}
+
+    button:disabled {
+        transform: translate(3px, 3px);
+        box-shadow: none;
+        opacity: 60%;
+        cursor: not-allowed;
     }
 
     button.primary {
         background-color: var(--color-accent);
         color: var(--color-accent-text);
         font-weight: bold;
-    }
-
-    button:disabled {
-        opacity: 60%;
-        cursor: not-allowed;
     }
 
     .sm {
