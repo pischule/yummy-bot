@@ -1,13 +1,14 @@
-<script lang='ts'>
+<script lang="ts">
 	import Button from '$lib/Button.svelte';
 	import { createEventDispatcher } from 'svelte';
 
 	export let orderedItems: Item[];
+	export let nameFromServer: string | undefined;
 
 	const dispatch = createEventDispatcher();
 	const nonce = crypto.randomUUID();
-	let name = localStorage.getItem('name') || '';
 	let sending = false;
+	let name = nameFromServer ?? localStorage.getItem('name') ?? '';
 
 	const sendOrder = async () => {
 		const order = { name, orderedItems } satisfies Order;
@@ -68,14 +69,14 @@
         padding-inline-start: 0;
     }
 
-		.qty {
-				font-weight: bold;
-		}
-
-    input {
-        font-size: 1em;
-        padding: 8px;
-        border-radius: var(--border-radius);
-        border: solid var(--color-fg) var(--border-width);
+    .qty {
+        font-weight: bold;
     }
+
+	input {
+		font-size: 1em;
+		padding: 8px;
+		border-radius: var(--border-radius);
+		border: solid var(--color-fg) var(--border-width);
+	}
 </style>

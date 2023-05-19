@@ -12,18 +12,19 @@ const escapeMarkdown = (s: string) => {
 };
 
 export const sendOrder = async (order: Order, userId: string) => {
-	const mention = `[${escapeMarkdown(
-		order.name
-	)}](tg://user?id=${userId})`;
+	const mention = `[${escapeMarkdown(order.name)}](tg://user?id=${userId})`;
 	const itemsString = order.orderedItems
-		.map(item => {
+		.map((item) => {
 			const title = escapeMarkdown(`- ${item.name}`);
 			const quantity = item.qty > 1 ? ` *x${item.qty}*` : '';
 			return `${title}${quantity}`;
-		}).join('\n');
+		})
+		.join('\n');
 
 	const message = `${mention}:\n${itemsString}`;
-	await bot.api.sendMessage(GROUP_CHAT_ID, message, { parse_mode: 'MarkdownV2' });
+	await bot.api.sendMessage(GROUP_CHAT_ID, message, {
+		parse_mode: 'MarkdownV2'
+	});
 };
 
 export const sendOrderButton = async () => {

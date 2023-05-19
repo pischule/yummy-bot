@@ -1,4 +1,4 @@
-<script lang='ts'>
+<script lang="ts">
 	import type { PageData } from './$types';
 	import ChooseStep from './ChooseStep.svelte';
 	import ConfirmStep from './ConfirmStep.svelte';
@@ -10,7 +10,7 @@
 	const steps = ['choose', 'confirm', 'done'];
 	let currentStep = steps[0];
 
-	let items = [];
+	let items = data.menu?.items.map((name) => ({ name, qty: 0 })) ?? [];
 	let orderedItems: Item[] = [];
 
 	const handleChoose = (event) => {
@@ -21,18 +21,17 @@
 	const handleConfirm = () => {
 		currentStep = steps[2];
 	};
-
-	if (data.menu) {
-		items = data.menu.items.map((name) => ({ name, qty: 0 })) ?? [];
-	}
 </script>
-
 
 {#if data.menu}
 	{#if currentStep === 'choose'}
 		<ChooseStep {items} weekday={data.weekday} on:choose={handleChoose} />
 	{:else if currentStep === 'confirm'}
-		<ConfirmStep {orderedItems} on:confirm={handleConfirm} />
+		<ConfirmStep
+			nameFromServer={data.name}
+			{orderedItems}
+			on:confirm={handleConfirm}
+		/>
 	{:else}
 		<DoneStep />
 	{/if}

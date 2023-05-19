@@ -1,18 +1,13 @@
-import fs from 'fs/promises';
 import * as util from '$lib/server/util';
+import { jsonStore } from '$lib/server/jsonStore';
 
-const filename = 'menu.json';
+const menuStore = jsonStore<Menu>('data/menu.json');
+const namesStore =
+	jsonStore<Record<string, string | undefined>>('data/names.json');
+
 export const getMenu = async () => {
-	let file: Buffer;
-	try {
-		file = await fs.readFile(filename);
-	} catch (e) {
-		console.error(e);
-		return null;
-	}
-	const menu = <Menu>JSON.parse(file.toString());
-
-	if (menu.items.length === 0) {
+	const menu = await menuStore.get();
+	if (menu === null || menu.items.length === 0) {
 		return null;
 	}
 
@@ -25,5 +20,16 @@ export const getMenu = async () => {
 };
 
 export const setMenu = async (menu: Menu) => {
-	await fs.writeFile(filename, JSON.stringify(menu));
+	await menuStore.set(menu);
+};
+
+export const getName = async (id: string) => {
+	const names = (await namesStore.get()) ?? {};
+	return names[id];
+};
+
+export const setName = async (id: string, name: string) => {
+	const names = (await namesStore.get()) ?? {};
+	names[id] = name;
+	namesStore.set(names).then();
 };
