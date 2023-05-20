@@ -11,7 +11,7 @@ const checkSecret = (params: RouteParams) => {
   if (SECRET !== params.secret) throw error(404, 'Not Found');
 };
 
-export const load = (async ({ params }) => {
+export const load = (async ({ params, setHeaders }) => {
   checkSecret(params);
 
   const menu = await db.getMenu();
@@ -32,6 +32,7 @@ export const load = (async ({ params }) => {
     receiptDate = util.dateToLocalDateString(suggestedDate);
   }
 
+  setHeaders({ 'Cache-Control': 'max-age=0' });
   return { receiptDate, itemsString };
 }) satisfies PageServerLoad;
 
