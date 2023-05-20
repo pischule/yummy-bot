@@ -9,6 +9,5 @@ const tz = 'Europe/Minsk';
 const localDateFormat = 'YYYY-MM-DD';
 
 export const dateToLocalDateString = (date?: Date) => {
-	return dayjs(date).tz(tz).format(localDateFormat);
+  return dayjs(date).tz(tz).format(localDateFormat);
 };
-

@@ -24,6 +24,7 @@
 </table>
 
 Пример docker-compose.yml
+
 ```yaml
 services:
   app:

@@ -1,18 +1,18 @@
 interface Item {
-	name: string,
-	qty: number
+  name: string;
+  qty: number;
 }
 
 interface Menu {
-	updateDate: string,
-	receiptDate: string,
-	items: string[]
+  updateDate: string;
+  receiptDate: string;
+  items: string[];
 }
 
 interface Order {
-	name: string,
-	orderedItems: {
-		name: string,
-		qty: number
-	}[]
+  name: string;
+  orderedItems: {
+    name: string;
+    qty: number;
+  }[];
 }
