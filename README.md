@@ -23,10 +23,21 @@
   </tr>
 </table>
 
-Для запуска нужны следующие переменные окружения
-- BOT_TOKEN - токен телеграм-бота
-- GROUP_CHAT_ID - id чата, в который бот отправляет сообщения
-- APP_URL - url приложение
-- SECRET - секрет для доступа к админке (APP_URL/_/SECRET/edit)
+Пример docker-compose.yml
+```yaml
+services:
+  app:
+    image: ghcr.io/pischule/yummy-bot-4:main
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    environment:
+      BOT_TOKEN: 'токен телеграм-бота'
+      GROUP_CHAT_ID: 'id чата, в который бот отправляет сообщения'
+      APP_URL: 'url приложения'
+      SECRET: 'секрет для доступа к админке'
+    volumes:
+      - './data:/usr/src/app/data'
+```
 
-Собранный контейнер с приложением можно найти [здесь](https://github.com/pischule/yummy-bot-4/pkgs/container/yummy-bot-4)
+Админка доступна по url `/_/SECRET/edit`
