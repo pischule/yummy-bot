@@ -34,13 +34,13 @@
   }
 
   @media (hover: hover) {
-    button:hover {
+    button:hover(:not(:disabled)) {
       transform: translate(3px, 3px);
       box-shadow: none;
     }
   }
 
-  button:active {
+  button:active(:not(:disabled)) {
     transform: translate(3px, 3px);
     box-shadow: none;
   }
