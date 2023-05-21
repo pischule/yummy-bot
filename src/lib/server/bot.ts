@@ -89,17 +89,14 @@ export const authenticate = async (searchParams: URLSearchParams) => {
     .map((key) => `${key}=${searchParams.get(key)}`)
     .join('\n');
 
-  if (
-    searchParams.has('query_id') &&
-    (await isWebAppSignatureValid(hash, dataCheckString))
-  ) {
+  if (await isLinkSignatureValid(hash, dataCheckString)) {
+    return {
+      id: searchParams.get('id')!,
+    };
+  } else if (await isWebAppSignatureValid(hash, dataCheckString)) {
     const user = JSON.parse(searchParams.get('user')!);
     return {
       id: user.id,
-    };
-  } else if (await isLinkSignatureValid(hash, dataCheckString)) {
-    return {
-      id: searchParams.get('id')!,
     };
   } else {
     return null;
