@@ -68,16 +68,6 @@ const isLinkSignatureValid = async (hash: string, data: string) => {
   return hash === hex(digest);
 };
 
-const isWebAppSignatureValid = async (hash: string, data: string) => {
-  const enc = new TextEncoder();
-  const secretKey = await createHmac(
-    enc.encode('WebAppData'),
-    enc.encode(BOT_TOKEN),
-  );
-  const digest = await createHmac(secretKey, enc.encode(data));
-  return hash === hex(digest);
-};
-
 export const authenticate = async (searchParams: URLSearchParams) => {
   if (!searchParams) return null;
   const hash = searchParams.get('hash');
@@ -89,18 +79,13 @@ export const authenticate = async (searchParams: URLSearchParams) => {
     .map((key) => `${key}=${searchParams.get(key)}`)
     .join('\n');
 
-  if (await isLinkSignatureValid(hash, dataCheckString)) {
-    return {
-      id: searchParams.get('id')!,
-    };
-  } else if (await isWebAppSignatureValid(hash, dataCheckString)) {
-    const user = JSON.parse(searchParams.get('user')!);
-    return {
-      id: user.id,
-    };
-  } else {
+  if (!(await isLinkSignatureValid(hash, dataCheckString))) {
     return null;
   }
+
+  return {
+    id: searchParams.get('id')!,
+  };
 };
 
 export const init = () => {
