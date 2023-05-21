@@ -41,41 +41,56 @@ export const sendOrderButton = async () => {
   );
 };
 
+const createHmac = async (secret: ArrayBuffer, data: ArrayBuffer) => {
+  const algorithm = { name: 'HMAC', hash: 'SHA-256' };
+  const key = await crypto.subtle.importKey('raw', secret, algorithm, false, [
+    'sign',
+  ]);
+  return await crypto.subtle.sign(algorithm.name, key, data);
+};
+
+const createHash = async (data: ArrayBuffer) => {
+  return await crypto.subtle.digest('SHA-256', data);
+};
+
+const hex = (data: ArrayBuffer) => {
+  return Array.prototype.map
+    .call(new Uint8Array(data), (x) => x.toString(16).padStart(2, '0'))
+    .join('');
+};
+
+const isLinkSignatureValid = async (hash: string, data: string) => {
+  const enc = new TextEncoder();
+  const secretKey = await createHash(enc.encode(BOT_TOKEN));
+  const digest = await createHmac(secretKey, enc.encode(data));
+  return hash === hex(digest);
+};
+
+const isWebAppSignatureValid = async (hash: string, data: string) => {
+  const enc = new TextEncoder();
+  const secretKey = await createHmac(
+    enc.encode('WebAppData'),
+    enc.encode(BOT_TOKEN),
+  );
+  const digest = await createHmac(secretKey, enc.encode(data));
+  return hash === hex(digest);
+};
+
 export const isSignatureValid = async (auth: Map<string, string>) => {
   if (!auth) return false;
   const hash = auth.get('hash');
   if (!hash) return false;
 
-  const hashedKeys = [...auth.keys()].filter((key) => key !== 'hash');
-  hashedKeys.sort();
-  const dataCheckString = hashedKeys
+  const dataCheckString = [...auth.keys()]
+    .filter((key) => key !== 'hash')
+    .sort()
     .map((key) => `${key}=${auth.get(key)}`)
     .join('\n');
 
-  const enc = new TextEncoder();
-  const algorithm = { name: 'HMAC', hash: 'SHA-256' };
-  const secretKey = await crypto.subtle.digest(
-    algorithm.hash,
-    enc.encode(BOT_TOKEN),
+  return (
+    (await isLinkSignatureValid(hash, dataCheckString)) ||
+    (await isWebAppSignatureValid(hash, dataCheckString))
   );
-  const key = await crypto.subtle.importKey(
-    'raw',
-    secretKey,
-    algorithm,
-    false,
-    ['sign'],
-  );
-  const signature = await crypto.subtle.sign(
-    algorithm.name,
-    key,
-    enc.encode(dataCheckString),
-  );
-  const binaryDigest = new Uint8Array(signature);
-  const hexDigest = Array.prototype.map
-    .call(binaryDigest, (x) => x.toString(16).padStart(2, '0'))
-    .join('');
-
-  return hash === hexDigest;
 };
 
 export const init = () => {
