@@ -20,7 +20,12 @@ export const handle = (async ({ event, resolve }) => {
       const nowDate = Date.now() / 1000;
       const isNotStale = nowDate - authDate < cookieMaxAge * 2;
       if (isNotStale) {
-        event.locals.userId = <string>authData.get('id');
+        if (authData.get('query_id')) {
+          const user = JSON.parse(authData.get('user')!);
+          event.locals.userId = <string>user.id;
+        } else {
+          event.locals.userId = <string>authData.get('id');
+        }
       }
     }
   }
