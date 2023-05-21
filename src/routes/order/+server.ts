@@ -6,8 +6,9 @@ import { setName } from '$lib/server/database';
 
 const usedNonces = new Set();
 
-export const POST = (async ({ request, locals }) => {
-  if (!locals.userId) {
+export const POST = (async ({ request, url }) => {
+  const user = await bot.authenticate(url.searchParams);
+  if (!user) {
     throw error(401, 'Unauthorized');
   }
 
@@ -17,8 +18,8 @@ export const POST = (async ({ request, locals }) => {
   }
 
   const order = <Order>await request.json();
-  await bot.sendOrder(order, locals.userId);
-  await setName(locals.userId, order.name);
+  await bot.sendOrder(order, user.id);
+  await setName(user.id, order.name);
 
   if (nonce) {
     usedNonces.add(nonce);

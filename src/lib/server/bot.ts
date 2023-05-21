@@ -76,21 +76,24 @@ const isWebAppSignatureValid = async (hash: string, data: string) => {
   return hash === hex(digest);
 };
 
-export const isSignatureValid = async (auth: Map<string, string>) => {
-  if (!auth) return false;
-  const hash = auth.get('hash');
-  if (!hash) return false;
+export const authenticate = async (searchParams: URLSearchParams) => {
+  if (!searchParams) return null;
+  const hash = searchParams.get('hash');
+  if (!hash) return null;
 
-  const dataCheckString = [...auth.keys()]
+  const dataCheckString = [...searchParams.keys()]
     .filter((key) => key !== 'hash')
     .sort()
-    .map((key) => `${key}=${auth.get(key)}`)
+    .map((key) => `${key}=${searchParams.get(key)}`)
     .join('\n');
 
-  return (
-    (await isLinkSignatureValid(hash, dataCheckString)) ||
-    (await isWebAppSignatureValid(hash, dataCheckString))
-  );
+  if (!(await isLinkSignatureValid(hash, dataCheckString))) {
+    return null;
+  }
+
+  return {
+    id: searchParams.get('id')!,
+  };
 };
 
 export const init = () => {
