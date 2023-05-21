@@ -14,13 +14,12 @@ export const handle = (async ({ event, resolve }) => {
 
   const auth = event.cookies.get('tg-auth');
   if (auth) {
-    console.log(`authData = ${auth}`)
     const authData = new Map(new URLSearchParams(auth).entries());
     if (await bot.isSignatureValid(authData)) {
-      if (authData.get('query_id')) {
-        const user = JSON.parse(authData.get('user')!);
-        event.locals.userId = <string>user.id;
-      } else {
+      const authDate = parseInt(<string>authData.get('auth_date'));
+      const nowDate = Date.now() / 1000;
+      const isNotStale = nowDate - authDate < cookieMaxAge * 2;
+      if (isNotStale) {
         event.locals.userId = <string>authData.get('id');
       }
     }
