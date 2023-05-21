@@ -89,10 +89,6 @@ export const authenticate = async (searchParams: URLSearchParams) => {
     .map((key) => `${key}=${searchParams.get(key)}`)
     .join('\n');
 
-  if (!(await isLinkSignatureValid(hash, dataCheckString))) {
-    return null;
-  }
-
   if (
     searchParams.has('query_id') &&
     (await isWebAppSignatureValid(hash, dataCheckString))
