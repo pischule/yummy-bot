@@ -47,7 +47,7 @@
 
 <form on:submit|preventDefault={handleMainBtnClick}>
   <input
-    placeholder="Имя"
+    placeholder="Ваше имя"
     required
     autocomplete="name"
     minlength="3"
