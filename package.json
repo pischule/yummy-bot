@@ -15,7 +15,6 @@
   "devDependencies": {
     "@sveltejs/adapter-auto": "^2.0.0",
     "@sveltejs/kit": "^1.5.0",
-    "bun-types": "^1.0.1",
     "dayjs": "^1.11.7",
     "grammy": "^1.16.0",
     "prettier": "^2.8.0",

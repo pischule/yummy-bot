@@ -1,8 +1,9 @@
+import fs from 'fs/promises';
+
 export const jsonStore = <Type>(filename: string) => {
   const get = async () => {
     try {
-      const file = Bun.file(filename);
-      return <Type>await file.json();
+      return <Type>JSON.parse(await fs.readFile(filename, 'utf-8'));
     } catch (e) {
       console.error(`failed to read ${filename}`, e);
       return null;
@@ -11,7 +12,7 @@ export const jsonStore = <Type>(filename: string) => {
 
   const set = async (value: Type) => {
     try {
-      await Bun.write(filename, JSON.stringify(value));
+      await fs.writeFile(filename, JSON.stringify(value));
     } catch (e) {
       console.error(`failed to write ${filename}`, e);
     }
