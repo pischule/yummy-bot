@@ -1,5 +1,5 @@
-FROM oven/bun:1.0
+FROM node:20-alpine
 WORKDIR /usr/src/app
 COPY . .
 EXPOSE 3000
-CMD ["bun", "./build/index.js"]
+CMD ["node", "build"]
