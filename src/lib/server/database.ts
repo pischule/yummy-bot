@@ -1,9 +1,9 @@
 import * as util from '$lib/server/util';
 import { jsonStore } from '$lib/server/jsonStore';
 
-const menuStore = jsonStore<Menu>('./data/menu.json');
+const menuStore = jsonStore<Menu>('data/menu.json');
 const namesStore =
-  jsonStore<Record<string, string | undefined>>('./data/names.json');
+  jsonStore<Record<string, string | undefined>>('data/names.json');
 
 export const getMenu = async () => {
   const menu = await menuStore.get();
