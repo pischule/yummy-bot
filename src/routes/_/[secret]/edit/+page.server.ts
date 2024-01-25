@@ -4,6 +4,7 @@ import * as bot from '$lib/server/bot';
 import * as util from '$lib/server/util';
 import { env } from '$env/dynamic/private';
 import { error } from '@sveltejs/kit';
+import { logger } from '$lib/server/logger';
 
 const { SECRET } = env;
 
@@ -52,6 +53,8 @@ const save = async (request: Request) => {
     receiptDate: new Date(receiptDate).toJSON(),
     items,
   } satisfies Menu;
+
+  logger.info({ menu }, 'updated menu');
 
   await db.setMenu(menu);
 };

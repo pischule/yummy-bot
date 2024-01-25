@@ -3,6 +3,7 @@ import type { RequestHandler } from './$types';
 import * as bot from '$lib/server/bot';
 import { error } from '@sveltejs/kit';
 import { setName } from '$lib/server/database';
+import { logger } from '$lib/server/logger';
 
 const usedNonces = new Set();
 
@@ -24,6 +25,6 @@ export const POST = (async ({ request, url }) => {
   if (nonce) {
     usedNonces.add(nonce);
   }
-
+  logger.info({ userId: user.id, order }, 'created order');
   return new Response(null, { status: 201 });
 }) satisfies RequestHandler;
