@@ -1,53 +1,68 @@
 <script lang="ts">
-  import { ordersToCsv } from '$lib/messagesParser';
+  import { ordersToTsv } from '$lib/messagesParser';
   import Button from '$lib/Button.svelte';
 
   let textareaText: string = '';
 
-  function download(filename: string, text: string) {
-    const element = document.createElement('a');
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
+  const buttonOriginalText: string = 'Скопировать таблицу';
+  let buttonText: string = buttonOriginalText;
 
-    element.style.display = 'none';
-    document.body.appendChild(element);
-
-    element.click();
-
-    document.body.removeChild(element);
-  }
+  let timeoutId = null;
 
   function handleSubmit() {
-    const date = new Date().toJSON().split('T')[0];
-    const csv = ordersToCsv(textareaText);
-    download(`заказы-${date}.csv`, csv);
+    const tsv = ordersToTsv(textareaText);
+    navigator.clipboard.writeText(tsv).then(
+      function () {
+        buttonText = 'Готово';
+        window.clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          buttonText = buttonOriginalText;
+        }, 1000);
+      },
+      function (err) {
+        console.error('Async: Could not copy text: ', err);
+      },
+    );
   }
 </script>
 
 <h1>Парсер сообщений от бота</h1>
 
+<p>
+  <a
+    href="https://docs.google.com/spreadsheets/d/1Xver_uuh6sDZoi2XkI8695OFrP8Rzo-vs6qZoTPUl5k/edit?usp=sharing"
+    target="_blank">Шаблон</a
+  > с удобными формулами
+</p>
+
 <form on:submit|preventDefault={handleSubmit}>
   <label for="textarea">Вставьте сообщения с заказами</label>
-  <textarea rows="10" id="textarea" placeholder="Сюда" bind:value={textareaText}></textarea>
-  <Button primary block>Скачать CSV</Button>
+  <textarea
+    rows="10"
+    id="textarea"
+    placeholder="Сюда"
+    bind:value={textareaText}
+  />
+  <Button primary block>{buttonText}</Button>
 </form>
 
 <style>
   form {
-      display: flex;
-      flex-direction: column;
+    display: flex;
+    flex-direction: column;
+    margin-block-start: 2em;
   }
 
   textarea {
-      font-size: 1em;
-      padding: 8px;
-      border-radius: var(--border-radius);
-      border: solid var(--color-fg) var(--border-width);
-      font-family: inherit;
-      width: calc(100% - 20px);
-      display: block;
-      line-height: 1.25;
+    font-size: 1em;
+    padding: 8px;
+    border-radius: var(--border-radius);
+    border: solid var(--color-fg) var(--border-width);
+    font-family: inherit;
+    width: calc(100% - 20px);
+    display: block;
+    line-height: 1.25;
 
-      margin-block-end: 10px;
+    margin-block-end: 10px;
   }
 </style>
