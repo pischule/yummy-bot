@@ -1,0 +1,24 @@
+# fly.toml app configuration file generated for yummy-bot-4 on 2024-06-11T22:22:41+03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'yummy-bot-4'
+primary_region = 'waw'
+
+[build]
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  size = 'shared-cpu-1x'
+
+[mounts]
+  source = "data"
+  destination = "/usr/src/app/data"
