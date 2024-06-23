@@ -1,21 +1,24 @@
 <script lang="ts">
   import { ordersToTsv } from '$lib/messagesParser';
   import Button from '$lib/Button.svelte';
+  import type { PageData } from './$types';
 
   let textareaText: string = '';
 
   const buttonOriginalText: string = 'Скопировать таблицу';
   let buttonText: string = buttonOriginalText;
 
-  let timeoutId = null;
+  let timeoutId: number | undefined;
+
+  export let data: PageData;
 
   function handleSubmit() {
-    const tsv = ordersToTsv(textareaText);
+    const tsv = ordersToTsv(textareaText, data.menu);
     navigator.clipboard.writeText(tsv).then(
       function () {
         buttonText = 'Готово';
         window.clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
+        timeoutId = window.setTimeout(() => {
           buttonText = buttonOriginalText;
         }, 1000);
       },

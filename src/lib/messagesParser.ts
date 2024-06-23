@@ -1,3 +1,5 @@
+import { orderByExample } from '$lib/utils';
+
 interface Order {
   name: string;
   items: Array<Item>;
@@ -51,11 +53,12 @@ function generateTsv(ordersParsed: Array<Order>, allItemNames: Array<string>) {
 const orderRegex = /(YummyOrderBot, \[.+](\n.+)+)\n\n/gm;
 const itemRegex = /^- (.*?)(?:\sx(\d+))?$/;
 
-export function ordersToTsv(rawText: string) {
+export function ordersToTsv(rawText: string, menu: string[]) {
   const botTextOrders = (rawText + '\n\n').matchAll(orderRegex);
   const ordersParsed = [...botTextOrders].map((match) =>
     parseBotOrder(match[0]),
   );
   const allItemNames = getAllItemNames(ordersParsed);
+  orderByExample(allItemNames, menu);
   return generateTsv(ordersParsed, allItemNames);
 }
