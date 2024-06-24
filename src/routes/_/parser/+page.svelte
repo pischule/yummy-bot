@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { ordersToTsv } from '$lib/messagesParser';
   import Button from '$lib/Button.svelte';
-  import type { PageData } from './$types';
 
   let textareaText: string = '';
 
@@ -10,22 +8,27 @@
 
   let timeoutId: number | undefined;
 
-  export let data: PageData;
+  async function handleSubmit() {
+    const response = await fetch('/_/parser', {
+      method: 'POST',
+      body: JSON.stringify({ text: textareaText }),
+      headers: {
+        'content-type': 'application/json',
+      },
+    });
 
-  function handleSubmit() {
-    const tsv = ordersToTsv(textareaText, data.menu);
-    navigator.clipboard.writeText(tsv).then(
-      function () {
-        buttonText = 'Готово';
-        window.clearTimeout(timeoutId);
-        timeoutId = window.setTimeout(() => {
-          buttonText = buttonOriginalText;
-        }, 1000);
-      },
-      function (err) {
-        console.error('Async: Could not copy text: ', err);
-      },
-    );
+    const tsv: string = (await response.json()).data;
+
+    try {
+      await navigator.clipboard.writeText(tsv);
+      buttonText = 'Готово';
+      window.clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(() => {
+        buttonText = buttonOriginalText;
+      }, 1000);
+    } catch (err) {
+      console.error('Async: Could not copy text: ', err);
+    }
   }
 </script>
 

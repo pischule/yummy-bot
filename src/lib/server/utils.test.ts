@@ -1,4 +1,4 @@
-import { orderByExample } from '$lib/utils';
+import { orderByExample } from '$lib/server/utils';
 import { describe, expect, test } from 'vitest';
 
 describe('orderByExample', () => {

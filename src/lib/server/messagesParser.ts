@@ -1,4 +1,4 @@
-import { orderByExample } from '$lib/utils';
+import { orderByExample } from '$lib/server/utils';
 
 interface Order {
   name: string;
