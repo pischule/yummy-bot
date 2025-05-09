@@ -3,4 +3,4 @@ WORKDIR /usr/src/app
 COPY . .
 EXPOSE 3000
 RUN mkdir -p /usr/src/app/data
-CMD ["node", "--require", "./instrumentation.js", "build"]
+CMD ["node", "build"]
