@@ -5,13 +5,20 @@
   import DoneStep from './DoneStep.svelte';
   import NoMenu from './NoMenu.svelte';
 
-  export let data: PageData;
+  interface Item {
+    name: string;
+    qty: number;
+  }
+
+  let data: PageData = $props();
 
   const steps = ['choose', 'confirm', 'done'];
-  let currentStep = steps[0];
+  let currentStep = $state(steps[0]);
 
-  let items = data.menu?.items.map((name) => ({ name, qty: 0 })) ?? [];
-  let orderedItems: Item[] = [];
+  let items = $state(
+    data.menu?.items.map((name: string) => ({ name, qty: 0 })) ?? [],
+  );
+  let orderedItems = $state<Item[]>([]);
 
   const handleChoose = (event: CustomEvent<{ items: Item[] }>) => {
     orderedItems = event.detail.items;

@@ -2,13 +2,25 @@
   import Button from '$lib/Button.svelte';
   import { createEventDispatcher } from 'svelte';
 
-  export let orderedItems: Item[];
-  export let nameFromServer: string | undefined;
+  interface Item {
+    name: string;
+    qty: number;
+  }
+
+  interface Order {
+    name: string;
+    orderedItems: Item[];
+  }
+
+  let { orderedItems, nameFromServer } = $props<{
+    orderedItems: Item[];
+    nameFromServer: string | undefined;
+  }>();
 
   const dispatch = createEventDispatcher();
   const nonce = crypto.randomUUID();
-  let sending = false;
-  let name = nameFromServer ?? localStorage.getItem('name') ?? '';
+  let sending = $state(false);
+  let name = $state(nameFromServer ?? localStorage.getItem('name') ?? '');
 
   const sendOrder = async () => {
     const order = { name, orderedItems } satisfies Order;

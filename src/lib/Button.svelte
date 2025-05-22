@@ -1,11 +1,19 @@
 <script lang="ts">
-  export let primary = false;
-  export let block = false;
-  export let flex = false;
-  export let formaction: string | undefined = undefined;
-  export let sm = false;
-
-  export let disabled = false;
+  let {
+    primary = false,
+    block = false,
+    flex = false,
+    formaction,
+    sm = false,
+    disabled = false,
+  } = $props<{
+    primary?: boolean;
+    block?: boolean;
+    flex?: boolean;
+    formaction?: string | undefined;
+    sm?: boolean;
+    disabled?: boolean;
+  }>();
 </script>
 
 <button

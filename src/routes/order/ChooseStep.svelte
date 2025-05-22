@@ -2,16 +2,20 @@
   import Button from '$lib/Button.svelte';
   import { createEventDispatcher } from 'svelte';
 
-  export let items: Item[];
-  export let weekday: string;
+  interface Item {
+    name: string;
+    qty: number;
+  }
+
+  let { items, weekday } = $props<{ items: Item[]; weekday: string }>();
 
   const dispatch = createEventDispatcher<{ choose: { items: Item[] } }>();
 
-  $: orderedItems = items.filter((item) => item.qty > 0);
+  const orderedItems = $derived(items.filter((item: Item) => item.qty > 0));
 
   const updateItemQty = (updatedItem: Item, increment: number) => {
     updatedItem.qty = Math.max(updatedItem.qty + increment, 0);
-    items = items;
+    // The line `items = items;` is no longer needed with Svelte 5's reactivity
   };
 
   const handleMainBtnClick = () => {

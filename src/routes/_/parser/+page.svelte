@@ -1,10 +1,10 @@
 <script lang="ts">
   import Button from '$lib/Button.svelte';
 
-  let textareaText: string = '';
+  let textareaText = $state('');
 
   const buttonOriginalText: string = 'Скопировать таблицу';
-  let buttonText: string = buttonOriginalText;
+  let buttonText = $state(buttonOriginalText);
 
   let timeoutId: number | undefined;
 

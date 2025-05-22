@@ -22,7 +22,7 @@ export const sendOrder = async (order: Order, userId: string) => {
     .join('\n');
 
   const message = `${mention}:\n${itemsString}`;
-  await bot.api.sendMessage(GROUP_CHAT_ID, message, {
+  await bot.api.sendMessage(GROUP_CHAT_ID!, message, {
     parse_mode: 'MarkdownV2',
   });
 };
@@ -35,7 +35,7 @@ export const sendOrderButton = async () => {
     },
   };
   await bot.api.sendMessage(
-    GROUP_CHAT_ID,
+    GROUP_CHAT_ID!,
     'Нажмите на кнопку ниже, чтобы создать заказ',
     {
       reply_markup: { inline_keyboard: [[button]] },
@@ -63,8 +63,13 @@ const hex = (data: ArrayBuffer) => {
 
 const isLinkSignatureValid = async (hash: string, data: string) => {
   const enc = new TextEncoder();
-  const secretKey = await createHash(enc.encode(BOT_TOKEN));
-  const digest = await createHmac(secretKey, enc.encode(data));
+  const secretKey = await createHash(
+    enc.encode(BOT_TOKEN!).buffer as ArrayBuffer,
+  );
+  const digest = await createHmac(
+    secretKey,
+    enc.encode(data).buffer as ArrayBuffer,
+  );
   return hash === hex(digest);
 };
 
@@ -89,5 +94,5 @@ export const authenticate = async (searchParams: URLSearchParams) => {
 };
 
 export const init = () => {
-  bot = new Bot(BOT_TOKEN);
+  bot = new Bot(BOT_TOKEN!);
 };
