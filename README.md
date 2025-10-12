@@ -32,13 +32,14 @@ services:
     ports:
       - 3000:3000
     restart: unless-stopped
+    init: true
     environment:
       BOT_TOKEN: 'токен телеграм-бота'
       GROUP_CHAT_ID: 'id чата, в который бот отправляет сообщения'
       APP_URL: 'url приложения'
       SECRET: 'секрет для доступа к админке'
     volumes:
-      - './data:/usr/src/app/data'
+      - './data:/app/data'
 ```
 
 Админка доступна по url `/_/SECRET/edit`
