@@ -1,6 +1,16 @@
 FROM node:20-alpine
-WORKDIR /usr/src/app
-COPY . .
+
+RUN addgroup -S app \
+    && adduser -S -s /sbin/nologin -G app app
+
+WORKDIR /app
+
+COPY --chown=app build build
+RUN mkdir data && chown -R app data
+
+USER app:app
+
 EXPOSE 3000
-RUN mkdir -p /usr/src/app/data
+
 CMD ["node", "build"]
+
