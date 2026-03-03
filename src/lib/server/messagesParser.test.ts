@@ -13,10 +13,49 @@ Bob:
 - Soda x3
 - Burger
 `;
+
+  const mockRawNewText = `
+[01.01.24 12:00] YummyOrderBot: Alice:
+- Burger x2
+- Fries
+[01.01.24 12:05] YummyOrderBot: Bob:
+- Soda x3
+- Burger
+`;
+
+  const mockAnotherText = `
+YummyOrderBot, [3 Mar 2026 at 12:58:10]:
+Alice:
+- Burger x2
+- Fries
+
+
+YummyOrderBot, [3 Mar 2026 at 13:09:58]:
+Bob:
+- Soda x3
+- Burger
+`;
+
   const mockMenu = ['Soda', 'Burger', 'Fries'];
 
   it('should correctly parse names and quantities', () => {
     const result = ordersToTsv(mockRawText, mockMenu);
+    const lines = result.split('\n');
+
+    expect(lines[1]).toBe('"Alice"\t\t2\t1');
+    expect(lines[2]).toBe('"Bob"\t3\t1\t');
+  });
+
+  it('should correctly parse new format', () => {
+    const result = ordersToTsv(mockRawNewText, mockMenu);
+    const lines = result.split('\n');
+
+    expect(lines[1]).toBe('"Alice"\t\t2\t1');
+    expect(lines[2]).toBe('"Bob"\t3\t1\t');
+  });
+
+  it('should correctly parse another format', () => {
+    const result = ordersToTsv(mockAnotherText, mockMenu);
     const lines = result.split('\n');
 
     expect(lines[1]).toBe('"Alice"\t\t2\t1');
