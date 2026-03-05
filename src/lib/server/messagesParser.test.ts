@@ -76,16 +76,16 @@ describe('ordersToTsv', () => {
 
   it('should parse new win format', () => {
     const text = `
-  [01.01.24 12:00] YummyOrderBot: Alice:
-  - Burger x2
-  - Fries
-  [01.01.24 12:00] SomeSender: QWE:
-  - Similar looking format
-  someJunkText
-  [01.01.24 12:05] YummyOrderBot: Bob:
-  - Soda x3
-  - Burger
-  `;
+    [01.01.24 12:00] YummyOrderBot: Alice:
+    - Burger x2
+    - Fries
+    [01.01.24 12:00] SomeSender: QWE:
+    - Similar looking format
+    someJunkText
+    [01.01.24 12:05] YummyOrderBot: Bob:
+    - Soda x3
+    - Burger
+    `;
 
     const result = ordersToTsv(text, mockMenu);
     const lines = result.split('\n');
@@ -115,13 +115,12 @@ describe('ordersToTsv', () => {
   });
 
   it('should handle items not present in the menu by putting them at the end', () => {
-    const rawWithExtra =
-      `
-YummyOrderBot, [01.01.24 12:00]
-Charlie:
-- Pizza
-- Soda
-`.trim() + '\n\n';
+    const rawWithExtra = `
+    YummyOrderBot, [01.01.24 12:00]
+    Charlie:
+    - Pizza
+    - Soda
+    `;
 
     const result = ordersToTsv(rawWithExtra, mockMenu);
     const headers = result.split('\n')[0];
@@ -131,12 +130,11 @@ Charlie:
   });
 
   it('should escape double quotes in item names and user names', () => {
-    const rawWithQuotes =
-      `
-YummyOrderBot, [01.01.24 12:00]
-"Big" Ben:
-- Special "Sauce"
-`.trim() + '\n\n';
+    const rawWithQuotes = `
+    YummyOrderBot, [01.01.24 12:00]
+    "Big" Ben:
+    - Special "Sauce"
+    `;
 
     const result = ordersToTsv(rawWithQuotes, []);
 
