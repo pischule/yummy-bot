@@ -18,6 +18,9 @@ Bob:
 [01.01.24 12:00] YummyOrderBot: Alice:
 - Burger x2
 - Fries
+[01.01.24 12:00] SomeSender: QWE:
+- Similar looking format
+someJunkText
 [01.01.24 12:05] YummyOrderBot: Bob:
 - Soda x3
 - Burger

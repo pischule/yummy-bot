@@ -14,8 +14,10 @@ function escapeCsvField(field: string) {
   return '"' + field.replace(/"/g, '""') + '"';
 }
 
-function parseItem(line: string) {
-  const [, itemName, qty] = line.match(itemRegex) || [];
+function parseItem(line: string): Item | null {
+  const match = line.match(itemRegex);
+  if (!match) return null;
+  const [, itemName, qty] = match;
   return { name: itemName || '', qty: parseInt(qty) || 1 };
 }
 
@@ -59,6 +61,12 @@ function isAlternativeFormat(rawText: string): boolean {
   return rawText.trim().startsWith('[');
 }
 
+function parseNameFromAlternativeHeader(line: string): string | null {
+  const match = line.match(/YummyOrderBot:\s*(.+):$/);
+  if (!match) return null;
+  return match[1].trim();
+}
+
 function parseStandard(rawText: string) {
   const botTextOrders = (rawText + '\n\n').matchAll(orderRegex);
   return [...botTextOrders].map((match) => parseBotOrder(match[0]));
@@ -71,12 +79,21 @@ function parseAlternative(rawText: string) {
   for (let line of lines) {
     line = line.trim();
     if (!line) continue;
-    const headerMatch = line.match(/YummyOrderBot:\s*(.+):$/);
-    if (headerMatch) {
-      if (currentOrder) orders.push(currentOrder);
-      currentOrder = { name: headerMatch[1].trim(), items: [] };
-    } else if (line.startsWith('-') && currentOrder) {
-      currentOrder.items.push(parseItem(line));
+
+    const nameFromHeader = parseNameFromAlternativeHeader(line);
+    const item = parseItem(line);
+    if (nameFromHeader) {
+      if (currentOrder) {
+        orders.push(currentOrder);
+      }
+      currentOrder = { name: nameFromHeader, items: [] };
+    } else if (item && currentOrder) {
+      currentOrder.items.push(item);
+    } else {
+      if (currentOrder) {
+        orders.push(currentOrder);
+        currentOrder = null;
+      }
     }
   }
 
