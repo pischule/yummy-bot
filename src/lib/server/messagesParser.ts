@@ -10,83 +10,48 @@ interface Item {
   qty: number;
 }
 
-function escapeCsvField(field: string) {
-  return '"' + field.replace(/"/g, '""') + '"';
+export function ordersToTsv(rawText: string, menu: string[]) {
+  const orders = parseOrders(rawText);
+  const allItemNames = getAllItemNames(orders);
+  orderByExample(allItemNames, menu);
+  return generateTsv(orders, allItemNames);
 }
 
-function parseItem(line: string): Item | null {
-  const match = line.match(itemRegex);
-  if (!match) return null;
-  const [, itemName, qty] = match;
-  return { name: itemName || '', qty: parseInt(qty) || 1 };
+function parseOrders(rawText: string): Order[] {
+  const lines = rawText
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line);
+  if (!lines) return [];
+
+  if (isHeaderWithoutName(lines[0])) {
+    return parseWithNameOnNewLine(lines);
+  } else {
+    return parseWithNameOnSameLine(lines);
+  }
 }
 
-function parseBotOrder(text: string) {
-  const [nameWithColon, ...items] = text.trim().split('\n').slice(1);
-  const name = nameWithColon.substring(0, nameWithColon.length - 1);
-  const parsedItems = items.map((line) => parseItem(line));
-  return { name, items: parsedItems };
+function isHeaderWithoutName(line: string): boolean {
+  const macRegex = /^> YummyOrderBot:$/;
+  const winRegex = /^YummyOrderBot, \[.+\]:?$/;
+  return winRegex.test(line) || macRegex.test(line);
 }
 
-function getAllItemNames(orders: Array<Order>) {
-  const allItems = orders.flatMap((order) =>
-    order.items.map((item) => item.name),
-  );
-  return [...new Set(allItems)].sort();
-}
-
-function generateCsvLine(order: Order, allItemNames: Array<string>) {
-  const itemMap = new Map(order.items.map((item) => [item.name, item.qty]));
-  const line = [escapeCsvField(order.name)];
-  allItemNames.forEach((itemName) => {
-    const qty = itemMap.get(itemName) || '';
-    line.push(qty.toString());
-  });
-  return line.join('\t');
-}
-
-function generateTsv(ordersParsed: Array<Order>, allItemNames: Array<string>) {
-  const csvLines = [];
-  csvLines.push(['Имя', ...allItemNames.map(escapeCsvField)].join('\t'));
-  ordersParsed.forEach((order) => {
-    csvLines.push(generateCsvLine(order, allItemNames));
-  });
-  return csvLines.join('\n');
-}
-
-const orderRegex = /(YummyOrderBot, \[.+]:?(\n.+)+)\n\n/gm;
-const itemRegex = /^- (.*?)(?:\sx(\d+))?$/;
-
-function isAlternativeFormat(rawText: string): boolean {
-  return rawText.trim().startsWith('[');
-}
-
-function parseNameFromAlternativeHeader(line: string): string | null {
-  const match = line.match(/YummyOrderBot:\s*(.+):$/);
-  if (!match) return null;
-  return match[1].trim();
-}
-
-function parseStandard(rawText: string) {
-  const botTextOrders = (rawText + '\n\n').matchAll(orderRegex);
-  return [...botTextOrders].map((match) => parseBotOrder(match[0]));
-}
-
-function parseAlternative(rawText: string) {
-  const lines = rawText.split('\n');
+function parseWithNameOnNewLine(lines: string[]): Order[] {
   const orders: Order[] = [];
   let currentOrder: Order | null = null;
-  for (let line of lines) {
-    line = line.trim();
-    if (!line) continue;
-
-    const nameFromHeader = parseNameFromAlternativeHeader(line);
+  let previousLineIsHeader = false;
+  for (const line of lines) {
     const item = parseItem(line);
-    if (nameFromHeader) {
+    if (isHeaderWithoutName(line)) {
+      previousLineIsHeader = true;
+    } else if (previousLineIsHeader) {
+      previousLineIsHeader = false;
       if (currentOrder) {
         orders.push(currentOrder);
       }
-      currentOrder = { name: nameFromHeader, items: [] };
+      const name = line.trim().slice(0, -1);
+      currentOrder = { name, items: [] };
     } else if (item && currentOrder) {
       currentOrder.items.push(item);
     } else {
@@ -96,20 +61,73 @@ function parseAlternative(rawText: string) {
       }
     }
   }
-
   if (currentOrder) orders.push(currentOrder);
   return orders;
 }
 
-export function ordersToTsv(rawText: string, menu: string[]) {
-  let ordersParsed = [];
-  if (isAlternativeFormat(rawText)) {
-    ordersParsed = parseAlternative(rawText);
-  } else {
-    ordersParsed = parseStandard(rawText);
-  }
+function parseItem(line: string): Item | null {
+  const match = line.match(/^- (.*?)(?:\sx(\d+))?$/);
+  if (!match) return null;
+  const [, itemName, qty] = match;
+  return { name: itemName || '', qty: parseInt(qty) || 1 };
+}
 
-  const allItemNames = getAllItemNames(ordersParsed);
-  orderByExample(allItemNames, menu);
-  return generateTsv(ordersParsed, allItemNames);
+function parseWithNameOnSameLine(lines: string[]): Order[] {
+  const orders: Order[] = [];
+  let currentOrder: Order | null = null;
+  for (const line of lines) {
+    const name = parseNameFromAlternativeHeader(line);
+    const item = parseItem(line);
+    if (name) {
+      if (currentOrder) {
+        orders.push(currentOrder);
+      }
+      currentOrder = { name, items: [] };
+    } else if (item && currentOrder) {
+      currentOrder.items.push(item);
+    } else {
+      if (currentOrder) {
+        orders.push(currentOrder);
+        currentOrder = null;
+      }
+    }
+  }
+  if (currentOrder) orders.push(currentOrder);
+  return orders;
+}
+
+function parseNameFromAlternativeHeader(line: string): string | null {
+  const match = line.match(/^\[.+\] YummyOrderBot:\s*(.+):$/);
+  if (!match) return null;
+  return match[1].trim();
+}
+
+function getAllItemNames(orders: Order[]): string[] {
+  const allItems = orders.flatMap((order) =>
+    order.items.map((item) => item.name),
+  );
+  return [...new Set(allItems)].sort();
+}
+
+function generateTsv(ordersParsed: Order[], allItemNames: string[]): string {
+  const csvLines = [];
+  csvLines.push(['Имя', ...allItemNames.map(escapeCsvField)].join('\t'));
+  ordersParsed.forEach((order) => {
+    csvLines.push(generateTsvLine(order, allItemNames));
+  });
+  return csvLines.join('\n');
+}
+
+function generateTsvLine(order: Order, allItemNames: string[]): string {
+  const itemMap = new Map(order.items.map((item) => [item.name, item.qty]));
+  const line = [escapeCsvField(order.name)];
+  allItemNames.forEach((itemName) => {
+    const qty = itemMap.get(itemName) || '';
+    line.push(qty.toString());
+  });
+  return line.join('\t');
+}
+
+function escapeCsvField(field: string): string {
+  return '"' + field.replace(/"/g, '""') + '"';
 }
