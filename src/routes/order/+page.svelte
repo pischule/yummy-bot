@@ -1,40 +1,40 @@
 <script lang="ts">
-  import type { PageData } from './$types';
-  import ChooseStep from './ChooseStep.svelte';
-  import ConfirmStep from './ConfirmStep.svelte';
-  import DoneStep from './DoneStep.svelte';
-  import NoMenu from './NoMenu.svelte';
+	import type { PageProps } from './$types';
+	import ChooseStep from './ChooseStep.svelte';
+	import ConfirmStep from './ConfirmStep.svelte';
+	import DoneStep from './DoneStep.svelte';
+	import NoMenu from './NoMenu.svelte';
 
-  export let data: PageData;
+	let { data }: PageProps = $props();
 
-  const steps = ['choose', 'confirm', 'done'];
-  let currentStep = steps[0];
+	function toItemWithQty(items: string[]): Item[] {
+		return items.map((name: string) => ({ name, qty: 0 })) ?? [];
+	}
 
-  let items = data.menu?.items.map((name) => ({ name, qty: 0 })) ?? [];
-  let orderedItems: Item[] = [];
+	let currentStep = $state(0);
+	let items = $state(toItemWithQty(data.items));
 
-  const handleChoose = (event: CustomEvent<{ items: Item[] }>) => {
-    orderedItems = event.detail.items;
-    currentStep = steps[1];
-  };
+	function onUpdateItemQty(item: Item, increment: number) {
+		item.qty = Math.max(item.qty + increment, 0);
+	}
 
-  const handleConfirm = () => {
-    currentStep = steps[2];
-  };
+	function onChoose() {
+		currentStep = 1;
+	}
+
+	function onConfirm() {
+		currentStep = 2;
+	}
 </script>
 
-{#if data.menu}
-  {#if currentStep === 'choose'}
-    <ChooseStep {items} weekday={data.weekday} on:choose={handleChoose} />
-  {:else if currentStep === 'confirm'}
-    <ConfirmStep
-      nameFromServer={data.name}
-      {orderedItems}
-      on:confirm={handleConfirm}
-    />
-  {:else}
-    <DoneStep />
-  {/if}
+{#if data.items.length > 0}
+	{#if currentStep === 0}
+		<ChooseStep {items} weekday={data.weekday} {onUpdateItemQty} {onChoose} />
+	{:else if currentStep === 1}
+		<ConfirmStep nameFromServer={data.name} {items} {onConfirm} />
+	{:else}
+		<DoneStep />
+	{/if}
 {:else}
-  <NoMenu />
+	<NoMenu />
 {/if}
