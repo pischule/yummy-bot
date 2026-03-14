@@ -1,3 +1,5 @@
+export const APP_TZ = 'Europe/Minsk';
+
 export function orderByExample(array: string[], example: string[]): string[] {
 	const indexMap = new Map();
 	example.forEach((el, index) => {

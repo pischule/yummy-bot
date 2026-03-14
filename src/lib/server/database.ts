@@ -1,5 +1,5 @@
-import * as util from '$lib/server/util';
-import { jsonStore } from '$lib/server/jsonStore';
+import { APP_TZ } from './utils.ts';
+import { jsonStore } from './jsonStore.ts';
 
 const menuStore = jsonStore<Menu>('data/menu.json');
 const namesStore = jsonStore<Record<string, string | undefined>>('data/names.json');
@@ -10,9 +10,11 @@ export const getMenu = async () => {
 		return null;
 	}
 
-	const updateDate = util.dateToLocalDateString(new Date(menu.updateDate));
-	const today = util.dateToLocalDateString();
-	if (today !== updateDate) {
+	const updateDate = Temporal.Instant.from(menu.updateDate)
+		.toZonedDateTimeISO(APP_TZ)
+		.toPlainDate();
+	const today: Temporal.PlainDate = Temporal.Now.plainDateISO(APP_TZ);
+	if (Temporal.PlainDate.compare(today, updateDate) != 0) {
 		return null;
 	}
 	return menu;

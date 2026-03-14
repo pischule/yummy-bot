@@ -2,6 +2,7 @@
 node_modules
 .svelte-kit
 package
+
 **/.env
 **/.env.*
 !**/.env.example
@@ -9,6 +10,6 @@ package
 **/vite.config.ts.timestamp-*
 .dev.vars
 .idea
+.mise.toml
 
 data
-fly.toml
