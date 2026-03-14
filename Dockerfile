@@ -5,7 +5,10 @@ RUN addgroup -S app \
 
 WORKDIR /app
 
-COPY --chown=app .deno-deploy .deno-deploy
+COPY .deno-deploy ./.deno-deploy
+COPY node_modules ./node_modules
+COPY package.json ./
+
 RUN mkdir data && chown -R app data
 
 USER app:app
