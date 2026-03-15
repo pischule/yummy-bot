@@ -8,6 +8,12 @@ importers:
 
   .:
     devDependencies:
+      '@js-joda/core':
+        specifier: ^5.7.0
+        version: 5.7.0
+      '@js-joda/timezone':
+        specifier: ^2.23.0
+        version: 2.23.0(@js-joda/core@5.7.0)
       '@sveltejs/adapter-auto':
         specifier: ^7.0.0
         version: 7.0.1(@sveltejs/kit@2.53.4(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.53.7)(vite@7.3.1(@types/node@25.3.5)))(svelte@5.53.7)(typescript@5.9.3)(vite@7.3.1(@types/node@25.3.5)))
@@ -23,9 +29,6 @@ importers:
       '@types/node':
         specifier: ^25.3.5
         version: 25.3.5
-      dayjs:
-        specifier: ^1.11.19
-        version: 1.11.19
       grammy:
         specifier: ^1.41.1
         version: 1.41.1
@@ -230,6 +233,14 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@js-joda/core@5.7.0':
+    resolution: {integrity: sha512-WBu4ULVVxySLLzK1Ppq+OdfP+adRS4ntmDQT915rzDJ++i95gc2jZkM5B6LWEAwN3lGXpfie3yPABozdD3K3Vg==}
+
+  '@js-joda/timezone@2.23.0':
+    resolution: {integrity: sha512-33rPV8ORT66Httd/IHQaymTZ//MbjF0WRB58JOUT0G04/a9cB5Q0RFTV1+T4XjIjHr+nY5QkO6KppqgogsJs+Q==}
+    peerDependencies:
+      '@js-joda/core': '>=1.11.0'
 
   '@pinojs/redact@0.4.0':
     resolution: {integrity: sha512-k2ENnmBugE/rzQfEcdWHcCY+/FM3VLzH9cYEsbdsoqrvzAKRhUZeRNhAZvB8OitQJ1TBed3yqWtdjzS6wJKBwg==}
@@ -553,9 +564,6 @@ packages:
   cookie@0.6.0:
     resolution: {integrity: sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==}
     engines: {node: '>= 0.6'}
-
-  dayjs@1.11.19:
-    resolution: {integrity: sha512-t5EcLVS6QPBNqM2z8fakk/NKel+Xzshgt8FFKAn+qwlD1pzZWxh0nVCrvFK7ZDb6XucZeF9z8C7CBWTRIVApAw==}
 
   debug@4.4.3:
     resolution: {integrity: sha512-RGwwWnwQvkVfavKVt22FGLw+xYSdzARwm0ru6DhTVA3umU5hZc28V3kO4stgYryrTlLpuvgI9GiijltAjNbcqA==}
@@ -1025,6 +1033,12 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
+  '@js-joda/core@5.7.0': {}
+
+  '@js-joda/timezone@2.23.0(@js-joda/core@5.7.0)':
+    dependencies:
+      '@js-joda/core': 5.7.0
+
   '@pinojs/redact@0.4.0': {}
 
   '@polka/url@1.0.0-next.29': {}
@@ -1278,8 +1292,6 @@ snapshots:
   commondir@1.0.1: {}
 
   cookie@0.6.0: {}
-
-  dayjs@1.11.19: {}
 
   debug@4.4.3:
     dependencies:

@@ -3,17 +3,17 @@
 
 	interface Props {
 		items: Item[];
-		weekday: string;
+		day: string;
 		onChoose: (items: Item[]) => void;
 		onUpdateItemQty: (item: Item, increment: number) => void;
 	}
 
-	let { items, weekday, onUpdateItemQty, onChoose }: Props = $props();
+	let { items, day, onUpdateItemQty, onChoose }: Props = $props();
 
 	const selectedItems = $derived(items.filter((item) => item.qty > 0));
 </script>
 
-<h1>Меню на {weekday}</h1>
+<h1>Меню на {day}</h1>
 
 <div class="items-container">
 	{#each items as item}

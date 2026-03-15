@@ -1,10 +1,11 @@
 import type { Actions, PageServerLoad, RouteParams } from './$types';
 import * as db from '$lib/server/database';
 import * as bot from '$lib/server/bot';
-import * as util from '$lib/server/util';
 import { env } from '$env/dynamic/private';
 import { error } from '@sveltejs/kit';
 import { logger } from '$lib/server/logger';
+import { DayOfWeek, Instant, LocalDate, ZonedDateTime, ZoneId } from '@js-joda/core';
+import { APP_TZ } from '$lib/server/utils';
 
 const { SECRET } = env;
 
@@ -20,17 +21,16 @@ export const load: PageServerLoad = (async ({ params, setHeaders }) => {
 
 	let receiptDate: string;
 	if (menu?.receiptDate) {
-		receiptDate = util.dateToLocalDateString(new Date(menu.receiptDate));
+		receiptDate = menu.receiptDate.toJSON();
 	} else {
-		const suggestedDate = new Date();
+		let suggestedDate: LocalDate = ZonedDateTime.now(APP_TZ).toLocalDate();
 		let daysAdded = 1;
-		if (suggestedDate.getDay() == 5) {
+		if (suggestedDate.dayOfWeek() === DayOfWeek.FRIDAY) {
 			daysAdded = 3;
-		} else if (suggestedDate.getDay() == 6) {
+		} else if (suggestedDate.dayOfWeek() === DayOfWeek.SATURDAY) {
 			daysAdded = 2;
 		}
-		suggestedDate.setDate(suggestedDate.getDate() + daysAdded);
-		receiptDate = util.dateToLocalDateString(suggestedDate);
+		receiptDate = suggestedDate.plusDays(daysAdded).toJSON();
 	}
 
 	setHeaders({ 'Cache-Control': 'max-age=0' });
@@ -49,14 +49,14 @@ const save = async (request: Request) => {
 	items = [...new Set(items)];
 
 	const menu = {
-		updateDate: new Date().toJSON(),
-		receiptDate: new Date(receiptDate).toJSON(),
+		updatedAt: Instant.now(),
+		receiptDate: LocalDate.parse(receiptDate),
 		items
-	} satisfies Menu;
-
-	logger.info({ menu }, 'updated menu');
+	};
 
 	await db.setMenu(menu);
+
+	logger.info({ menu }, 'updated menu');
 };
 
 export const actions = {

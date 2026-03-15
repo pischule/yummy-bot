@@ -3,12 +3,6 @@ interface Item {
 	qty: number;
 }
 
-interface Menu {
-	updateDate: string;
-	receiptDate: string;
-	items: string[];
-}
-
 interface Order {
 	name: string;
 	orderedItems: {

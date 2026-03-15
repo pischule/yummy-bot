@@ -1,42 +1,45 @@
-# sv
+# yummy-bot
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Веб-приложение для заказа еды. Авторизация по телеграм, заказы отправляются в заданный чат
 
-## Creating a project
+<table>
+  <tr>
+    <td>
+      <img src="https://github.com/pischule/yummy-bot-4/assets/41614960/4628fda2-fcab-48bc-ac38-eeddf74de45d"/>
+    </td>
+    <td>
+      <img src="https://github.com/pischule/yummy-bot-4/assets/41614960/c48a375f-d618-44e4-bee4-243112fc28bf"/>
+    </td>
+    <td>
+      <img src="https://github.com/pischule/yummy-bot-4/assets/41614960/b6debea7-a813-47c5-a10a-b317318880d2"/>
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>
+      <img src="https://github.com/pischule/yummy-bot-4/assets/41614960/72748835-6b0b-4d34-a9a8-408d94f23e7b"/>
+    </td>
+    <td></td>
+  </tr>
+</table>
 
-If you're seeing this, you've probably already done this step. Congrats!
+Пример docker-compose.yml
 
-```sh
-# create a new project
-npx sv create my-app
+```yaml
+services:
+  app:
+    image: ghcr.io/pischule/yummy-bot-4:main
+    ports:
+      - 8000:8000
+    restart: unless-stopped
+    init: true
+    environment:
+      BOT_TOKEN: 'токен телеграм-бота'
+      GROUP_CHAT_ID: 'id чата, в который бот отправляет сообщения'
+      APP_URL: 'url приложения'
+      SECRET: 'секрет для доступа к админке'
+    volumes:
+      - './data:/app/data'
 ```
 
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-pnpm dlx sv@0.12.5 create --template minimal --types ts --add prettier vitest="usages:unit" --install pnpm yummy-bot
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Админка доступна по url `/_/SECRET/edit`
