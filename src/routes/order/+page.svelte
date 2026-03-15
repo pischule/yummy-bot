@@ -29,7 +29,7 @@
 
 {#if data.items.length > 0}
 	{#if currentStep === 0}
-		<ChooseStep {items} weekday={data.weekday} {onUpdateItemQty} {onChoose} />
+		<ChooseStep {items} day={data.day} {onUpdateItemQty} {onChoose} />
 	{:else if currentStep === 1}
 		<ConfirmStep nameFromServer={data.name} {items} {onConfirm} />
 	{:else}

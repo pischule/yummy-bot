@@ -3,15 +3,17 @@ import * as db from '$lib/server/database';
 import { getName } from '$lib/server/database';
 import { error } from '@sveltejs/kit';
 import * as bot from '$lib/server/bot';
+import { ZonedDateTime } from '@js-joda/core';
+import { APP_TZ } from '$lib/server/utils';
 
 const WEEKDAYS = [
-	'воскресенье',
 	'понедельник',
 	'вторник',
 	'среду',
 	'четверг',
 	'пятницу',
-	'субботу'
+	'субботу',
+	'воскресенье'
 ];
 
 export const load = (async ({ url, setHeaders }) => {
@@ -21,10 +23,28 @@ export const load = (async ({ url, setHeaders }) => {
 	}
 
 	setHeaders({ 'Cache-Control': 'max-age=0' });
-	const menu: Menu | null = await db.getMenu();
+
+	const menu = await db.getMenu();
+	if (!menu?.items) {
+		return {
+			items: [],
+			day: '',
+			name: ''
+		};
+	}
+
+	const receiptDate = menu.receiptDate;
+	const tomorrow = ZonedDateTime.now(APP_TZ).toLocalDate().plusDays(1);
+	let day: string;
+	if (menu.receiptDate.isEqual(tomorrow)) {
+		day = 'завтра';
+	} else {
+		day = WEEKDAYS[receiptDate.dayOfWeek().ordinal()];
+	}
+
 	return {
 		items: menu?.items ?? [],
-		weekday: menu ? WEEKDAYS[new Date(menu.receiptDate).getDay()] : '?',
+		day,
 		name: await getName(user.id)
 	};
 }) satisfies PageServerLoad;
