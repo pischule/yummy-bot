@@ -39,5 +39,8 @@
 		"@js-joda/timezone": "^2.23.0",
 		"grammy": "^1.41.1",
 		"pino": "^10.3.1"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": ["esbuild"]
 	}
 }

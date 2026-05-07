@@ -1,14 +1,3 @@
-FROM node:24-alpine AS builder
-
-WORKDIR /app
-
-COPY package.json pnpm-lock.yaml ./
-RUN corepack enable && pnpm install --frozen-lockfile
-
-COPY . .
-RUN pnpm build
-
-
 FROM node:24-alpine
 
 RUN addgroup -S app \
@@ -16,9 +5,9 @@ RUN addgroup -S app \
 
 WORKDIR /app
 
-COPY --from=builder --chown=app /app/build build
-COPY --from=builder --chown=app /app/package.json /app/pnpm-lock.yaml ./
-COPY --from=builder --chown=app /app/drizzle drizzle
+COPY --chown=app build build
+COPY --chown=app package.json pnpm-lock.yaml ./
+COPY --chown=app drizzle drizzle
 RUN corepack enable && pnpm install --frozen-lockfile --prod
 RUN mkdir data && chown -R app data
 
