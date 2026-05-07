@@ -7,7 +7,7 @@ settings:
 importers:
 
   .:
-    devDependencies:
+    dependencies:
       '@js-joda/core':
         specifier: ^5.7.0
         version: 5.7.0
@@ -17,6 +17,16 @@ importers:
       '@libsql/client':
         specifier: ^0.17.3
         version: 0.17.3
+      drizzle-orm:
+        specifier: ^0.45.2
+        version: 0.45.2(@libsql/client@0.17.3)
+      grammy:
+        specifier: ^1.41.1
+        version: 1.41.1
+      pino:
+        specifier: ^10.3.1
+        version: 10.3.1
+    devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^7.0.0
         version: 7.0.1(@sveltejs/kit@2.53.4(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.53.7)(vite@7.3.1(@types/node@25.3.5)(tsx@4.21.0)))(svelte@5.53.7)(typescript@5.9.3)(vite@7.3.1(@types/node@25.3.5)(tsx@4.21.0)))
@@ -35,15 +45,6 @@ importers:
       drizzle-kit:
         specifier: ^0.31.10
         version: 0.31.10
-      drizzle-orm:
-        specifier: ^0.45.2
-        version: 0.45.2(@libsql/client@0.17.3)
-      grammy:
-        specifier: ^1.41.1
-        version: 1.41.1
-      pino:
-        specifier: ^10.3.1
-        version: 10.3.1
       prettier:
         specifier: ^3.8.1
         version: 3.8.1
