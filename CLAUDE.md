@@ -83,7 +83,7 @@ All app time is in `Europe/Minsk` (`APP_TZ` in `src/lib/server/utils.ts`).
 | `GROUP_CHAT_ID` | Chat ID where orders are sent |
 | `APP_URL` | Public app URL (used for login_url) |
 | `SECRET` | Path segment for admin panel access |
-| `DB_URL` | SQLite database file path (e.g. `data/app.db`) |
+| `DB_URL` | SQLite database url (e.g. `file:data/app.db`) |
 
 ## Code conventions
 
