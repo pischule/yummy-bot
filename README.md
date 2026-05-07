@@ -38,6 +38,7 @@ services:
       GROUP_CHAT_ID: 'id чата, в который бот отправляет сообщения'
       APP_URL: 'url приложения'
       SECRET: 'секрет для доступа к админке'
+      DB_URL: '/app/data/app.db'
     volumes:
       - './data:/app/data'
 ```

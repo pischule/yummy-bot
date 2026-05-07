@@ -27,7 +27,7 @@ This is a **SvelteKit 2 + Node adapter** app for ordering food at an office. Use
 - **Telegram bot:** `grammy` for sending messages/buttons to the group chat
 - **Date/time:** `@js-joda/core` + `@js-joda/timezone`
 - **Logging:** `pino`
-- **Persistence:** JSON files in `data/` (mounted as Docker volume)
+- **Persistence:** SQLite via Drizzle ORM (`drizzle-orm` + `@libsql/client`), file path from `DB_URL` env var
 - **Tests:** vitest, server-side only (no component tests), `expect.requireAssertions: true`
 
 ### Routing (SvelteKit file-based)
@@ -46,7 +46,7 @@ This is a **SvelteKit 2 + Node adapter** app for ordering food at an office. Use
 
 ### Data flow
 
-1. Admin sets the menu via `/_/[secret]/edit` form actions → saves to `data/menu.json`
+1. Admin sets the menu via `/_/[secret]/edit` form actions → saves to SQLite via Drizzle
 2. "Save and Send" calls `bot.sendOrderButton()` → posts a Telegram inline keyboard with a `login_url` pointing to `/order`
 3. User taps the button, Telegram authenticates them, they land on `/order`
 4. User selects items/quantities, confirms → POST to `/order/+server.ts`
@@ -67,8 +67,10 @@ All app time is in `Europe/Minsk` (`APP_TZ` in `src/lib/server/utils.ts`).
 ### Key server modules (`src/lib/server/`)
 
 - `bot.ts` — Grammy bot instance, `sendOrder()`, `sendOrderButton()`, `authenticate()`
-- `database.ts` — CRUD for `data/menu.json` and `data/names.json`
-- `jsonStore.ts` — Generic `read()`/`write()` JSON file helper
+- `database.ts` — Re-exports from `db/database.ts` (kept for existing import paths)
+- `db/schema.ts` — Drizzle ORM schema: `menuTable` (id, updatedAt, receiptDate, items) and `namesTable` (telegramId, name)
+- `db/store.ts` — Drizzle instance (libsql driver), reads db file path from `DB_URL` env var
+- `db/database.ts` — `getMenu()`, `setMenu()`, `getName()`, `setName()` using Drizzle queries
 - `messagesParser.ts` — Parses forwarded Telegram order messages into TSV (3 formats supported)
 - `utils.ts` — `APP_TZ` constant, `orderByExample()` sort utility
 - `logger.ts` — Pino logger instance
@@ -81,6 +83,7 @@ All app time is in `Europe/Minsk` (`APP_TZ` in `src/lib/server/utils.ts`).
 | `GROUP_CHAT_ID` | Chat ID where orders are sent |
 | `APP_URL` | Public app URL (used for login_url) |
 | `SECRET` | Path segment for admin panel access |
+| `DB_URL` | SQLite database file path (e.g. `data/app.db`) |
 
 ## Code conventions
 

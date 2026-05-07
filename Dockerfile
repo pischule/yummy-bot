@@ -6,6 +6,7 @@ RUN addgroup -S app \
 WORKDIR /app
 
 COPY --chown=app build build
+COPY --chown=app drizzle drizzle
 RUN mkdir data && chown -R app data
 
 USER app:app
