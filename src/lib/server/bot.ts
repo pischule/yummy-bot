@@ -89,3 +89,7 @@ export const init = () => {
 	);
 	bot.start();
 };
+
+export const stop = () => {
+	bot.stop();
+};
