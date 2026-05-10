@@ -8,6 +8,13 @@
       "when": 1778188837220,
       "tag": "0000_pale_sleeper",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1778430832441,
+      "tag": "0001_minor_tenebrous",
+      "breakpoints": true
     }
   ]
 }

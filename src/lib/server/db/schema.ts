@@ -1,10 +1,12 @@
 import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
-export const menuTable = sqliteTable('menu', {
+export const locationsTable = sqliteTable('locations', {
 	id: text().primaryKey(),
-	updatedAt: text('updated_at').notNull(),
-	receiptDate: text('receipt_date').notNull(),
-	items: text('items', { mode: 'json' }).notNull().$type<string[]>()
+	name: text().notNull(),
+	chatId: text('chat_id').notNull().unique(),
+	menu: text('menu', { mode: 'json' }).notNull().$type<string[]>().default([]),
+	updatedAt: text('updated_at').notNull().default(''),
+	receiptDate: text('receipt_date').notNull().default('')
 });
 
 export const namesTable = sqliteTable('name', {

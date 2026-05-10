@@ -2,7 +2,7 @@ import { Instant, LocalDate } from '@js-joda/core';
 import { eq } from 'drizzle-orm';
 import { APP_TZ } from '../utils';
 import { db } from './store';
-import { menuTable, namesTable } from './schema';
+import { locationsTable, namesTable } from './schema';
 
 export interface Menu {
 	updatedAt: Instant;
@@ -10,41 +10,83 @@ export interface Menu {
 	items: string[];
 }
 
-export async function getMenu(): Promise<Menu | null> {
-	const menu = (await db.select().from(menuTable).where(eq(menuTable.id, 'default')).limit(1))[0];
-	if (menu == null || menu.items.length === 0) {
-		return null;
-	}
+export interface DbLocation {
+	id: string;
+	name: string;
+	chatId: string;
+	menu: string[];
+	updatedAt: string;
+	receiptDate: string;
+}
 
-	const updatedAt = Instant.parse(menu.updatedAt);
-	const receiptDate = LocalDate.parse(menu.receiptDate);
-	const items = menu.items;
+export async function getLocations(): Promise<DbLocation[]> {
+	return db.select().from(locationsTable);
+}
+
+export async function getLocation(id: string): Promise<DbLocation | undefined> {
+	const rows = await db.select().from(locationsTable).where(eq(locationsTable.id, id)).limit(1);
+	return rows[0];
+}
+
+export async function getLocationByChatId(chatId: string): Promise<DbLocation | undefined> {
+	const rows = await db
+		.select()
+		.from(locationsTable)
+		.where(eq(locationsTable.chatId, chatId))
+		.limit(1);
+	return rows[0];
+}
+
+export async function addLocation(loc: { id: string; name: string; chatId: string }) {
+	await db.insert(locationsTable).values({
+		id: loc.id,
+		name: loc.name,
+		chatId: loc.chatId,
+		menu: [],
+		updatedAt: '',
+		receiptDate: ''
+	});
+}
+
+export async function updateLocation(id: string, data: { name: string; chatId: string }) {
+	await db
+		.update(locationsTable)
+		.set({ name: data.name, chatId: data.chatId })
+		.where(eq(locationsTable.id, id));
+}
+
+export async function deleteLocation(id: string) {
+	await db.delete(locationsTable).where(eq(locationsTable.id, id));
+}
+
+export function getMenuFromLocation(loc: DbLocation): Menu | null {
+	if (loc.menu.length === 0) return null;
+
+	const updatedAt = loc.updatedAt ? Instant.parse(loc.updatedAt) : Instant.now();
+	const receiptDate = loc.receiptDate ? LocalDate.parse(loc.receiptDate) : LocalDate.now(APP_TZ);
 
 	const updateDate = updatedAt.atZone(APP_TZ).toLocalDate();
 	const today = LocalDate.now(APP_TZ);
-	if (!updateDate.isEqual(today)) {
-		return null;
-	}
-	return { updatedAt, receiptDate, items };
+	if (!updateDate.isEqual(today)) return null;
+
+	return { updatedAt, receiptDate, items: loc.menu };
 }
 
-export async function setMenu(menu: Menu) {
+export async function getMenu(locationId: string): Promise<Menu | null> {
+	const loc = await getLocation(locationId);
+	if (!loc) return null;
+	return getMenuFromLocation(loc);
+}
+
+export async function setMenu(locationId: string, menu: Menu) {
 	await db
-		.insert(menuTable)
-		.values({
-			id: 'default',
+		.update(locationsTable)
+		.set({
+			menu: menu.items,
 			updatedAt: menu.updatedAt.toJSON(),
-			receiptDate: menu.receiptDate.toJSON(),
-			items: menu.items
+			receiptDate: menu.receiptDate.toJSON()
 		})
-		.onConflictDoUpdate({
-			target: menuTable.id,
-			set: {
-				updatedAt: menu.updatedAt.toJSON(),
-				receiptDate: menu.receiptDate.toJSON(),
-				items: menu.items
-			}
-		});
+		.where(eq(locationsTable.id, locationId));
 }
 
 export async function getName(id: string) {

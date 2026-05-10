@@ -1,7 +1,7 @@
 import { env } from '$env/dynamic/private';
 import { Bot } from 'grammy';
 
-const { BOT_TOKEN, GROUP_CHAT_ID, APP_URL } = env;
+const { BOT_TOKEN, APP_URL } = env;
 
 let bot: Bot;
 
@@ -11,7 +11,7 @@ const escapeMarkdown = (s: string) => {
 	return s;
 };
 
-export const sendOrder = async (order: Order, userId: string) => {
+export const sendOrder = async (order: Order, userId: string, chatId: string) => {
 	const mention = `[${escapeMarkdown(order.name)}](tg://user?id=${userId})`;
 	const itemsString = order.orderedItems
 		.map((item) => {
@@ -22,19 +22,19 @@ export const sendOrder = async (order: Order, userId: string) => {
 		.join('\n');
 
 	const message = `${mention}:\n${itemsString}`;
-	await bot.api.sendMessage(GROUP_CHAT_ID, message, {
+	await bot.api.sendMessage(chatId, message, {
 		parse_mode: 'MarkdownV2'
 	});
 };
 
-export const sendOrderButton = async () => {
+export const sendOrderButton = async (location: { id: string; chatId: string }) => {
 	const button = {
 		text: 'Создать заказ',
 		login_url: {
-			url: `${APP_URL}/order`
+			url: `${APP_URL}/order/${location.id}`
 		}
 	};
-	await bot.api.sendMessage(GROUP_CHAT_ID, 'Нажмите на кнопку ниже, чтобы создать заказ', {
+	await bot.api.sendMessage(location.chatId, 'Нажмите на кнопку ниже, чтобы создать заказ', {
 		reply_markup: { inline_keyboard: [[button]] }
 	});
 };
@@ -84,4 +84,8 @@ export const authenticate = async (searchParams: URLSearchParams) => {
 
 export const init = () => {
 	bot = new Bot(BOT_TOKEN);
+	bot.command('chatid', (ctx) =>
+		ctx.reply(`Chat ID: <code>${ctx.chatId}</code>`, { parse_mode: 'HTML' })
+	);
+	bot.start();
 };

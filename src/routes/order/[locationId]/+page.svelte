@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
-	import ChooseStep from './ChooseStep.svelte';
-	import ConfirmStep from './ConfirmStep.svelte';
-	import DoneStep from './DoneStep.svelte';
-	import NoMenu from './NoMenu.svelte';
+	import ChooseStep from '../ChooseStep.svelte';
+	import ConfirmStep from '../ConfirmStep.svelte';
+	import DoneStep from '../DoneStep.svelte';
+	import NoMenu from '../NoMenu.svelte';
 
 	let { data }: PageProps = $props();
 

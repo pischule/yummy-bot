@@ -16,20 +16,23 @@ const WEEKDAYS = [
 	'воскресенье'
 ];
 
-export const load = (async ({ url, setHeaders }) => {
+export const load = (async ({ url, params, setHeaders }) => {
 	const user = await bot.authenticate(url.searchParams);
 	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
 
+	const { locationId } = params;
+
 	setHeaders({ 'Cache-Control': 'max-age=0' });
 
-	const menu = await db.getMenu();
+	const menu = await db.getMenu(locationId);
 	if (!menu?.items) {
 		return {
 			items: [],
 			day: '',
-			name: ''
+			name: '',
+			locationId
 		};
 	}
 
@@ -45,6 +48,7 @@ export const load = (async ({ url, setHeaders }) => {
 	return {
 		items: menu?.items ?? [],
 		day,
-		name: await getName(user.id)
+		name: await getName(user.id),
+		locationId
 	};
 }) satisfies PageServerLoad;
