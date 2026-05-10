@@ -19,7 +19,7 @@
 		const order = { name, orderedItems } satisfies Order;
 		try {
 			sending = true;
-			const response = await fetch(`/order${window.location.search}`, {
+			const response = await fetch(window.location.pathname + window.location.search, {
 				method: 'POST',
 				body: JSON.stringify(order),
 				headers: {
