@@ -92,8 +92,7 @@ export const actions = {
 			return { success: false, error: 'Локация с таким Chat ID уже существует' };
 		await db.updateLocation(id, { name, chatId });
 		logger.info({ id, name, chatId }, 'updated location');
-		const activeId = url.searchParams.get('locationId');
-		throw redirect(303, url.pathname + (activeId ? '?locationId=' + activeId : ''));
+		return { success: true };
 	},
 
 	deleteLocation: async ({ request, params, url }) => {

@@ -45,12 +45,12 @@
 	}
 
 	function onFormResult(result: any, update: () => void) {
-		if (result.type === 'redirect') {
+		if (result.type === 'success' && result.data?.success === false) {
+			modalError = result.data.error;
+		} else {
 			modal = null;
 			modalError = '';
 			update();
-		} else if (result.type === 'success' && result.data?.success === false) {
-			modalError = result.data.error;
 		}
 	}
 
@@ -163,6 +163,7 @@
 								formError = result.data.error as string;
 							} else {
 								formError = '';
+								await update();
 							}
 						};
 					}}
