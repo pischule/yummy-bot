@@ -1,5 +1,3 @@
-import { orderByExample } from '$lib/server/utils';
-
 interface Order {
 	name: string;
 	items: Array<Item>;
@@ -10,11 +8,41 @@ interface Item {
 	qty: number;
 }
 
-export function ordersToTsv(rawText: string, menu: string[]) {
+export function ordersToTsv(rawText: string) {
 	const orders = parseOrders(rawText);
-	const allItemNames = getAllItemNames(orders);
-	orderByExample(allItemNames, menu);
+	const allItemNames = deriveMenuOrder(orders);
 	return generateTsv(orders, allItemNames);
+}
+
+function deriveMenuOrder(orders: Order[]): string[] {
+	const before: Record<string, Record<string, number>> = {};
+
+	for (const order of orders) {
+		const names = order.items.map((i) => i.name);
+		for (let i = 0; i < names.length; i++) {
+			for (let j = i + 1; j < names.length; j++) {
+				before[names[i]] ??= {};
+				before[names[i]][names[j]] = (before[names[i]][names[j]] ?? 0) + 1;
+			}
+		}
+	}
+
+	const items = getAllItemNames(orders);
+	const score = (item: string) => {
+		let s = 0;
+		for (const other of items) {
+			if (other === item) continue;
+			s += before[item]?.[other] ?? 0;
+			s -= before[other]?.[item] ?? 0;
+		}
+		return s;
+	};
+
+	return items.sort((a, b) => {
+		const diff = score(b) - score(a);
+		if (diff !== 0) return diff;
+		return a.localeCompare(b);
+	});
 }
 
 function parseOrders(rawText: string): Order[] {

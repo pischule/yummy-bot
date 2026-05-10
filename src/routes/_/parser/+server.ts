@@ -4,6 +4,6 @@ import { ordersToTsv } from '$lib/server/messagesParser';
 
 export const POST = (async ({ request }) => {
 	const { text } = await request.json();
-	const tsv = ordersToTsv(text, []);
+	const tsv = ordersToTsv(text);
 	return json({ data: tsv });
 }) satisfies RequestHandler;

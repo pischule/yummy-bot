@@ -2,8 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { ordersToTsv } from './messagesParser';
 
 describe('ordersToTsv', () => {
-	const mockMenu = ['Soda', 'Burger', 'Fries'];
-
 	it('should parse old win format', () => {
 		const text = `
     YummyOrderBot, [01.01.24 12:00]
@@ -17,7 +15,7 @@ describe('ordersToTsv', () => {
     - Burger
     `;
 
-		const result = ordersToTsv(text, mockMenu);
+		const result = ordersToTsv(text);
 		const lines = result.split('\n');
 
 		expect(lines).toStrictEqual([
@@ -40,7 +38,7 @@ describe('ordersToTsv', () => {
     - Burger
     `;
 
-		const result = ordersToTsv(text, mockMenu);
+		const result = ordersToTsv(text);
 		const lines = result.split('\n');
 
 		expect(lines).toStrictEqual([
@@ -67,7 +65,7 @@ describe('ordersToTsv', () => {
     - Burger
     `;
 
-		const result = ordersToTsv(text, mockMenu);
+		const result = ordersToTsv(text);
 		const lines = result.split('\n');
 
 		expect(lines[1]).toBe('"Alice"\t\t2\t1');
@@ -87,14 +85,14 @@ describe('ordersToTsv', () => {
     - Burger
     `;
 
-		const result = ordersToTsv(text, mockMenu);
+		const result = ordersToTsv(text);
 		const lines = result.split('\n');
 
 		expect(lines[1]).toBe('"Alice"\t\t2\t1');
 		expect(lines[2]).toBe('"Bob"\t3\t1\t');
 	});
 
-	it('should sort columns based on the provided menu order', () => {
+	it('should sort columns based on precedence derived from order items', () => {
 		const text = `
     YummyOrderBot, [01.01.24 12:00]
     Alice:
@@ -107,26 +105,75 @@ describe('ordersToTsv', () => {
     - Burger
     `;
 
-		const result = ordersToTsv(text, mockMenu);
+		const result = ordersToTsv(text);
 		const headers = result.split('\n')[0];
 
-		// Header should be: Имя, "Soda", "Burger", "Fries"
 		expect(headers).toBe('Имя\t"Soda"\t"Burger"\t"Fries"');
 	});
 
-	it('should handle items not present in the menu by putting them at the end', () => {
-		const rawWithExtra = `
+	it('should sort items with equal scores alphabetically', () => {
+		const text = `
     YummyOrderBot, [01.01.24 12:00]
-    Charlie:
-    - Pizza
+    Alice:
+    - Burger
+    - Fries
+
+    YummyOrderBot, [01.01.24 12:05]
+    Bob:
     - Soda
+    - Pizza
     `;
 
-		const result = ordersToTsv(rawWithExtra, mockMenu);
+		const result = ordersToTsv(text);
 		const headers = result.split('\n')[0];
 
-		// "Pizza" is not in mockMenu, so it should be pushed to the end by orderByExample
-		expect(headers).toBe('Имя\t"Soda"\t"Pizza"');
+		// Burger beats Fries (score 1), Soda beats Pizza (score 1)
+		// Fries loses to Burger (-1), Pizza loses to Soda (-1)
+		// Burger/Soda tied (1), Fries/Pizza tied (-1), alphabetical within ties
+		expect(headers).toBe('Имя\t"Burger"\t"Soda"\t"Fries"\t"Pizza"');
+	});
+
+	it('should derive column order from multiple orders with overlapping items', () => {
+		const text = `
+    YummyOrderBot, [01.01.24 12:00]
+    Alice:
+    - A
+    - B
+
+    YummyOrderBot, [01.01.24 12:05]
+    Bob:
+    - B
+    - C
+
+    YummyOrderBot, [01.01.24 12:10]
+    Charlie:
+    - C
+    - D
+    `;
+
+		const result = ordersToTsv(text);
+		const headers = result.split('\n')[0];
+
+		// A before B (Alice), B before C (Bob), C before D (Charlie) → chain: A, B, C, D
+		expect(headers).toBe('Имя\t"A"\t"B"\t"C"\t"D"');
+	});
+
+	it('should break ties alphabetically when no precedence information', () => {
+		const text = `
+    YummyOrderBot, [01.01.24 12:00]
+    Alice:
+    - Soda
+
+    YummyOrderBot, [01.01.24 12:05]
+    Bob:
+    - Burger
+    `;
+
+		const result = ordersToTsv(text);
+		const headers = result.split('\n')[0];
+
+		// No pairs to compare, all tied → alphabetical
+		expect(headers).toBe('Имя\t"Burger"\t"Soda"');
 	});
 
 	it('should escape double quotes in item names and user names', () => {
@@ -136,15 +183,14 @@ describe('ordersToTsv', () => {
     - Special "Sauce"
     `;
 
-		const result = ordersToTsv(rawWithQuotes, []);
+		const result = ordersToTsv(rawWithQuotes);
 
-		// escapeCsvField should turn " into "" and wrap in "
 		expect(result).toContain('"Big"" Ben"');
 		expect(result).toContain('"Special ""Sauce"""');
 	});
 
 	it('should return only headers if the input text is empty', () => {
-		const result = ordersToTsv('', []);
+		const result = ordersToTsv('');
 		expect(result).toBe('Имя');
 	});
 });
