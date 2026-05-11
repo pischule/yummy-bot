@@ -409,10 +409,13 @@
 		color: inherit;
 		box-shadow: 3px 3px 0 0 var(--color-fg);
 		transition: 0.15s ease;
+		-webkit-tap-highlight-color: transparent;
 	}
-	.dash-card:hover {
-		transform: translate(2px, 2px);
-		box-shadow: 1px 1px 0 0 var(--color-fg);
+	@media (hover: hover) and (pointer: fine) {
+		.dash-card:hover {
+			transform: translate(2px, 2px);
+			box-shadow: 1px 1px 0 0 var(--color-fg);
+		}
 	}
 
 	.card-header {

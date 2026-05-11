@@ -23,12 +23,14 @@
 		border: solid var(--color-border) var(--border-width);
 		border-radius: var(--border-radius);
 		cursor: pointer;
+		touch-action: manipulation;
+		-webkit-tap-highlight-color: transparent;
 
 		transition: 0.2s ease;
 		box-shadow: 3px 3px 0 0 var(--color-border);
 	}
 
-	@media (hover: hover) {
+	@media (hover: hover) and (pointer: fine) {
 		button:hover:not(:disabled) {
 			transform: translate(3px, 3px);
 			box-shadow: none;

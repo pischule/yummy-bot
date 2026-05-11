@@ -24,7 +24,7 @@
 
 <dialog
 	bind:this={dialogEl}
-	onclose={onclose}
+	{onclose}
 	onclick={(e) => {
 		if (e.target === dialogEl) dialogEl?.close();
 	}}
@@ -72,10 +72,13 @@
 		font-family: inherit;
 		box-shadow: 3px 3px 0 0 var(--color-border);
 		transition: 0.2s ease;
+		-webkit-tap-highlight-color: transparent;
 	}
-	:global(.btn-cancel:hover) {
-		transform: translate(3px, 3px);
-		box-shadow: none;
+	@media (hover: hover) and (pointer: fine) {
+		:global(.btn-cancel:hover) {
+			transform: translate(3px, 3px);
+			box-shadow: none;
+		}
 	}
 	:global(.btn-cancel:active) {
 		transform: translate(3px, 3px);

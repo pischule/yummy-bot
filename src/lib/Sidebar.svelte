@@ -115,10 +115,13 @@
 		white-space: nowrap;
 		box-shadow: 2px 2px 0 0 var(--color-fg);
 		transition: 0.15s ease;
+		-webkit-tap-highlight-color: transparent;
 	}
-	.btn-add:hover {
-		transform: translate(1px, 1px);
-		box-shadow: 1px 1px 0 0 var(--color-fg);
+	@media (hover: hover) and (pointer: fine) {
+		.btn-add:hover {
+			transform: translate(1px, 1px);
+			box-shadow: 1px 1px 0 0 var(--color-fg);
+		}
 	}
 	.btn-add:active {
 		transform: translate(2px, 2px);
@@ -161,9 +164,12 @@
 		color: inherit;
 		margin-bottom: 2px;
 		position: relative;
+		-webkit-tap-highlight-color: transparent;
 	}
-	.location-item:hover {
-		background: var(--color-hover-bg);
+	@media (hover: hover) and (pointer: fine) {
+		.location-item:hover {
+			background: var(--color-hover-bg);
+		}
 	}
 	.location-item.active {
 		background: hsl(241 100% 66% / 0.08);
@@ -198,7 +204,11 @@
 		opacity: 0;
 		transition: opacity 0.15s;
 	}
-	.location-item:hover .actions,
+	@media (hover: hover) and (pointer: fine) {
+		.location-item:hover .actions {
+			opacity: 1;
+		}
+	}
 	.location-item.active .actions {
 		opacity: 1;
 	}
@@ -240,14 +250,17 @@
 		cursor: pointer;
 		font-size: 13px;
 		font-family: inherit;
+		-webkit-tap-highlight-color: transparent;
 	}
-	.btn-icon:hover {
-		background: var(--color-surface-bg);
-		opacity: 1;
-	}
-	.btn-icon.danger:hover {
-		background: var(--color-danger-bg);
-		color: var(--color-danger);
+	@media (hover: hover) and (pointer: fine) {
+		.btn-icon:hover {
+			background: var(--color-surface-bg);
+			opacity: 1;
+		}
+		.btn-icon.danger:hover {
+			background: var(--color-danger-bg);
+			color: var(--color-danger);
+		}
 	}
 
 	.empty-state {
