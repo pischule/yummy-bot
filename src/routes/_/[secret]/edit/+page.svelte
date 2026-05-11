@@ -2,6 +2,7 @@
 	import type { PageProps } from './$types';
 	import { enhance } from '$app/forms';
 	import Button from '$lib/Button.svelte';
+	import Dialog from '$lib/Dialog.svelte';
 
 	const { data }: PageProps = $props();
 
@@ -10,7 +11,6 @@
 	let modalTargetId = $state('');
 	let modalError = $state('');
 	let formError = $state('');
-	let dialogEl = $state<HTMLDialogElement | null>(null);
 
 	let locations = $derived(data.locations ?? []);
 	let activeLocationId = $derived(data.activeLocationId);
@@ -37,17 +37,9 @@
 		modal = type;
 		modalTargetId = targetId ?? '';
 		modalError = '';
-		dialogEl?.showModal();
 	}
 
 	function closeModal() {
-		modal = null;
-		modalTargetId = '';
-		modalError = '';
-		dialogEl?.close();
-	}
-
-	function onDialogClose() {
 		modal = null;
 		modalTargetId = '';
 		modalError = '';
@@ -280,14 +272,7 @@
 	</div>
 {/if}
 
-<!-- ===== NATIVE DIALOG ===== -->
-<dialog
-	bind:this={dialogEl}
-	onclose={onDialogClose}
-	onclick={(e) => {
-		if (e.target === dialogEl) closeModal();
-	}}
->
+<Dialog open={modal !== null} onclose={closeModal}>
 	{#if modal === 'add'}
 		<h3>Новая локация</h3>
 		<form
@@ -398,7 +383,7 @@
 			</div>
 		</form>
 	{/if}
-</dialog>
+</Dialog>
 
 <style>
 	/* ===== RESET & LAYOUT ===== */
@@ -859,63 +844,6 @@
 			opacity: 1;
 			transform: translateY(0);
 		}
-	}
-
-	/* ===== NATIVE DIALOG ===== */
-	dialog {
-		background: var(--color-bg);
-		border: solid var(--color-fg) var(--border-width);
-		border-radius: var(--border-radius);
-		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-		width: 420px;
-		max-width: 90vw;
-		padding: 24px;
-	}
-
-	dialog::backdrop {
-		background: rgba(0, 0, 0, 0.35);
-		backdrop-filter: blur(2px);
-	}
-
-	dialog h3 {
-		font-size: 16px;
-		font-weight: 600;
-		margin-bottom: 18px;
-	}
-
-	dialog .field {
-		margin-bottom: 14px;
-	}
-
-	dialog .field:last-of-type {
-		margin-bottom: 0;
-	}
-
-	.btn-cancel {
-		font-size: 1rem;
-		padding: 6px 8px;
-		background: var(--color-bg);
-		border: solid var(--color-border) var(--border-width);
-		border-radius: var(--border-radius);
-		cursor: pointer;
-		font-family: inherit;
-		box-shadow: 3px 3px 0 0 var(--color-border);
-		transition: 0.2s ease;
-	}
-	.btn-cancel:hover {
-		transform: translate(3px, 3px);
-		box-shadow: none;
-	}
-	.btn-cancel:active {
-		transform: translate(3px, 3px);
-		box-shadow: none;
-	}
-
-	.modal-footer {
-		display: flex;
-		gap: 8px;
-		justify-content: flex-end;
-		margin-top: 20px;
 	}
 
 	.error-text {
