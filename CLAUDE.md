@@ -92,3 +92,4 @@ All app time is in `Europe/Minsk` (`APP_TZ` in `src/lib/server/utils.ts`).
 - **TypeScript:** strict mode, `moduleResolution: "bundler"`
 - **`.npmrc`:** `engine-strict=true`
 - No ESLint — only Prettier for code quality
+- **Bash + square brackets in paths:** This repo uses `[secret]` in route paths. When using the Bash tool with paths containing `[` or `]`, always quote the path — fish and zsh interpret unquoted brackets as glob patterns. Read/Write/Edit tools pass paths directly and are unaffected.
