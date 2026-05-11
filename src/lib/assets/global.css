@@ -10,6 +10,20 @@ html {
 	--color-accent: hsl(241, 100%, 66%);
 	--color-accent-text: hsl(0, 0%, 100%);
 
+	--color-success: #16a34a;
+	--color-success-bg: #f0fdf4;
+	--color-success-border: #bbf7d0;
+	--color-success-strong: #15803d;
+	--color-warning: #d97706;
+	--color-warning-bg: #fffbeb;
+	--color-warning-border: #fde68a;
+	--color-warning-strong: #92400e;
+	--color-danger: #dc2626;
+	--color-danger-bg: #fef2f2;
+	--color-hover-bg: hsl(0 0% 0% / 0.05);
+	--color-surface-bg: hsl(0 0% 0% / 0.06);
+	--color-muted: #d1d5db;
+
 	--border-width: 2px;
 	--border-radius: 10px;
 }
@@ -19,6 +33,20 @@ html {
 		--color-bg: hsl(0, 0%, 10%);
 		--color-fg: hsl(0, 0%, 100%);
 		--color-border: hsl(0, 0%, 27%);
+
+		--color-success: #4ade80;
+		--color-success-bg: #052e16;
+		--color-success-border: #166534;
+		--color-success-strong: #86efac;
+		--color-warning: #fbbf24;
+		--color-warning-bg: #1e1400;
+		--color-warning-border: #78350f;
+		--color-warning-strong: #fcd34d;
+		--color-danger: #f87171;
+		--color-danger-bg: #1c0505;
+		--color-hover-bg: hsl(0 0% 100% / 0.08);
+		--color-surface-bg: hsl(0 0% 100% / 0.08);
+		--color-muted: #4b5563;
 	}
 }
 
