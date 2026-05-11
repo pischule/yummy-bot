@@ -2,7 +2,7 @@ import { Instant, LocalDate } from '@js-joda/core';
 import { eq } from 'drizzle-orm';
 import { APP_TZ } from '../utils';
 import { db } from './store';
-import { locationsTable, namesTable } from './schema';
+import { locationsTable, namesTable, ordersTable } from './schema';
 
 export interface Menu {
 	updatedAt: Instant;
@@ -99,4 +99,15 @@ export async function setName(id: string, name: string) {
 		target: namesTable.telegramId,
 		set: { name }
 	});
+}
+
+export async function saveOrder(order: {
+	locationId: string;
+	telegramId: string;
+	name: string;
+	orderedItems: { name: string; qty: number }[];
+	receiptDate: string;
+	createdAt: string;
+}) {
+	await db.insert(ordersTable).values(order);
 }

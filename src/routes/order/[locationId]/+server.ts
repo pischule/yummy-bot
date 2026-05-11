@@ -24,6 +24,15 @@ export const POST = (async ({ request, params, url }) => {
 	const loc = await db.getLocation(locationId);
 	if (!loc) throw error(404, 'Location not found');
 
+	await db.saveOrder({
+		locationId,
+		telegramId: user.id,
+		name: order.name,
+		orderedItems: order.orderedItems,
+		receiptDate: loc.receiptDate,
+		createdAt: new Date().toISOString()
+	});
+
 	await bot.sendOrder(order, user.id, loc.chatId);
 	await setName(user.id, order.name);
 

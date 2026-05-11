@@ -15,6 +15,13 @@
       "when": 1778430832441,
       "tag": "0001_minor_tenebrous",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1778496085966,
+      "tag": "0002_nasty_blue_shield",
+      "breakpoints": true
     }
   ]
 }
