@@ -10,6 +10,7 @@
 	let modalTargetId = $state('');
 	let modalError = $state('');
 	let formError = $state('');
+	let dialogEl = $state<HTMLDialogElement | null>(null);
 
 	let locations = $derived(data.locations ?? []);
 	let activeLocationId = $derived(data.activeLocationId);
@@ -36,9 +37,17 @@
 		modal = type;
 		modalTargetId = targetId ?? '';
 		modalError = '';
+		dialogEl?.showModal();
 	}
 
 	function closeModal() {
+		modal = null;
+		modalTargetId = '';
+		modalError = '';
+		dialogEl?.close();
+	}
+
+	function onDialogClose() {
 		modal = null;
 		modalTargetId = '';
 		modalError = '';
@@ -48,20 +57,11 @@
 		if (result.type === 'success' && result.data?.success === false) {
 			modalError = result.data.error;
 		} else {
-			modal = null;
-			modalError = '';
+			closeModal();
 			update();
 		}
 	}
-
-	function onKeyDown(e: KeyboardEvent) {
-		if (e.key === 'Escape' && modal) {
-			closeModal();
-		}
-	}
 </script>
-
-<svelte:window onkeydown={onKeyDown} />
 
 <svelte:head>
 	<title>Yummy Bot — Управление меню</title>
@@ -280,135 +280,125 @@
 	</div>
 {/if}
 
-<!-- ===== MODAL: ADD ===== -->
-{#if modal === 'add'}
-	<div class="modal-overlay" onclick={() => closeModal()}>
-		<div class="modal" onclick={(e) => e.stopPropagation()}>
-			<h3>Новая локация</h3>
-			<form
-				method="POST"
-				action="?/addLocation"
-				use:enhance={() => {
-					return async ({ result, update }) => {
-						onFormResult(result, update);
-					};
-				}}
-			>
-				<div class="field">
-					<label class="field-label" for="modalName">Название</label>
-					<input
-						class="input"
-						id="modalName"
-						name="name"
-						placeholder="например, Кафе на Ленина"
-						maxlength="60"
-					/>
-				</div>
-				<div class="field">
-					<label class="field-label" for="modalChatId">Chat ID</label>
-					<input
-						class="input"
-						id="modalChatId"
-						name="chatId"
-						placeholder="например, -1001234567890"
-						maxlength="30"
-					/>
-					<p class="hint">
-						Добавьте <a href="https://t.me/{botUsername}" target="_blank">@{botUsername}</a> в чат и
-						вызовите команду <code>/chatid</code>. Вставьте полученный ID сюда.
-					</p>
-				</div>
-				{#if modalError}
-					<p class="error-text" style="display:block;">{modalError}</p>
-				{/if}
-				<div class="modal-footer">
-					<Button sm onclick={() => closeModal()}>Отмена</Button>
-					<Button primary sm>Добавить</Button>
-				</div>
-			</form>
-		</div>
-	</div>
-{/if}
-
-<!-- ===== MODAL: EDIT ===== -->
-{#if modal === 'edit' && modalTargetId}
-	<div class="modal-overlay" onclick={() => closeModal()}>
-		<div class="modal" onclick={(e) => e.stopPropagation()}>
-			<h3>Редактировать локацию</h3>
-			<form
-				method="POST"
-				action="?/editLocation"
-				use:enhance={() => {
-					return async ({ result, update }) => {
-						onFormResult(result, update);
-					};
-				}}
-			>
-				<input type="hidden" name="id" value={modalTargetId} />
-				<div class="field">
-					<label class="field-label" for="modalName">Название</label>
-					<input
-						class="input"
-						id="modalName"
-						name="name"
-						value={locations.find((l) => l.id === modalTargetId)?.name ?? ''}
-						maxlength="60"
-					/>
-				</div>
-				<div class="field">
-					<label class="field-label" for="modalChatId">Chat ID</label>
-					<input
-						class="input"
-						id="modalChatId"
-						name="chatId"
-						value={locations.find((l) => l.id === modalTargetId)?.chatId ?? ''}
-						maxlength="30"
-					/>
-					<p class="hint">
-						Добавьте <a href="https://t.me/{botUsername}" target="_blank">@{botUsername}</a> в чат и
-						вызовите команду <code>/chatid</code>. Вставьте полученный ID сюда.
-					</p>
-				</div>
-				{#if modalError}
-					<p class="error-text" style="display:block;">{modalError}</p>
-				{/if}
-				<div class="modal-footer">
-					<Button sm onclick={() => closeModal()}>Отмена</Button>
-					<Button primary sm>Сохранить</Button>
-				</div>
-			</form>
-		</div>
-	</div>
-{/if}
-
-<!-- ===== MODAL: DELETE ===== -->
-{#if modal === 'delete' && modalTargetId}
-	<div class="modal-overlay" onclick={() => closeModal()}>
-		<div class="modal" onclick={(e) => e.stopPropagation()}>
-			<h3>Удалить локацию?</h3>
-			<p class="confirm-text">
-				Вы уверены, что хотите удалить <strong
-					>{locations.find((l) => l.id === modalTargetId)?.name ?? ''}</strong
-				>? Все данные меню будут потеряны.
-			</p>
-			<form
-				method="POST"
-				action="?/deleteLocation"
-				use:enhance={() => {
-					return async ({ result, update }) => {
-						onFormResult(result, update);
-					};
-				}}
-			>
-				<input type="hidden" name="id" value={modalTargetId} />
-				<div class="modal-footer">
-					<Button sm onclick={() => closeModal()}>Отмена</Button>
-					<Button primary sm>Удалить</Button>
-				</div>
-			</form>
-		</div>
-	</div>
-{/if}
+<!-- ===== NATIVE DIALOG ===== -->
+<dialog
+	bind:this={dialogEl}
+	onclose={onDialogClose}
+	onclick={(e) => {
+		if (e.target === dialogEl) closeModal();
+	}}
+>
+	{#if modal === 'add'}
+		<h3>Новая локация</h3>
+		<form
+			method="POST"
+			action="?/addLocation"
+			use:enhance={() => {
+				return async ({ result, update }) => {
+					onFormResult(result, update);
+				};
+			}}
+		>
+			<div class="field">
+				<label class="field-label" for="modalName">Название</label>
+				<input
+					class="input"
+					id="modalName"
+					name="name"
+					placeholder="например, Кафе на Ленина"
+					maxlength="60"
+				/>
+			</div>
+			<div class="field">
+				<label class="field-label" for="modalChatId">Chat ID</label>
+				<input
+					class="input"
+					id="modalChatId"
+					name="chatId"
+					placeholder="например, -1001234567890"
+					maxlength="30"
+				/>
+				<p class="hint">
+					Добавьте <a href="https://t.me/{botUsername}" target="_blank">@{botUsername}</a> в чат и
+					вызовите команду <code>/chatid</code>. Вставьте полученный ID сюда.
+				</p>
+			</div>
+			{#if modalError}
+				<p class="error-text">{modalError}</p>
+			{/if}
+			<div class="modal-footer">
+				<button type="button" class="btn-cancel" onclick={() => closeModal()}>Отмена</button>
+				<Button primary sm>Добавить</Button>
+			</div>
+		</form>
+	{:else if modal === 'edit' && modalTargetId}
+		<h3>Редактировать локацию</h3>
+		<form
+			method="POST"
+			action="?/editLocation"
+			use:enhance={() => {
+				return async ({ result, update }) => {
+					onFormResult(result, update);
+				};
+			}}
+		>
+			<input type="hidden" name="id" value={modalTargetId} />
+			<div class="field">
+				<label class="field-label" for="modalName">Название</label>
+				<input
+					class="input"
+					id="modalName"
+					name="name"
+					value={locations.find((l) => l.id === modalTargetId)?.name ?? ''}
+					maxlength="60"
+				/>
+			</div>
+			<div class="field">
+				<label class="field-label" for="modalChatId">Chat ID</label>
+				<input
+					class="input"
+					id="modalChatId"
+					name="chatId"
+					value={locations.find((l) => l.id === modalTargetId)?.chatId ?? ''}
+					maxlength="30"
+				/>
+				<p class="hint">
+					Добавьте <a href="https://t.me/{botUsername}" target="_blank">@{botUsername}</a> в чат и
+					вызовите команду <code>/chatid</code>. Вставьте полученный ID сюда.
+				</p>
+			</div>
+			{#if modalError}
+				<p class="error-text">{modalError}</p>
+			{/if}
+			<div class="modal-footer">
+				<button type="button" class="btn-cancel" onclick={() => closeModal()}>Отмена</button>
+				<Button primary sm>Сохранить</Button>
+			</div>
+		</form>
+	{:else if modal === 'delete' && modalTargetId}
+		<h3>Удалить локацию?</h3>
+		<p class="confirm-text">
+			Вы уверены, что хотите удалить <strong
+				>{locations.find((l) => l.id === modalTargetId)?.name ?? ''}</strong
+			>? Все данные меню будут потеряны.
+		</p>
+		<form
+			method="POST"
+			action="?/deleteLocation"
+			use:enhance={() => {
+				return async ({ result, update }) => {
+					onFormResult(result, update);
+				};
+			}}
+		>
+			<input type="hidden" name="id" value={modalTargetId} />
+			<div class="modal-footer">
+				<button type="button" class="btn-cancel" onclick={() => closeModal()}>Отмена</button>
+				<Button primary sm>Удалить</Button>
+			</div>
+		</form>
+	{/if}
+</dialog>
 
 <style>
 	/* ===== RESET & LAYOUT ===== */
@@ -871,29 +861,8 @@
 		}
 	}
 
-	/* ===== MODAL ===== */
-	.modal-overlay {
-		position: fixed;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.35);
-		backdrop-filter: blur(2px);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 50;
-		animation: fadeIn 0.15s ease;
-	}
-
-	@keyframes fadeIn {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
-
-	.modal {
+	/* ===== NATIVE DIALOG ===== */
+	dialog {
 		background: var(--color-bg);
 		border: solid var(--color-fg) var(--border-width);
 		border-radius: var(--border-radius);
@@ -901,32 +870,45 @@
 		width: 420px;
 		max-width: 90vw;
 		padding: 24px;
-		animation: scaleIn 0.2s ease;
 	}
 
-	@keyframes scaleIn {
-		from {
-			opacity: 0;
-			transform: scale(0.96);
-		}
-		to {
-			opacity: 1;
-			transform: scale(1);
-		}
+	dialog::backdrop {
+		background: rgba(0, 0, 0, 0.35);
+		backdrop-filter: blur(2px);
 	}
 
-	.modal h3 {
+	dialog h3 {
 		font-size: 16px;
 		font-weight: 600;
 		margin-bottom: 18px;
 	}
 
-	.modal .field {
+	dialog .field {
 		margin-bottom: 14px;
 	}
 
-	.modal .field:last-of-type {
+	dialog .field:last-of-type {
 		margin-bottom: 0;
+	}
+
+	.btn-cancel {
+		font-size: 1rem;
+		padding: 6px 8px;
+		background: var(--color-bg);
+		border: solid var(--color-border) var(--border-width);
+		border-radius: var(--border-radius);
+		cursor: pointer;
+		font-family: inherit;
+		box-shadow: 3px 3px 0 0 var(--color-border);
+		transition: 0.2s ease;
+	}
+	.btn-cancel:hover {
+		transform: translate(3px, 3px);
+		box-shadow: none;
+	}
+	.btn-cancel:active {
+		transform: translate(3px, 3px);
+		box-shadow: none;
 	}
 
 	.modal-footer {
