@@ -24,6 +24,7 @@ export const POST = (async ({ request, params, url }) => {
 	const loc = await db.getLocation(locationId);
 	if (!loc) throw error(404, 'Location not found');
 
+	await bot.sendOrder(order, user.id, loc.chatId);
 	await db.saveOrder({
 		locationId,
 		telegramId: user.id,
@@ -33,7 +34,6 @@ export const POST = (async ({ request, params, url }) => {
 		createdAt: new Date().toISOString()
 	});
 
-	await bot.sendOrder(order, user.id, loc.chatId);
 	await setName(user.id, order.name);
 
 	if (nonce) {
