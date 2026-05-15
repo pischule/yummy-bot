@@ -563,6 +563,7 @@
 		opacity: 0.5;
 		margin-top: 4px;
 		line-height: 1.4;
+		overflow-wrap: break-word;
 	}
 
 	.textarea {

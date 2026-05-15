@@ -43,6 +43,18 @@
 		padding: 24px;
 	}
 
+	dialog :global(a),
+	dialog :global(code) {
+		overflow-wrap: break-word;
+	}
+
+	@media (max-width: 480px) {
+		dialog {
+			padding: 16px;
+			margin-top: 15vh;
+		}
+	}
+
 	dialog::backdrop {
 		background: rgba(0, 0, 0, 0.35);
 		backdrop-filter: blur(2px);

@@ -96,9 +96,8 @@
 	}
 
 	.sidebar-header h2 {
-		font-size: 13px;
-		font-weight: 500;
-		opacity: 0.6;
+		font-size: 15px;
+		font-weight: 600;
 	}
 
 	.heading-group {
