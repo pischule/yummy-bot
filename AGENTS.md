@@ -2,16 +2,16 @@
 
 ## Commands
 
-| Command | Purpose |
-|---|---|
-| `pnpm dev` | Dev server (Vite HMR) |
+| Command                            | Purpose                              |
+| ---------------------------------- | ------------------------------------ |
+| `pnpm dev`                         | Dev server (Vite HMR)                |
 | `BOT_TOKEN=SOME_STRING pnpm build` | Production build (needs dummy token) |
-| `pnpm check` | Type-check via svelte-check |
-| `pnpm lint` / `pnpm format` | Prettier check/write (no ESLint) |
-| `pnpm test` | vitest once (requires assertions) |
-| `pnpm test:unit` | vitest watch |
-| `pnpm drizzle:generate` | Generate SQLite migration |
-| `pnpm drizzle:migrate` | Run pending migrations |
+| `pnpm check`                       | Type-check via svelte-check          |
+| `pnpm lint` / `pnpm format`        | Prettier check/write (no ESLint)     |
+| `pnpm test`                        | vitest once (requires assertions)    |
+| `pnpm test:unit`                   | vitest watch                         |
+| `pnpm drizzle:generate`            | Generate SQLite migration            |
+| `pnpm drizzle:migrate`             | Run pending migrations               |
 
 ## Gotchas
 

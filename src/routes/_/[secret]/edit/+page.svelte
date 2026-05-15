@@ -13,8 +13,18 @@
 	let modalError = $state('');
 	let formError = $state('');
 
-	let locations = $derived(data.locations ?? []);
+	let sidebarOpen = $state(false);
+	function toggleSidebar() {
+		sidebarOpen = !sidebarOpen;
+	}
+
 	let activeLocationId = $derived(data.activeLocationId);
+
+	$effect(() => {
+		if (activeLocationId) sidebarOpen = false;
+	});
+
+	let locations = $derived(data.locations ?? []);
 	let activeLocation = $derived(data.activeLocation);
 	let menuText = $state(data.menuItems?.join('\n') ?? '');
 
@@ -65,6 +75,8 @@
 		{locations}
 		{activeLocationId}
 		{countingMissing}
+		open={sidebarOpen}
+		ontoggle={toggleSidebar}
 		onadd={() => openModal('add')}
 		onedit={(id) => openModal('edit', id)}
 		ondelete={(id) => openModal('delete', id)}
@@ -74,8 +86,15 @@
 	<main class="main-area">
 		{#if activeLocationId && activeLocation}
 			<div class="main-header">
-				<div class="breadcrumb">Управление меню</div>
-				<h1>{activeLocation.name}</h1>
+				<div class="header-top">
+					<button class="menu-toggle" onclick={toggleSidebar} aria-label="Открыть список локаций"
+						>☰</button
+					>
+					<div>
+						<div class="breadcrumb">Управление меню</div>
+						<h1>{activeLocation.name}</h1>
+					</div>
+				</div>
 				<div class="subtitle">Chat ID: {activeLocation.chatId}</div>
 			</div>
 			<div class="main-body">
@@ -157,8 +176,15 @@
 			</div>
 		{:else}
 			<div class="main-header">
-				<div class="breadcrumb">Управление меню</div>
-				<h1>Обзор локаций</h1>
+				<div class="header-top">
+					<button class="menu-toggle" onclick={toggleSidebar} aria-label="Открыть список локаций"
+						>☰</button
+					>
+					<div>
+						<div class="breadcrumb">Управление меню</div>
+						<h1>Обзор локаций</h1>
+					</div>
+				</div>
 				<div class="subtitle">Статус меню по всем кафе</div>
 			</div>
 			<div class="main-body">
@@ -384,6 +410,35 @@
 		font-size: 13px;
 		opacity: 0.6;
 		margin-top: 2px;
+	}
+
+	.header-top {
+		display: flex;
+		align-items: flex-start;
+		gap: 8px;
+	}
+	.header-top > div:last-child {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.menu-toggle {
+		display: none;
+		background: none;
+		border: none;
+		font-size: 22px;
+		cursor: pointer;
+		padding: 2px 4px;
+		color: var(--color-fg);
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
+		flex-shrink: 0;
+		line-height: 1;
+	}
+	@media (max-width: 768px) {
+		.menu-toggle {
+			display: block;
+		}
 	}
 
 	.main-body {

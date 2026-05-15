@@ -9,6 +9,8 @@
 		locations,
 		activeLocationId = null as string | null,
 		countingMissing = 0,
+		open = false,
+		ontoggle = () => {},
 		onadd = () => {},
 		onedit = (id: string) => {},
 		ondelete = (id: string) => {}
@@ -16,13 +18,18 @@
 		locations: LocationItem[];
 		activeLocationId?: string | null;
 		countingMissing?: number;
+		open?: boolean;
+		ontoggle?: () => void;
 		onadd?: () => void;
 		onedit?: (id: string) => void;
 		ondelete?: (id: string) => void;
 	} = $props();
 </script>
 
-<aside class="sidebar">
+{#if open}
+	<div class="backdrop" onclick={ontoggle} role="presentation"></div>
+{/if}
+<aside class="sidebar" class:open>
 	<div class="sidebar-header">
 		<div class="heading-group">
 			<a href="?" data-sveltekit-preload-data="off" class="heading-link"><h2>Локации</h2></a>
@@ -45,6 +52,7 @@
 					class:active={loc.id === activeLocationId}
 					href="?locationId={loc.id}"
 					data-sveltekit-preload-data="off"
+					onclick={ontoggle}
 				>
 					<div class="icon">📍</div>
 					<div class="info">
@@ -56,7 +64,7 @@
 					>
 						<span class="status-dot {loc.menuStatus === 'set' ? 'dot-set' : 'dot-empty'}"></span>
 					</span>
-					<div class="actions" onclick={(e) => e.preventDefault()}>
+					<div class="actions" onclick={(e) => e.preventDefault()} role="presentation">
 						<button class="btn-icon" title="Редактировать" onclick={() => onedit(loc.id)}>
 							✎
 						</button>
@@ -276,13 +284,30 @@
 		display: block;
 	}
 
+	.backdrop {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.4);
+		z-index: 98;
+		-webkit-tap-highlight-color: transparent;
+	}
+
 	@media (max-width: 768px) {
 		.sidebar {
-			width: 100%;
-			min-width: 0;
-			max-height: 40vh;
-			border-right: none;
-			border-bottom: solid var(--color-fg) var(--border-width);
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 280px;
+			height: 100vh;
+			max-height: none;
+			z-index: 99;
+			transform: translateX(-100%);
+			transition: transform 0.25s ease;
+			border-right: solid var(--color-fg) var(--border-width);
+			border-bottom: none;
+		}
+		.sidebar.open {
+			transform: translateX(0);
 		}
 	}
 </style>
