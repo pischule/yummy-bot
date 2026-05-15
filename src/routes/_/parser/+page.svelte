@@ -8,7 +8,8 @@
 
 	let timeoutId: number | undefined;
 
-	async function handleSubmit() {
+	async function handleSubmit(e: Event) {
+		e.preventDefault();
 		const response = await fetch('/_/parser', {
 			method: 'POST',
 			body: JSON.stringify({ text: textareaText }),
@@ -41,7 +42,7 @@
 	> с удобными формулами
 </p>
 
-<form on:submit|preventDefault={handleSubmit}>
+<form onsubmit={handleSubmit}>
 	<label for="textarea">Вставьте сообщения с заказами</label>
 	<textarea rows="10" id="textarea" placeholder="Сюда" bind:value={textareaText} />
 	<Button primary block>{buttonText}</Button>
