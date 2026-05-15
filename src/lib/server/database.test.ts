@@ -6,8 +6,8 @@ vi.mock('$env/dynamic/private', () => ({
 	}
 }));
 
-import { db } from './store';
-import { ordersTable } from './schema';
+import { db } from './db/store';
+import { ordersTable } from './db/schema';
 import { migrate } from 'drizzle-orm/libsql/migrator';
 import { saveOrder } from './database';
 
