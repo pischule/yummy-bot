@@ -4,7 +4,7 @@
 	interface Props {
 		items: Item[];
 		day: string;
-		onChoose: (items: Item[]) => void;
+		onChoose: () => void;
 		onUpdateItemQty: (item: Item, increment: number) => void;
 	}
 

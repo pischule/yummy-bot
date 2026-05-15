@@ -7,7 +7,7 @@
 		formaction = undefined,
 		disabled = false,
 		sm = undefined,
-		onclick = () => {}
+		onclick = undefined as ((e: Event) => void) | undefined
 	} = $props();
 </script>
 
