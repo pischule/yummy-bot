@@ -12,10 +12,7 @@ vi.mock('$env/dynamic/private', () => ({
 
 vi.mock('$lib/server/bot', () => ({
 	sendOrder: vi.fn().mockResolvedValue(undefined),
-	sendOrderButton: vi.fn().mockResolvedValue(undefined),
-	authenticate: vi.fn().mockResolvedValue(null),
-	init: vi.fn(),
-	stop: vi.fn()
+	sendOrderButton: vi.fn().mockResolvedValue(undefined)
 }));
 
 import { db } from '$lib/server/db/store';

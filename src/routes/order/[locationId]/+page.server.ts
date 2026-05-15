@@ -2,7 +2,7 @@ import type { PageServerLoad } from './$types';
 import * as db from '$lib/server/database';
 import { getName } from '$lib/server/database';
 import { error } from '@sveltejs/kit';
-import * as bot from '$lib/server/bot';
+import { authenticate } from '$lib/server/auth';
 import { ZonedDateTime } from '@js-joda/core';
 import { APP_TZ } from '$lib/server/utils';
 
@@ -17,7 +17,7 @@ const WEEKDAYS = [
 ];
 
 export const load = (async ({ url, params, setHeaders }) => {
-	const user = await bot.authenticate(url.searchParams);
+	const user = await authenticate(url.searchParams);
 	if (!user) {
 		throw error(401, 'Unauthorized');
 	}
