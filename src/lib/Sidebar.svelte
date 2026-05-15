@@ -89,15 +89,16 @@
 	}
 
 	.sidebar-header {
-		padding: 18px 16px 12px;
+		padding: 20px 16px 12px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 	}
 
 	.sidebar-header h2 {
-		font-size: 15px;
-		font-weight: 600;
+		font-size: 13px;
+		font-weight: 500;
+		opacity: 0.6;
 	}
 
 	.heading-group {

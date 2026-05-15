@@ -90,12 +90,8 @@
 					<button class="menu-toggle" onclick={toggleSidebar} aria-label="Открыть список локаций"
 						>☰</button
 					>
-					<div>
-						<div class="breadcrumb">Управление меню</div>
-						<h1>{activeLocation.name}</h1>
-					</div>
+					<h1>{activeLocation.name}</h1>
 				</div>
-				<div class="subtitle">Chat ID: {activeLocation.chatId}</div>
 			</div>
 			<div class="main-body">
 				{#if countingMissing > 0}
@@ -180,10 +176,7 @@
 					<button class="menu-toggle" onclick={toggleSidebar} aria-label="Открыть список локаций"
 						>☰</button
 					>
-					<div>
-						<div class="breadcrumb">Управление меню</div>
-						<h1>Обзор локаций</h1>
-					</div>
+					<h1>Обзор локаций</h1>
 				</div>
 				<div class="subtitle">Статус меню по всем кафе</div>
 			</div>
@@ -392,15 +385,6 @@
 		flex-shrink: 0;
 	}
 
-	.breadcrumb {
-		font-size: 11px;
-		opacity: 0.5;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		font-weight: 500;
-		margin-bottom: 4px;
-	}
-
 	.main-header h1 {
 		font-size: 20px;
 		font-weight: 600;
@@ -417,11 +401,9 @@
 		align-items: flex-start;
 		gap: 8px;
 	}
-	.header-top > div:last-child {
-		flex: 1;
-		min-width: 0;
+	.header-top h1 {
+		margin: 0;
 	}
-
 	.menu-toggle {
 		display: none;
 		background: none;
