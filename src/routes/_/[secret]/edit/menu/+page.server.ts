@@ -5,7 +5,8 @@ import { sendOrderButton } from '$lib/server/bot';
 import { checkAdminAuth } from '$lib/server/auth';
 import { logger } from '$lib/server/logger';
 
-export async function load({ url, parent }) {
+export async function load({ url, parent, params }) {
+	checkAdminAuth(params);
 	const { locations } = await parent();
 	const locationId = url.searchParams.get('locationId');
 

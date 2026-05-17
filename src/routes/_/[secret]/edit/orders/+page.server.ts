@@ -2,8 +2,10 @@ import { redirect } from '@sveltejs/kit';
 import { Instant } from '@js-joda/core';
 import { getOrders } from '$lib/server/database';
 import { APP_TZ } from '$lib/server/utils';
+import { checkAdminAuth } from '$lib/server/auth';
 
-export async function load({ url, parent }) {
+export async function load({ url, parent, params }) {
+	checkAdminAuth(params);
 	const { locations, today } = await parent();
 	const locationId = url.searchParams.get('locationId');
 

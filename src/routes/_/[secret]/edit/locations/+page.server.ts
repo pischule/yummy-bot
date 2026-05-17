@@ -3,7 +3,6 @@ import {
 	addLocation,
 	updateLocation,
 	deleteLocation,
-	deleteOrdersForLocation,
 	getLocationByChatId
 } from '$lib/server/database';
 import { checkAdminAuth } from '$lib/server/auth';

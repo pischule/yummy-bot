@@ -2,8 +2,10 @@ import { env } from '$env/dynamic/private';
 import { LocalDate } from '@js-joda/core';
 import { APP_TZ } from '$lib/server/utils';
 import { getLocations, getMenuFromLocation, isMenuPostedToday } from '$lib/server/database';
+import { checkAdminAuth } from '$lib/server/auth';
 
 export async function load({ params }) {
+	checkAdminAuth(params);
 	const locations = await getLocations();
 	const todayLocalDate = LocalDate.now(APP_TZ);
 	const today = todayLocalDate.toString();
@@ -24,5 +26,5 @@ export async function load({ params }) {
 		};
 	});
 
-	return { secret: params.secret, locations: enriched, today, botUsername: env.BOT_USERNAME };
+	return { locations: enriched, today, botUsername: env.BOT_USERNAME };
 }

@@ -3,5 +3,5 @@ import { checkAdminAuth } from '$lib/server/auth';
 
 export function load({ params }) {
 	checkAdminAuth(params);
-	redirect(302, `/_/${params.secret}/edit/menu`);
+	redirect(302, `edit/menu`);
 }

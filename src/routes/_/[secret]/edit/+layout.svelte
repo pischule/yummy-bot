@@ -1,22 +1,24 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	let { data, children } = $props();
 
+	let url = page.url;
+
 	let selectedLocationId = $derived(
-		$page.url.searchParams.get('locationId') ?? data.locations[0]?.id ?? null
+		url.searchParams.get('locationId') ?? data.locations[0]?.id ?? null
 	);
 
-	let isLocationsPage = $derived($page.url.pathname.endsWith('/locations'));
+	let isLocationsPage = $derived(url.pathname.endsWith('/locations'));
 
 	function locationHref(locId: string) {
-		const path = $page.url.pathname;
+		const path = url.pathname;
 		const pageName = path.endsWith('/orders') ? 'orders' : 'menu';
 		const params = new URLSearchParams();
 		params.set('locationId', locId);
-		const date = $page.url.searchParams.get('date');
+		const date = url.searchParams.get('date');
 		if (date) params.set('date', date);
-		return `/_/${data.secret}/edit/${pageName}?${params.toString()}`;
+		return `${pageName}?${params.toString()}`;
 	}
 
 	const icons = {
@@ -31,14 +33,14 @@
 			<h1>YummyBot <span>Admin</span></h1>
 			<nav id="view-nav">
 				<a
-					href="/_/{data.secret}/edit/menu?locationId={selectedLocationId}"
-					class:active={$page.url.pathname.endsWith('/menu')}
+					href="./menu?locationId={selectedLocationId}"
+					class:active={url.pathname.endsWith('/menu')}
 				>
 					Меню
 				</a>
 				<a
-					href="/_/{data.secret}/edit/orders?locationId={selectedLocationId}"
-					class:active={$page.url.pathname.endsWith('/orders')}
+					href="./orders?locationId={selectedLocationId}"
+					class:active={url.pathname.endsWith('/orders')}
 				>
 					Заказы
 				</a>
@@ -67,7 +69,7 @@
 				{/each}
 			</ul>
 			<div class="sidebar-footer">
-				<a href="/_/{data.secret}/edit/locations" class="settings-link">
+				<a href="./locations" class="settings-link">
 					<span class="icon-inline">{@html icons.settings}</span>
 					Управление локациями
 				</a>

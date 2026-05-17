@@ -148,7 +148,6 @@
 Суп дня"
 				disabled={!data.selectedLocation}
 				bind:value={menuText}
-				required
 			></textarea>
 		</div>
 
@@ -163,7 +162,7 @@
 				flex
 				sm
 				type="button"
-				disabled={!data.selectedLocation}
+				disabled={!data.selectedLocation || !menuText?.trim()}
 				onclick={handlePublish}
 			>
 				<span class="icon-inline">{@html icons.send}</span>

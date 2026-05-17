@@ -144,7 +144,3 @@ export async function getOrders(locationId: string, date: string) {
 export async function markMenuPosted(locationId: string, postedAt: string) {
 	await db.update(locationsTable).set({ postedAt }).where(eq(locationsTable.id, locationId));
 }
-
-export async function deleteOrdersForLocation(locationId: string) {
-	await db.delete(ordersTable).where(eq(ordersTable.locationId, locationId));
-}
