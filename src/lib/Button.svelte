@@ -7,11 +7,23 @@
 		formaction = undefined,
 		disabled = false,
 		sm = undefined,
+		flat = false,
+		type = 'button' as 'button' | 'submit' | 'reset',
 		onclick = undefined as ((e: Event) => void) | undefined
 	} = $props();
 </script>
 
-<button class:sm class:primary class:block class:flex {onclick} {disabled} {formaction}>
+<button
+	class:sm
+	class:primary
+	class:block
+	class:flex
+	class:flat
+	{onclick}
+	{disabled}
+	{formaction}
+	{type}
+>
 	{@render children()}
 </button>
 
@@ -31,15 +43,32 @@
 	}
 
 	@media (hover: hover) and (pointer: fine) {
-		button:hover:not(:disabled) {
+		button:not(.flat):hover:not(:disabled) {
 			transform: translate(3px, 3px);
 			box-shadow: none;
 		}
+		button.flat:hover:not(:disabled) {
+			background-color: var(--color-hover-bg);
+		}
+		button.flat.primary:hover:not(:disabled) {
+			background-color: var(--color-accent);
+			filter: brightness(1.1);
+		}
 	}
 
-	button:active:not(:disabled) {
+	button:not(.flat):active:not(:disabled) {
 		transform: translate(3px, 3px);
 		box-shadow: none;
+	}
+
+	button.flat {
+		box-shadow: none;
+		border-width: 1px;
+		border-color: var(--color-muted);
+	}
+
+	button.flat.primary {
+		border-color: var(--color-accent);
 	}
 
 	button:disabled {
@@ -64,6 +93,6 @@
 	}
 
 	.flex {
-		flex-grow: 1;
+		flex: 1;
 	}
 </style>

@@ -4,12 +4,12 @@ import * as db from '$lib/server/database';
 import { error } from '@sveltejs/kit';
 import { setName } from '$lib/server/database';
 import { logger } from '$lib/server/logger';
-import { authenticate } from '$lib/server/auth';
+import { checkClientAuth } from '$lib/server/auth';
 
 const usedNonces = new Set();
 
 export const POST = (async ({ request, params, url }) => {
-	const user = await authenticate(url.searchParams);
+	const user = await checkClientAuth(url.searchParams);
 	if (!user) {
 		throw error(401, 'Unauthorized');
 	}

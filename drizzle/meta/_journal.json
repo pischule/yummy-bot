@@ -22,6 +22,13 @@
       "when": 1778496085966,
       "tag": "0002_nasty_blue_shield",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1778937541072,
+      "tag": "0003_real_penance",
+      "breakpoints": true
     }
   ]
 }

@@ -6,7 +6,8 @@ export const locationsTable = sqliteTable('locations', {
 	chatId: text('chat_id').notNull().unique(),
 	menu: text('menu', { mode: 'json' }).notNull().$type<string[]>().default([]),
 	updatedAt: text('updated_at').notNull().default(''),
-	receiptDate: text('receipt_date').notNull().default('')
+	receiptDate: text('receipt_date').notNull().default(''),
+	postedAt: text('posted_at')
 });
 
 export const namesTable = sqliteTable('name', {

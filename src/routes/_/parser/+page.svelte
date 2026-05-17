@@ -45,7 +45,7 @@
 <form onsubmit={handleSubmit}>
 	<label for="textarea">Вставьте сообщения с заказами</label>
 	<textarea rows="10" id="textarea" placeholder="Сюда" bind:value={textareaText} />
-	<Button primary block>{buttonText}</Button>
+	<Button type="submit" primary block>{buttonText}</Button>
 </form>
 
 <style>
