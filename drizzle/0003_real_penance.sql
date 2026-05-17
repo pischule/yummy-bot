@@ -1,0 +1,1 @@
+ALTER TABLE `locations` ADD `posted_at` text;

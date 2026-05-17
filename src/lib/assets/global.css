@@ -21,8 +21,11 @@ html {
 	--color-danger: #dc2626;
 	--color-danger-bg: #fef2f2;
 	--color-hover-bg: hsl(0 0% 0% / 0.05);
-	--color-surface-bg: hsl(0 0% 0% / 0.06);
-	--color-muted: #d1d5db;
+	--color-surface-bg: hsl(0 0% 0% / 0.04);
+
+	/* Refined for better contrast */
+	--color-muted: #6b7280;
+	--color-subtle: #e5e7eb;
 
 	--border-width: 2px;
 	--border-radius: 10px;
@@ -46,11 +49,15 @@ html {
 		--color-danger-bg: #1c0505;
 		--color-hover-bg: hsl(0 0% 100% / 0.08);
 		--color-surface-bg: hsl(0 0% 100% / 0.08);
-		--color-muted: #4b5563;
+
+		/* Refined for better contrast in dark mode */
+		--color-muted: #9ca3af;
+		--color-subtle: #374151;
 	}
 }
 
 body {
+	margin: 0;
 	font-size: 1rem;
 	font-family: system-ui;
 	line-height: 1.5;

@@ -1,5 +1,5 @@
 import { Instant, LocalDate } from '@js-joda/core';
-import { eq } from 'drizzle-orm';
+import { and, eq, gte, lt } from 'drizzle-orm';
 import { APP_TZ } from './utils';
 import { db } from './db/store';
 import { locationsTable, namesTable, ordersTable } from './db/schema';
@@ -8,6 +8,7 @@ export interface Menu {
 	updatedAt: Instant;
 	receiptDate: LocalDate;
 	items: string[];
+	postedAt: Instant | null;
 }
 
 export type DbLocation = typeof locationsTable.$inferSelect;
@@ -52,6 +53,12 @@ export async function deleteLocation(id: string) {
 	await db.delete(locationsTable).where(eq(locationsTable.id, id));
 }
 
+export function isMenuPostedToday(loc: DbLocation): boolean {
+	if (!loc.postedAt) return false;
+	const postedDate = Instant.parse(loc.postedAt).atZone(APP_TZ).toLocalDate();
+	return postedDate.isEqual(LocalDate.now(APP_TZ));
+}
+
 export function getMenuFromLocation(loc: DbLocation): Menu | null {
 	if (loc.menu.length === 0) return null;
 
@@ -62,7 +69,9 @@ export function getMenuFromLocation(loc: DbLocation): Menu | null {
 	const today = LocalDate.now(APP_TZ);
 	if (!updateDate.isEqual(today)) return null;
 
-	return { updatedAt, receiptDate, items: loc.menu };
+	const postedAt = loc.postedAt ? Instant.parse(loc.postedAt) : null;
+
+	return { updatedAt, receiptDate, items: loc.menu, postedAt };
 }
 
 export async function getMenu(locationId: string): Promise<Menu | null> {
@@ -103,4 +112,29 @@ export async function saveOrder(order: {
 	createdAt: string;
 }) {
 	await db.insert(ordersTable).values(order);
+}
+
+export async function getOrders(locationId: string, date: string) {
+	const localDate = LocalDate.parse(date);
+	const start = localDate.atStartOfDay(APP_TZ).toInstant().toString();
+	const end = localDate.plusDays(1).atStartOfDay(APP_TZ).toInstant().toString();
+
+	return db
+		.select()
+		.from(ordersTable)
+		.where(
+			and(
+				eq(ordersTable.locationId, locationId),
+				gte(ordersTable.createdAt, start),
+				lt(ordersTable.createdAt, end)
+			)
+		);
+}
+
+export async function markMenuPosted(locationId: string, postedAt: string) {
+	await db.update(locationsTable).set({ postedAt }).where(eq(locationsTable.id, locationId));
+}
+
+export async function deleteOrdersForLocation(locationId: string) {
+	await db.delete(ordersTable).where(eq(ordersTable.locationId, locationId));
 }

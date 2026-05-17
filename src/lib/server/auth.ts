@@ -1,6 +1,11 @@
+import { error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-const { BOT_TOKEN } = env;
+const { BOT_TOKEN, SECRET } = env;
+
+export function checkAdminAuth(params: { secret: string }) {
+	if (params.secret !== SECRET) throw error(404, 'Not Found');
+}
 
 const createHmac = async (secret: ArrayBuffer, data: ArrayBuffer) => {
 	const algorithm = { name: 'HMAC', hash: 'SHA-256' };
@@ -25,7 +30,7 @@ const isLinkSignatureValid = async (hash: string, data: string) => {
 	return hash === hex(digest);
 };
 
-export const authenticate = async (searchParams: URLSearchParams) => {
+export const checkClientAuth = async (searchParams: URLSearchParams) => {
 	if (!searchParams) return null;
 	const hash = searchParams.get('hash');
 	if (!hash) return null;

@@ -46,5 +46,4 @@
 - `src/lib/server/bot.ts` — `init`, `stop`, `sendOrder`, `sendOrderButton`
 - `src/lib/server/messagesParser.ts` — Parse forwarded Telegram order messages → TSV
 - `src/lib/ordersTsv.ts` — TSV generation with precedence-based column ordering
-- `src/lib/server/logger.ts` — Pino logger instance (`import { logger } from '$lib/server/logger'`)
 - `src/hooks.server.ts` — Entrypoint: runs migrations, inits bot, handles SIGTERM

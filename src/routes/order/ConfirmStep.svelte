@@ -70,7 +70,9 @@
 			</li>
 		{/each}
 	</ul>
-	<Button primary block disabled={sending}>{sending ? 'Отправляю...' : 'Отправить'}</Button>
+	<Button type="submit" primary block disabled={sending}
+		>{sending ? 'Отправляю...' : 'Отправить'}</Button
+	>
 </form>
 
 <style>
