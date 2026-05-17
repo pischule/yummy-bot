@@ -1,4 +1,4 @@
-import { Instant, LocalDate } from '@js-joda/core';
+import { DayOfWeek, Instant, LocalDate } from '@js-joda/core';
 import { and, eq, gte, lt } from 'drizzle-orm';
 import { APP_TZ } from './utils';
 import { db } from './db/store';
@@ -63,10 +63,20 @@ export function getMenuFromLocation(loc: DbLocation): Menu | null {
 	if (loc.menu.length === 0) return null;
 
 	const updatedAt = loc.updatedAt ? Instant.parse(loc.updatedAt) : Instant.now();
-	const receiptDate = loc.receiptDate ? LocalDate.parse(loc.receiptDate) : LocalDate.now(APP_TZ);
+	const today = LocalDate.now(APP_TZ);
 
 	const updateDate = updatedAt.atZone(APP_TZ).toLocalDate();
-	const today = LocalDate.now(APP_TZ);
+
+	const dow = today.dayOfWeek();
+	let defaultReceiptDate;
+	if (dow === DayOfWeek.FRIDAY) {
+		defaultReceiptDate = today.plusDays(3);
+	} else if (dow === DayOfWeek.SATURDAY) {
+		defaultReceiptDate = today.plusDays(2);
+	} else {
+		defaultReceiptDate = today.plusDays(1);
+	}
+	const receiptDate = loc.receiptDate ? LocalDate.parse(loc.receiptDate) : defaultReceiptDate;
 	if (!updateDate.isEqual(today)) return null;
 
 	const postedAt = loc.postedAt ? Instant.parse(loc.postedAt) : null;

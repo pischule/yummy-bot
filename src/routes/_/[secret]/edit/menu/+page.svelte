@@ -28,8 +28,17 @@
 		return `Черновик, сохранён в ${t}`;
 	});
 
-	function todayStr() {
+	// TODO: rewrite this mess
+	function receiptDateDefault() {
 		const d = new Date();
+		const dow = d.getDay();
+		if (dow === 5) {
+			d.setDate(d.getDate() + 3);
+		} else if (dow === 6) {
+			d.setDate(d.getDate() + 2);
+		} else {
+			d.setDate(d.getDate() + 1);
+		}
 		return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 	}
 
@@ -37,10 +46,10 @@
 		const loc = data.selectedLocation;
 		if (loc?.hasActiveMenu) {
 			menuText = loc.items.join('\n');
-			menuDate = loc.receiptDate || todayStr();
+			menuDate = loc.receiptDate;
 		} else {
 			menuText = '';
-			menuDate = todayStr();
+			menuDate = receiptDateDefault();
 		}
 	});
 
