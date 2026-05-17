@@ -3,7 +3,7 @@
 
 	let { data, children } = $props();
 
-	let url = page.url;
+	let url = $derived(page.url);
 
 	let selectedLocationId = $derived(
 		url.searchParams.get('locationId') ?? data.locations[0]?.id ?? null
