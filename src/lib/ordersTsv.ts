@@ -8,7 +8,7 @@ export interface Order {
 	items: Item[];
 }
 
-export function deriveMenuOrder(orders: Order[]): string[] {
+export function deriveOrderFromRelative(orders: Order[]): string[] {
 	const before: Record<string, Record<string, number>> = {};
 
 	for (const order of orders) {
@@ -39,7 +39,7 @@ export function deriveMenuOrder(orders: Order[]): string[] {
 	});
 }
 
-function getAllItemNames(orders: Order[]): string[] {
+export function getAllItemNames(orders: Order[]): string[] {
 	const allItems = orders.flatMap((order) => order.items.map((item) => item.name));
 	return [...new Set(allItems)].sort();
 }

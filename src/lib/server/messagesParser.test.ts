@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { ordersToTsv } from './messagesParser';
 
 describe('ordersToTsv', () => {
-	it('should parse old win format', () => {
+	it('should parse old win format', async () => {
 		const text = `
     YummyOrderBot, [01.01.24 12:00]
     Alice:
@@ -15,7 +15,7 @@ describe('ordersToTsv', () => {
     - Burger
     `;
 
-		const result = ordersToTsv(text);
+		const result = await ordersToTsv(text);
 		const lines = result.split('\n');
 
 		expect(lines).toStrictEqual([
@@ -25,7 +25,7 @@ describe('ordersToTsv', () => {
 		]);
 	});
 
-	it('should parse old win format with extra colon', () => {
+	it('should parse old win format with extra colon', async () => {
 		const text = `
     YummyOrderBot, [01.01.24 12:00]:
     Alice:
@@ -38,7 +38,7 @@ describe('ordersToTsv', () => {
     - Burger
     `;
 
-		const result = ordersToTsv(text);
+		const result = await ordersToTsv(text);
 		const lines = result.split('\n');
 
 		expect(lines).toStrictEqual([
@@ -48,7 +48,7 @@ describe('ordersToTsv', () => {
 		]);
 	});
 
-	it('should parse mac format', () => {
+	it('should parse mac format', async () => {
 		const text = `
     > YummyOrderBot:
     Alice:
@@ -65,14 +65,14 @@ describe('ordersToTsv', () => {
     - Burger
     `;
 
-		const result = ordersToTsv(text);
+		const result = await ordersToTsv(text);
 		const lines = result.split('\n');
 
 		expect(lines[1]).toBe('"Alice"\t\t2\t1');
 		expect(lines[2]).toBe('"Bob"\t3\t1\t');
 	});
 
-	it('should parse new win format', () => {
+	it('should parse new win format', async () => {
 		const text = `
     [01.01.24 12:00] YummyOrderBot: Alice:
     - Burger x2
@@ -85,14 +85,14 @@ describe('ordersToTsv', () => {
     - Burger
     `;
 
-		const result = ordersToTsv(text);
+		const result = await ordersToTsv(text);
 		const lines = result.split('\n');
 
 		expect(lines[1]).toBe('"Alice"\t\t2\t1');
 		expect(lines[2]).toBe('"Bob"\t3\t1\t');
 	});
 
-	it('should sort columns based on precedence derived from order items', () => {
+	it('should sort columns based on precedence derived from order items', async () => {
 		const text = `
     YummyOrderBot, [01.01.24 12:00]
     Alice:
@@ -105,13 +105,13 @@ describe('ordersToTsv', () => {
     - Burger
     `;
 
-		const result = ordersToTsv(text);
+		const result = await ordersToTsv(text);
 		const headers = result.split('\n')[0];
 
 		expect(headers).toBe('Имя\t"Soda"\t"Burger"\t"Fries"');
 	});
 
-	it('should sort items with equal scores alphabetically', () => {
+	it('should sort items with equal scores alphabetically', async () => {
 		const text = `
     YummyOrderBot, [01.01.24 12:00]
     Alice:
@@ -124,7 +124,7 @@ describe('ordersToTsv', () => {
     - Pizza
     `;
 
-		const result = ordersToTsv(text);
+		const result = await ordersToTsv(text);
 		const headers = result.split('\n')[0];
 
 		// Burger beats Fries (score 1), Soda beats Pizza (score 1)
@@ -133,7 +133,7 @@ describe('ordersToTsv', () => {
 		expect(headers).toBe('Имя\t"Burger"\t"Soda"\t"Fries"\t"Pizza"');
 	});
 
-	it('should derive column order from multiple orders with overlapping items', () => {
+	it('should derive column order from multiple orders with overlapping items', async () => {
 		const text = `
     YummyOrderBot, [01.01.24 12:00]
     Alice:
@@ -151,14 +151,14 @@ describe('ordersToTsv', () => {
     - D
     `;
 
-		const result = ordersToTsv(text);
+		const result = await ordersToTsv(text);
 		const headers = result.split('\n')[0];
 
 		// A before B (Alice), B before C (Bob), C before D (Charlie) → chain: A, B, C, D
 		expect(headers).toBe('Имя\t"A"\t"B"\t"C"\t"D"');
 	});
 
-	it('should break ties alphabetically when no precedence information', () => {
+	it('should break ties alphabetically when no precedence information', async () => {
 		const text = `
     YummyOrderBot, [01.01.24 12:00]
     Alice:
@@ -169,28 +169,28 @@ describe('ordersToTsv', () => {
     - Burger
     `;
 
-		const result = ordersToTsv(text);
+		const result = await ordersToTsv(text);
 		const headers = result.split('\n')[0];
 
 		// No pairs to compare, all tied → alphabetical
 		expect(headers).toBe('Имя\t"Burger"\t"Soda"');
 	});
 
-	it('should escape double quotes in item names and user names', () => {
+	it('should escape double quotes in item names and user names', async () => {
 		const rawWithQuotes = `
     YummyOrderBot, [01.01.24 12:00]
     "Big" Ben:
     - Special "Sauce"
     `;
 
-		const result = ordersToTsv(rawWithQuotes);
+		const result = await ordersToTsv(rawWithQuotes);
 
 		expect(result).toContain('"Big"" Ben"');
 		expect(result).toContain('"Special ""Sauce"""');
 	});
 
-	it('should return only headers if the input text is empty', () => {
-		const result = ordersToTsv('');
+	it('should return only headers if the input text is empty', async () => {
+		const result = await ordersToTsv('');
 		expect(result).toBe('Имя');
 	});
 });

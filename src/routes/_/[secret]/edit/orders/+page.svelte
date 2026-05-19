@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { deriveMenuOrder, generateTsv } from '$lib/ordersTsv';
+	import { deriveOrderFromRelative, generateTsv } from '$lib/ordersTsv';
 	import Button from '$lib/Button.svelte';
 
 	let { data } = $props();
@@ -62,7 +62,7 @@
 			disabled={orders.length === 0}
 			onclick={async () => {
 				if (orders.length === 0) return;
-				const itemOrder = deriveMenuOrder(orders);
+				const itemOrder = deriveOrderFromRelative(orders);
 				const tsv = generateTsv(orders, itemOrder);
 				try {
 					await navigator.clipboard.writeText(tsv);
@@ -91,7 +91,8 @@
 <div class="banner warning">
 	{@html icons.alert}
 	<span>
-		Внимание! Бот не отслеживает удаление сообщений в чате. Если заказ был отменён удалением сообщения, он всё равно останется в этом списке. Пока для точности лучше пользоваться
+		Внимание! Бот не отслеживает удаление сообщений в чате. Если заказ был отменён удалением
+		сообщения, он всё равно останется в этом списке. Пока для точности лучше пользоваться
 		<a href="/_/parser">парсером</a> — он видит только те сообщения, которые были переданы.
 	</span>
 </div>
