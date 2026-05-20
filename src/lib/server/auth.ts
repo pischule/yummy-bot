@@ -49,10 +49,9 @@ export const checkClientAuth = async (searchParams: URLSearchParams) => {
 
 	const id = searchParams.get('id')!;
 
-	const authDate = searchParams.get('auth_date');
-	if (authDate == null) return null;
-	const nowDate = new Date().getTime() / 1000;
-	if (nowDate - +authDate > TG_AUTH_TTL_SECONDS) {
+	const authDate: number = +searchParams.get('auth_date')!;
+	const nowDate: number = new Date().getTime() / 1000;
+	if (nowDate - authDate > TG_AUTH_TTL_SECONDS) {
 		logger.warn({ userId: id }, 'Stale tg auth');
 		return null;
 	}
