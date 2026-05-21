@@ -24,5 +24,6 @@ export const ordersTable = sqliteTable('orders', {
 		.notNull()
 		.$type<{ name: string; qty: number }[]>(),
 	receiptDate: text('receipt_date').notNull().default(''),
-	createdAt: text('created_at').notNull()
+	createdAt: text('created_at').notNull(),
+	messageId: integer('message_id')
 });

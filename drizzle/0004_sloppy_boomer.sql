@@ -1,0 +1,1 @@
+ALTER TABLE `orders` ADD `message_id` integer;

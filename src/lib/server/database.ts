@@ -120,6 +120,7 @@ export async function saveOrder(order: {
 	orderedItems: { name: string; qty: number }[];
 	receiptDate: string;
 	createdAt: string;
+	messageId?: number;
 }) {
 	await db.insert(ordersTable).values(order);
 }

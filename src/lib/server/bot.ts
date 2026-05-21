@@ -12,7 +12,7 @@ const escapeMarkdown = (s: string) => {
 	return s;
 };
 
-export const sendOrder = async (order: Order, userId: string, chatId: string) => {
+export const sendOrder = async (order: Order, userId: string, chatId: string): Promise<number> => {
 	const mention = `[${escapeMarkdown(order.name)}](tg://user?id=${userId})`;
 	const itemsString = order.orderedItems
 		.map((item) => {
@@ -23,9 +23,10 @@ export const sendOrder = async (order: Order, userId: string, chatId: string) =>
 		.join('\n');
 
 	const message = `${mention}:\n${itemsString}`;
-	await bot.api.sendMessage(chatId, message, {
+	const sent = await bot.api.sendMessage(chatId, message, {
 		parse_mode: 'MarkdownV2'
 	});
+	return sent.message_id;
 };
 
 export const sendOrderButton = async (location: { id: string; chatId: string }) => {
