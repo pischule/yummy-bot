@@ -30,13 +30,14 @@ export const sendOrder = async (order: Order, userId: string, chatId: string): P
 };
 
 export const init = () => {
+	if (bot) return;
 	bot = new Bot(BOT_TOKEN);
 	bot.command('chatid', (ctx) =>
 		ctx.reply(`Chat ID: <code>${ctx.chatId}</code>`, { parse_mode: 'HTML' })
 	);
-	bot.start();
+	bot.start().then();
 };
 
-export const stop = () => {
-	bot.stop();
-};
+export async function stop() {
+	await bot.stop();
+}

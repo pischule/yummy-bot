@@ -13,6 +13,7 @@ export const locationsTable = sqliteTable('locations', {
 export const menuLinkTable = sqliteTable('menu_link', {
 	id: text().primaryKey(),
 	locationId: text('location_id').notNull(),
+	chatId: integer('chat_id').notNull(),
 	messageId: integer('message_id'),
 	createdAt: text('created_at').notNull()
 });

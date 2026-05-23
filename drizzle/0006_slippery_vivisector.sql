@@ -1,0 +1,1 @@
+ALTER TABLE `menu_link` ADD `chat_id` integer NOT NULL;

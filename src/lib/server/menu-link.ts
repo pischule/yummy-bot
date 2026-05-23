@@ -1,12 +1,16 @@
 import { APP_URL } from '$env/static/private';
 import { db } from '$lib/server/db/store';
 import { menuLinkTable } from '$lib/server/db/schema';
-import { Instant } from '@js-joda/core';
-import { eq } from 'drizzle-orm';
+import { Instant, Duration } from '@js-joda/core';
+import { eq, inArray, lt } from 'drizzle-orm';
 import { bot } from '$lib/server/bot';
+import { groupBy, sleep } from '$lib/server/utils';
+import { logger } from '$lib/server/logger';
+
+let messageDeletionTimer: NodeJS.Timeout | null = null;
 
 export async function sendMenuLink(locationId: string, chatId: string): Promise<void> {
-	const linkId = await createMenuLink(locationId);
+	const linkId = await createMenuLink(locationId, +chatId);
 
 	const button = {
 		text: 'Создать заказ',
@@ -23,12 +27,62 @@ export async function sendMenuLink(locationId: string, chatId: string): Promise<
 	await updateMenuLinkMessageId(linkId, messageId);
 }
 
-async function createMenuLink(locationId: string): Promise<string> {
+async function deleteOldMenuLinks() {
+	const ttl = Duration.ofHours(24);
+	const createdBefore = Instant.now().minus(ttl).toJSON();
+
+	const links = await db
+		.select()
+		.from(menuLinkTable)
+		.where(lt(menuLinkTable.createdAt, createdBefore))
+		.limit(20);
+
+	const chatIdToLinks = groupBy(links, (link) => link.chatId);
+
+	const deleteDelayMs = 500;
+	for (const [chatId, links] of chatIdToLinks.entries()) {
+		const messageIds = links
+			.filter((link) => link.messageId != null)
+			.map((link) => link.messageId!);
+		if (messageIds.length == 0) {
+			continue;
+		}
+
+		try {
+			await bot.api.deleteMessages(chatId, messageIds);
+		} catch (e) {
+			logger.warn(e, 'Failed to delete messages');
+		}
+		await sleep(deleteDelayMs);
+	}
+
+	const linkIds = links.map((link) => link.id);
+	await db.delete(menuLinkTable).where(inArray(menuLinkTable.id, linkIds)).execute();
+
+	logger.info(`Deleted ${links.length} links`);
+}
+
+async function deleteOldLinksWithErrorLog() {
+	try {
+		await deleteOldMenuLinks();
+	} catch (e) {
+		logger.error(e, 'Old link deletion failed');
+	}
+}
+
+export function scheduleOldLinkDeletion() {
+	if (messageDeletionTimer) return;
+	const frequency = Duration.ofHours(12).toMillis();
+	messageDeletionTimer = setInterval(deleteOldLinksWithErrorLog, frequency);
+}
+
+async function createMenuLink(locationId: string, chatId: number): Promise<string> {
 	const linkId = crypto.randomUUID().toString();
 	await db
 		.insert(menuLinkTable)
 		.values({
 			id: linkId,
+			chatId: chatId,
 			locationId: locationId,
 			createdAt: Instant.now().toJSON()
 		})

@@ -43,6 +43,13 @@
       "when": 1779536183505,
       "tag": "0005_petite_dorian_gray",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1779544890002,
+      "tag": "0006_slippery_vivisector",
+      "breakpoints": true
     }
   ]
 }
