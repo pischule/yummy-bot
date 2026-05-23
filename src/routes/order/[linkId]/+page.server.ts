@@ -1,10 +1,10 @@
 import type { PageServerLoad } from './$types';
-import * as db from '$lib/server/database';
 import { getName } from '$lib/server/database';
 import { error } from '@sveltejs/kit';
 import { checkClientAuth } from '$lib/server/auth';
 import { ZonedDateTime } from '@js-joda/core';
 import { APP_TZ } from '$lib/server/utils';
+import { getMenuByLinkId } from '$lib/server/menu';
 
 const WEEKDAYS = [
 	'понедельник',
@@ -26,7 +26,7 @@ export const load = (async ({ url, params, setHeaders }) => {
 
 	setHeaders({ 'Cache-Control': 'max-age=0' });
 
-	const menu = await db.getMenuByLinkId(linkId);
+	const menu = await getMenuByLinkId(linkId);
 	if (!menu?.items) {
 		return {
 			items: [],

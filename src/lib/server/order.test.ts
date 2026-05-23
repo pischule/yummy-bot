@@ -9,7 +9,7 @@ vi.mock('$env/dynamic/private', () => ({
 import { db } from './db/store';
 import { ordersTable } from './db/schema';
 import { migrate } from 'drizzle-orm/libsql/migrator';
-import { saveOrder } from './database';
+import { saveOrder } from '$lib/server/order';
 
 describe('saveOrder', () => {
 	beforeAll(async () => {
@@ -23,7 +23,7 @@ describe('saveOrder', () => {
 		await db.delete(ordersTable);
 	});
 
-	it('persists an order with all fields', async () => {
+	it('persists an order.ts with all fields', async () => {
 		await saveOrder({
 			locationId: 'loc-1',
 			telegramId: 'user-1',

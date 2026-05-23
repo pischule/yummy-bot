@@ -1,11 +1,11 @@
 import type { RequestHandler } from './$types';
 import * as bot from '$lib/server/bot';
-import * as db from '$lib/server/database';
 import { error } from '@sveltejs/kit';
 import { setName } from '$lib/server/database';
 import { logger } from '$lib/server/logger';
 import { checkClientAuth } from '$lib/server/auth';
 import { getLocationByLinkId } from '$lib/server/location';
+import { saveOrder } from '$lib/server/order';
 
 const usedNonces = new Set();
 
@@ -28,7 +28,7 @@ export const POST = (async ({ request, params, url }) => {
 	const locationId = loc.id;
 
 	const messageId = await bot.sendOrder(order, user.id, loc.chatId);
-	await db.saveOrder({
+	await saveOrder({
 		locationId,
 		telegramId: user.id,
 		name: order.name,
@@ -43,6 +43,6 @@ export const POST = (async ({ request, params, url }) => {
 	if (nonce) {
 		usedNonces.add(nonce);
 	}
-	logger.info({ userId: user.id, order, locationId }, 'created order');
+	logger.info({ userId: user.id, order, locationId }, 'created order.ts');
 	return new Response(null, { status: 201 });
 }) satisfies RequestHandler;

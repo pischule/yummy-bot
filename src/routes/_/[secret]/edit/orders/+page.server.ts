@@ -1,8 +1,8 @@
 import { redirect } from '@sveltejs/kit';
 import { Instant } from '@js-joda/core';
-import { getOrders } from '$lib/server/database';
 import { APP_TZ } from '$lib/server/utils';
 import { checkAdminAuth } from '$lib/server/auth';
+import { getOrders } from '$lib/server/order';
 
 export async function load({ url, parent, params }) {
 	checkAdminAuth(params);

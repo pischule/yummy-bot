@@ -7,7 +7,7 @@ vi.mock('./location', () => ({
 }));
 
 describe('ordersToTsv guessing menu', () => {
-	it('should order columns by matched menu', async () => {
+	it('should order.ts columns by matched menu', async () => {
 		vi.mocked(location.getLocations).mockResolvedValue([
 			{
 				id: 'loc1',
@@ -30,7 +30,7 @@ describe('ordersToTsv guessing menu', () => {
 		const result = await ordersToTsv(text);
 		const headers = result.split('\n')[0];
 
-		// Matches menu of loc1, so should follow its order: Salad then Burger
+		// Matches menu of loc1, so should follow its order.ts: Salad then Burger
 		expect(headers).toBe('Имя\t"Salad"\t"Burger"');
 	});
 
