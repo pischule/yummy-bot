@@ -3,12 +3,20 @@ import { LocalDate } from '@js-joda/core';
 import { APP_TZ } from '$lib/server/utils';
 import { getLocations, getMenuFromLocation, isMenuPostedToday } from '$lib/server/database';
 import { checkAdminAuth } from '$lib/server/auth';
+import { bot } from '$lib/server/bot';
+import { logger } from '$lib/server/logger';
 
 export async function load({ params }) {
 	checkAdminAuth(params);
 	const locations = await getLocations();
 	const todayLocalDate = LocalDate.now(APP_TZ);
 	const today = todayLocalDate.toString();
+	let botUsername: string | undefined;
+	try {
+		botUsername = bot.botInfo.username;
+	} catch (e) {
+		logger.warn(e, 'Failed to fetch bot username');
+	}
 
 	const enriched = locations.map((loc) => {
 		const menu = getMenuFromLocation(loc);
@@ -26,5 +34,5 @@ export async function load({ params }) {
 		};
 	});
 
-	return { locations: enriched, today, botUsername: env.BOT_USERNAME };
+	return { locations: enriched, today, botUsername };
 }

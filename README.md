@@ -36,7 +36,6 @@ services:
     environment:
       BOT_TOKEN: 'токен телеграм-бота'
       APP_URL: 'url приложения'
-      BOT_USERNAME: 'username телеграм-бота (без @)'
       SECRET: 'секрет для доступа к админке'
       DB_URL: 'file:/app/data/db.sqlite3'
     volumes:
