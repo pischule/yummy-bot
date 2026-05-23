@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { ordersToTsv } from './messagesParser';
+import { ordersToTsv } from './parser';
 
-import { orderByExample } from './messagesParser';
+import { orderByExample } from './parser';
 
 describe('ordersToTsv', () => {
 	it('should parse old win format', async () => {

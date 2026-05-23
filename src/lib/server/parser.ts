@@ -3,21 +3,21 @@ import { getLocations } from '$lib/server/location';
 
 export async function ordersToTsv(rawText: string): Promise<string> {
 	const orders = parseOrders(rawText);
-	const orderFromMenu = await deriveOrderByGuessedMenu(orders);
-	const allItemNames = orderFromMenu ?? deriveOrderFromRelative(orders);
+	const itemsSortedByMenu = await deriveItemsOrderByGuessingMenu(orders);
+	const allItemNames = itemsSortedByMenu ?? deriveOrderFromRelative(orders);
 	return generateTsv(orders, allItemNames);
 }
 
-async function deriveOrderByGuessedMenu(orders: Order[]): Promise<string[] | null> {
+async function deriveItemsOrderByGuessingMenu(orders: Order[]): Promise<string[] | null> {
 	const locations = await getLocations();
 	if (locations.length === 0) return null;
 
-	const orderedNames = orders.flatMap((order) => order.items.map((item) => item.name));
+	const itemsFromOrders = orders.flatMap((order) => order.items.map((item) => item.name));
 
 	const winner = locations.reduce<{ score: number; menu: string[] | null }>(
 		(best, current) => {
 			const menuSet = new Set(current.menu);
-			const score = orderedNames.filter((name) => menuSet.has(name)).length;
+			const score = itemsFromOrders.filter((name) => menuSet.has(name)).length;
 			return score > best.score ? { score, menu: current.menu } : best;
 		},
 		{ score: 0, menu: null }

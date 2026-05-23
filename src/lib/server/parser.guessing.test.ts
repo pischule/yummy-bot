@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { ordersToTsv } from './messagesParser';
+import { ordersToTsv } from './parser';
 import * as location from './location';
 
 vi.mock('./location', () => ({
