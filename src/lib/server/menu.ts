@@ -49,7 +49,7 @@ export async function getMenuByLinkId(linkId: string): Promise<Menu | null> {
 	return getMenuFromLocation(loc);
 }
 
-export async function setLocationMenu(locationId: string, menu: Menu) {
+export async function setMenuForLocation(locationId: string, menu: Menu) {
 	await db
 		.update(locationsTable)
 		.set({
@@ -60,6 +60,7 @@ export async function setLocationMenu(locationId: string, menu: Menu) {
 		.where(eq(locationsTable.id, locationId));
 }
 
-export async function markMenuPosted(locationId: string, postedAt: string) {
+export async function markMenuAsPosted(locationId: string) {
+	const postedAt = Instant.now().toJSON();
 	await db.update(locationsTable).set({ postedAt }).where(eq(locationsTable.id, locationId));
 }

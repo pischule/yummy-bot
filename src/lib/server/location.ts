@@ -40,6 +40,11 @@ export async function getLocationByLinkId(linkId: string): Promise<DbLocation> {
 	return rows[0]?.locations;
 }
 
+export async function getLocationById(id: string): Promise<DbLocation | undefined> {
+	const rows = await db.select().from(locationsTable).where(eq(locationsTable.id, id)).limit(1);
+	return rows[0];
+}
+
 export async function getLocationByChatId(chatId: string): Promise<DbLocation | undefined> {
 	const rows = await db
 		.select()

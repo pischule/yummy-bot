@@ -2,8 +2,9 @@
 	import { enhance } from '$app/forms';
 	import Button from '$lib/Button.svelte';
 	import Dialog from '$lib/Dialog.svelte';
+	import type { PageProps } from './$types.js';
 
-	let { data, form } = $props();
+	let { data, form }: PageProps = $props();
 
 	let editingId = $state<string | null>(null);
 	let showAddDialog = $state(false);
