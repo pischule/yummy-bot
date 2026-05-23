@@ -31,7 +31,10 @@ jobs:
         run: pnpm install
 
       - name: Build the app
-        run: BOT_TOKEN=SOME_STRING APP_URL=http://example.com npm run build
+        env:
+          BOT_TOKEN: SOME_STRING
+          APP_URL: http://example.com
+        run: npm run build
 
       - name: Docker meta
         id: meta
