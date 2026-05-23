@@ -21,9 +21,10 @@ export const POST = (async ({ request, params, url }) => {
 
 	const order = <Order>await request.json();
 
-	const { locationId } = params;
-	const loc = await db.getLocation(locationId);
+	const { linkId } = params;
+	const loc = await db.getLocationByLinkId(linkId);
 	if (!loc) throw error(404, 'Location not found');
+	const locationId = loc.id;
 
 	const messageId = await bot.sendOrder(order, user.id, loc.chatId);
 	await db.saveOrder({

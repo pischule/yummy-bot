@@ -22,17 +22,16 @@ export const load = (async ({ url, params, setHeaders }) => {
 		throw error(401, 'Unauthorized');
 	}
 
-	const { locationId } = params;
+	const { linkId } = params;
 
 	setHeaders({ 'Cache-Control': 'max-age=0' });
 
-	const menu = await db.getMenu(locationId);
+	const menu = await db.getMenuByLinkId(linkId);
 	if (!menu?.items) {
 		return {
 			items: [],
 			day: '',
-			name: '',
-			locationId
+			name: ''
 		};
 	}
 
@@ -48,7 +47,6 @@ export const load = (async ({ url, params, setHeaders }) => {
 	return {
 		items: menu?.items ?? [],
 		day,
-		name: await getName(user.id),
-		locationId
+		name: await getName(user.id)
 	};
 }) satisfies PageServerLoad;
