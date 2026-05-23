@@ -107,6 +107,7 @@
 											placeholder="ID чата"
 											inputmode="numeric"
 											pattern="-?[0-9]+"
+											autocomplete="off"
 											required
 										/>
 									</div>
@@ -205,6 +206,7 @@
 				placeholder="-100123456789"
 				inputmode="numeric"
 				pattern="-?[0-9]+"
+				autocomplete="off"
 				required
 			/>
 			<p class="field-hint">

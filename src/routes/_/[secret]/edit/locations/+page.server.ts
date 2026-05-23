@@ -1,11 +1,11 @@
 import { fail } from '@sveltejs/kit';
+import { checkAdminAuth } from '$lib/server/auth';
 import {
 	addLocation,
-	updateLocation,
 	deleteLocation,
-	getLocationByChatId
-} from '$lib/server/database';
-import { checkAdminAuth } from '$lib/server/auth';
+	getLocationByChatId,
+	updateLocation
+} from '$lib/server/location';
 
 export const actions = {
 	addLocation: async ({ request, params }) => {

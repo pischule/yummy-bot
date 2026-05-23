@@ -1,10 +1,10 @@
-import { env } from '$env/dynamic/private';
 import { LocalDate } from '@js-joda/core';
 import { APP_TZ } from '$lib/server/utils';
-import { getLocations, getMenuFromLocation, isMenuPostedToday } from '$lib/server/database';
+import { getMenuFromLocation, isMenuPostedToday } from '$lib/server/database';
 import { checkAdminAuth } from '$lib/server/auth';
 import { bot } from '$lib/server/bot';
 import { logger } from '$lib/server/logger';
+import { getLocations } from '$lib/server/location';
 
 export async function load({ params }) {
 	checkAdminAuth(params);

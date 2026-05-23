@@ -1,5 +1,5 @@
 import { deriveOrderFromRelative, generateTsv, getAllItemNames, type Order } from '$lib/ordersTsv';
-import { getLocations } from '$lib/server/database';
+import { getLocations } from '$lib/server/location';
 
 export async function ordersToTsv(rawText: string): Promise<string> {
 	const orders = parseOrders(rawText);

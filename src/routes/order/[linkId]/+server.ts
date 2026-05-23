@@ -5,6 +5,7 @@ import { error } from '@sveltejs/kit';
 import { setName } from '$lib/server/database';
 import { logger } from '$lib/server/logger';
 import { checkClientAuth } from '$lib/server/auth';
+import { getLocationByLinkId } from '$lib/server/location';
 
 const usedNonces = new Set();
 
@@ -22,7 +23,7 @@ export const POST = (async ({ request, params, url }) => {
 	const order = <Order>await request.json();
 
 	const { linkId } = params;
-	const loc = await db.getLocationByLinkId(linkId);
+	const loc = await getLocationByLinkId(linkId);
 	if (!loc) throw error(404, 'Location not found');
 	const locationId = loc.id;
 

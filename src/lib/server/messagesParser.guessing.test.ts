@@ -1,14 +1,14 @@
 import { describe, it, expect, vi } from 'vitest';
 import { ordersToTsv } from './messagesParser';
-import * as database from './database';
+import * as location from './location';
 
-vi.mock('./database', () => ({
+vi.mock('./location', () => ({
 	getLocations: vi.fn()
 }));
 
 describe('ordersToTsv guessing menu', () => {
 	it('should order columns by matched menu', async () => {
-		vi.mocked(database.getLocations).mockResolvedValue([
+		vi.mocked(location.getLocations).mockResolvedValue([
 			{
 				id: 'loc1',
 				name: 'Location 1',
@@ -35,7 +35,7 @@ describe('ordersToTsv guessing menu', () => {
 	});
 
 	it('should pick the location with the highest match score', async () => {
-		vi.mocked(database.getLocations).mockResolvedValue([
+		vi.mocked(location.getLocations).mockResolvedValue([
 			{
 				id: 'loc-pizza',
 				name: 'Pizza Place',
@@ -73,7 +73,7 @@ describe('ordersToTsv guessing menu', () => {
 	});
 
 	it('should put unknown items at the end when a menu is matched', async () => {
-		vi.mocked(database.getLocations).mockResolvedValue([
+		vi.mocked(location.getLocations).mockResolvedValue([
 			{
 				id: 'loc1',
 				name: 'Location 1',
@@ -102,7 +102,7 @@ describe('ordersToTsv guessing menu', () => {
 	});
 
 	it('should fallback to relative ordering if no menu matches', async () => {
-		vi.mocked(database.getLocations).mockResolvedValue([
+		vi.mocked(location.getLocations).mockResolvedValue([
 			{
 				id: 'loc1',
 				name: 'Location 1',
@@ -130,7 +130,7 @@ describe('ordersToTsv guessing menu', () => {
 	});
 
 	it('should pick the first winner if there is a tie in scores', async () => {
-		vi.mocked(database.getLocations).mockResolvedValue([
+		vi.mocked(location.getLocations).mockResolvedValue([
 			{
 				id: 'loc-a',
 				name: 'A',
@@ -165,7 +165,7 @@ describe('ordersToTsv guessing menu', () => {
 	});
 
 	it('should handle empty locations list', async () => {
-		vi.mocked(database.getLocations).mockResolvedValue([]);
+		vi.mocked(location.getLocations).mockResolvedValue([]);
 
 		const text = `
     > YummyOrderBot:
