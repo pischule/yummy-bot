@@ -1,6 +1,11 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { Instant, LocalDate } from '@js-joda/core';
-import { setMenu, markMenuPosted } from '$lib/server/database';
+import {
+	setMenu,
+	markMenuPosted,
+	createMenuLink,
+	updateMenuLinkMessageId
+} from '$lib/server/database';
 import { sendOrderButton } from '$lib/server/bot';
 import { checkAdminAuth } from '$lib/server/auth';
 import { logger } from '$lib/server/logger';
@@ -80,14 +85,17 @@ export const actions = {
 			postedAt: null
 		};
 		await setMenu(locationId, menu);
+		const linkId = await createMenuLink(locationId);
 
 		try {
-			await sendOrderButton({ id: locationId, chatId });
+			const messageId = await sendOrderButton(linkId, chatId);
 			await markMenuPosted(locationId, now.toJSON());
+			await updateMenuLinkMessageId(linkId, messageId);
 			return { type: 'postMenu', success: true, postedAt: now.toJSON() };
 		} catch (err) {
 			logger.error(err, 'postMenu: failed to send order button');
-			const message = err instanceof Error ? err.message : 'Не удалось отправить в Telegram';
+			const message =
+				err instanceof Error ? err.message : 'Не удалось отправить в Telegram. Попробуйте еще раз';
 			return { type: 'postMenu', success: false, error: message };
 		}
 	}

@@ -2,7 +2,7 @@ import { DayOfWeek, Instant, LocalDate } from '@js-joda/core';
 import { and, eq, gte, lt } from 'drizzle-orm';
 import { APP_TZ } from './utils';
 import { db } from './db/store';
-import { locationsTable, namesTable, ordersTable } from './db/schema';
+import { locationsTable, namesTable, ordersTable, menuLinkTable } from './db/schema';
 
 export interface Menu {
 	updatedAt: Instant;
@@ -17,9 +17,14 @@ export async function getLocations(): Promise<DbLocation[]> {
 	return db.select().from(locationsTable);
 }
 
-export async function getLocation(id: string): Promise<DbLocation | undefined> {
-	const rows = await db.select().from(locationsTable).where(eq(locationsTable.id, id)).limit(1);
-	return rows[0];
+export async function getLocationByLinkId(linkId: string): Promise<DbLocation | undefined> {
+	const rows = await db
+		.select()
+		.from(locationsTable)
+		.innerJoin(menuLinkTable, eq(locationsTable.id, menuLinkTable.locationId))
+		.where(eq(menuLinkTable.id, linkId))
+		.limit(1);
+	return rows[0]?.locations;
 }
 
 export async function getLocationByChatId(chatId: string): Promise<DbLocation | undefined> {
@@ -84,8 +89,8 @@ export function getMenuFromLocation(loc: DbLocation): Menu | null {
 	return { updatedAt, receiptDate, items: loc.menu, postedAt };
 }
 
-export async function getMenu(locationId: string): Promise<Menu | null> {
-	const loc = await getLocation(locationId);
+export async function getMenuByLinkId(linkId: string): Promise<Menu | null> {
+	const loc = await getLocationByLinkId(linkId);
 	if (!loc) return null;
 	return getMenuFromLocation(loc);
 }
@@ -99,6 +104,30 @@ export async function setMenu(locationId: string, menu: Menu) {
 			receiptDate: menu.receiptDate.toJSON()
 		})
 		.where(eq(locationsTable.id, locationId));
+}
+
+export async function createMenuLink(locationId: string): Promise<string> {
+	const linkId = crypto.randomUUID().toString();
+	await db
+		.insert(menuLinkTable)
+		.values({
+			id: linkId,
+			locationId: locationId,
+			createdAt: Instant.now().toJSON()
+		})
+		.execute();
+	return linkId;
+}
+
+export async function updateMenuLinkMessageId(linkId: string, messageId: number): Promise<string> {
+	await db
+		.update(menuLinkTable)
+		.set({
+			messageId: messageId
+		})
+		.where(eq(menuLinkTable.id, linkId))
+		.execute();
+	return linkId;
 }
 
 export async function getName(id: string) {

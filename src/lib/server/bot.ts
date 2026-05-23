@@ -29,17 +29,18 @@ export const sendOrder = async (order: Order, userId: string, chatId: string): P
 	return sent.message_id;
 };
 
-export const sendOrderButton = async (location: { id: string; chatId: string }) => {
+export async function sendOrderButton(linkId: string, chatId: string): Promise<number> {
 	const button = {
 		text: 'Создать заказ',
 		login_url: {
-			url: `${APP_URL}/order/${location.id}`
+			url: `${APP_URL}/order/${linkId}`
 		}
 	};
-	await bot.api.sendMessage(location.chatId, 'Нажмите на кнопку ниже, чтобы создать заказ', {
+	const result = await bot.api.sendMessage(chatId, 'Нажмите на кнопку ниже, чтобы создать заказ', {
 		reply_markup: { inline_keyboard: [[button]] }
 	});
-};
+	return result.message_id;
+}
 
 export const init = () => {
 	bot = new Bot(BOT_TOKEN);

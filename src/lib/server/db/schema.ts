@@ -10,6 +10,13 @@ export const locationsTable = sqliteTable('locations', {
 	postedAt: text('posted_at')
 });
 
+export const menuLinkTable = sqliteTable('menu_link', {
+	id: text().primaryKey(),
+	locationId: text('location_id').notNull(),
+	messageId: integer('message_id'),
+	createdAt: text('created_at').notNull()
+});
+
 export const namesTable = sqliteTable('name', {
 	telegramId: text('telegram_id').primaryKey(),
 	name: text('name').notNull()
