@@ -1,14 +1,9 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { Instant, LocalDate } from '@js-joda/core';
-import {
-	setMenu,
-	markMenuPosted,
-	createMenuLink,
-	updateMenuLinkMessageId
-} from '$lib/server/database';
-import { sendOrderButton } from '$lib/server/bot';
+import { setMenu, markMenuPosted } from '$lib/server/database';
 import { checkAdminAuth } from '$lib/server/auth';
 import { logger } from '$lib/server/logger';
+import { sendMenuLink } from '$lib/server/menu-link';
 
 export async function load({ url, parent, params }) {
 	checkAdminAuth(params);
@@ -85,12 +80,10 @@ export const actions = {
 			postedAt: null
 		};
 		await setMenu(locationId, menu);
-		const linkId = await createMenuLink(locationId);
 
 		try {
-			const messageId = await sendOrderButton(linkId, chatId);
+			await sendMenuLink(locationId, chatId);
 			await markMenuPosted(locationId, now.toJSON());
-			await updateMenuLinkMessageId(linkId, messageId);
 			return { type: 'postMenu', success: true, postedAt: now.toJSON() };
 		} catch (err) {
 			logger.error(err, 'postMenu: failed to send order button');

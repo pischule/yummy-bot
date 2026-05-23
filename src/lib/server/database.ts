@@ -106,30 +106,6 @@ export async function setMenu(locationId: string, menu: Menu) {
 		.where(eq(locationsTable.id, locationId));
 }
 
-export async function createMenuLink(locationId: string): Promise<string> {
-	const linkId = crypto.randomUUID().toString();
-	await db
-		.insert(menuLinkTable)
-		.values({
-			id: linkId,
-			locationId: locationId,
-			createdAt: Instant.now().toJSON()
-		})
-		.execute();
-	return linkId;
-}
-
-export async function updateMenuLinkMessageId(linkId: string, messageId: number): Promise<string> {
-	await db
-		.update(menuLinkTable)
-		.set({
-			messageId: messageId
-		})
-		.where(eq(menuLinkTable.id, linkId))
-		.execute();
-	return linkId;
-}
-
 export async function getName(id: string) {
 	const row = (await db.select().from(namesTable).where(eq(namesTable.telegramId, id)).limit(1))[0];
 	return row?.name;

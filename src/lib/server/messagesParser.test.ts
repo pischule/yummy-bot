@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { ordersToTsv } from './messagesParser';
 
+import { orderByExample } from './messagesParser';
+
 describe('ordersToTsv', () => {
 	it('should parse old win format', async () => {
 		const text = `
@@ -192,5 +194,49 @@ describe('ordersToTsv', () => {
 	it('should return only headers if the input text is empty', async () => {
 		const result = await ordersToTsv('');
 		expect(result).toBe('Имя');
+	});
+});
+
+describe('orderByExample', () => {
+	it('orders elements according to the example list', () => {
+		const array = ['apple', 'banana', 'cherry', 'date', 'fig', 'grape'];
+		const example = ['banana', 'date', 'fig'];
+		const result = orderByExample(array, example);
+		expect(result).toEqual(['banana', 'date', 'fig', 'apple', 'cherry', 'grape']);
+	});
+
+	it('places elements not in the example list at the end in their original order', () => {
+		const array = ['apple', 'banana', 'cherry'];
+		const example = ['banana'];
+		const result = orderByExample(array, example);
+		expect(result).toEqual(['banana', 'apple', 'cherry']);
+	});
+
+	it('handles an empty example list by keeping the original order', () => {
+		const array = ['apple', 'banana', 'cherry'];
+		const example: string[] = [];
+		const result = orderByExample(array, example);
+		expect(result).toEqual(['apple', 'banana', 'cherry']);
+	});
+
+	it('handles an empty array', () => {
+		const array: string[] = [];
+		const example = ['banana', 'date', 'fig'];
+		const result = orderByExample(array, example);
+		expect(result).toEqual([]);
+	});
+
+	it('orders elements when example list contains new elements not in the array', () => {
+		const array = ['apple', 'banana', 'cherry'];
+		const example = ['banana', 'date', 'fig'];
+		const result = orderByExample(array, example);
+		expect(result).toEqual(['banana', 'apple', 'cherry']);
+	});
+
+	it('orders elements correctly when all elements are in the example list', () => {
+		const array = ['apple', 'banana', 'cherry'];
+		const example = ['cherry', 'banana', 'apple'];
+		const result = orderByExample(array, example);
+		expect(result).toEqual(['cherry', 'banana', 'apple']);
 	});
 });

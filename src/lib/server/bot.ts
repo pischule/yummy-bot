@@ -1,9 +1,9 @@
 import { env } from '$env/dynamic/private';
 import { Bot } from 'grammy';
 
-const { BOT_TOKEN, APP_URL } = env;
+const { BOT_TOKEN } = env;
 
-let bot: Bot;
+export let bot: Bot;
 
 const SPECIAL_CHARACTERS = '_*[]()~`>#+-=|{}.!'.split('');
 
@@ -28,19 +28,6 @@ export const sendOrder = async (order: Order, userId: string, chatId: string): P
 	});
 	return sent.message_id;
 };
-
-export async function sendOrderButton(linkId: string, chatId: string): Promise<number> {
-	const button = {
-		text: 'Создать заказ',
-		login_url: {
-			url: `${APP_URL}/order/${linkId}`
-		}
-	};
-	const result = await bot.api.sendMessage(chatId, 'Нажмите на кнопку ниже, чтобы создать заказ', {
-		reply_markup: { inline_keyboard: [[button]] }
-	});
-	return result.message_id;
-}
 
 export const init = () => {
 	bot = new Bot(BOT_TOKEN);
