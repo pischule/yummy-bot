@@ -1,3 +1,13 @@
 import Pino from 'pino';
 
-export const logger = Pino();
+const isDevMode = import.meta.env.DEV;
+
+export const logger = Pino(
+	isDevMode
+		? {
+				transport: {
+					target: 'pino-pretty'
+				}
+			}
+		: {}
+);
