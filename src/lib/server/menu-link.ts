@@ -1,4 +1,4 @@
-import { APP_URL } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { db } from '$lib/server/db/store';
 import { menuLinkTable } from '$lib/server/db/schema';
 import { Instant, Duration } from '@js-joda/core';
@@ -15,7 +15,7 @@ export async function sendMenuLink(locationId: string, chatId: string): Promise<
 	const button = {
 		text: 'Создать заказ',
 		login_url: {
-			url: `${APP_URL}/order/${linkId}`
+			url: `${env.APP_URL}/order/${linkId}`
 		}
 	};
 	const result = await bot.api.sendMessage(chatId, 'Нажмите на кнопку ниже, чтобы создать заказ', {
