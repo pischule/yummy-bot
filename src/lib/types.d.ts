@@ -10,3 +10,12 @@ interface Order {
 		qty: number;
 	}[];
 }
+
+type Role = 'admin' | 'user';
+
+interface Session {
+	tgId: number;
+	roles: Role[];
+	// epoch milli
+	authDate: number;
+}

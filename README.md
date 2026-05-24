@@ -38,6 +38,7 @@ services:
       APP_URL: 'url приложения'
       SECRET: 'секрет для доступа к админке'
       DB_URL: 'file:/app/data/db.sqlite3'
+      COOKIE_ENCRYPTION_KEY: 'generate using <openssl rand -base64 32>'
     volumes:
       - './data:/app/data'
 ```

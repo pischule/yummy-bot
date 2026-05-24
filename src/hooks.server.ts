@@ -1,7 +1,9 @@
+import { validateConfig } from '$lib/server/config';
 import { runMigrations } from '$lib/server/db/migrate';
 import * as bot from '$lib/server/bot';
 import { scheduleOldLinkDeletion } from '$lib/server/menu-link';
 
+validateConfig();
 await runMigrations();
 bot.init();
 scheduleOldLinkDeletion();

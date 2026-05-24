@@ -3,15 +3,15 @@ import * as bot from '$lib/server/bot';
 import { error } from '@sveltejs/kit';
 import { setName } from '$lib/server/database';
 import { logger } from '$lib/server/logger';
-import { checkClientAuth } from '$lib/server/auth';
+import { authenticateUser } from '$lib/server/auth';
 import { getLocationByLinkId } from '$lib/server/location';
 import { saveOrder } from '$lib/server/order';
 
 const usedNonces = new Set();
 
-export const POST: RequestHandler = async ({ request, params, url }) => {
-	const user = await checkClientAuth(url.searchParams);
-	if (!user) {
+export const POST: RequestHandler = async ({ request, params, cookies }) => {
+	const session = await authenticateUser(cookies);
+	if (!session) {
 		throw error(401, 'Unauthorized');
 	}
 
@@ -27,10 +27,10 @@ export const POST: RequestHandler = async ({ request, params, url }) => {
 	if (!loc) throw error(404, 'Location not found');
 	const locationId = loc.id;
 
-	const messageId = await bot.sendOrder(order, user.id, loc.chatId);
+	const messageId = await bot.sendOrder(order, session.tgId, loc.chatId);
 	await saveOrder({
 		locationId,
-		telegramId: user.id,
+		telegramId: session.tgId + '',
 		name: order.name,
 		orderedItems: order.orderedItems,
 		receiptDate: loc.receiptDate,
@@ -38,11 +38,11 @@ export const POST: RequestHandler = async ({ request, params, url }) => {
 		messageId
 	});
 
-	await setName(user.id, order.name);
+	await setName(session.tgId + '', order.name);
 
 	if (nonce) {
 		usedNonces.add(nonce);
 	}
-	logger.info({ userId: user.id, order, locationId }, 'created order.ts');
+	logger.info({ userId: session.tgId, order, locationId }, 'created order.ts');
 	return new Response(null, { status: 201 });
 };

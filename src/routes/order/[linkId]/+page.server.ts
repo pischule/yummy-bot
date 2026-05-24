@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { getName } from '$lib/server/database';
 import { error } from '@sveltejs/kit';
-import { checkClientAuth } from '$lib/server/auth';
+import { authenticateUser } from '$lib/server/auth';
 import { ZonedDateTime } from '@js-joda/core';
 import { APP_TZ } from '$lib/server/utils';
 import { getMenuByLinkId } from '$lib/server/menu';
@@ -16,9 +16,9 @@ const WEEKDAYS = [
 	'воскресенье'
 ];
 
-export const load: PageServerLoad = async ({ url, params, setHeaders }) => {
-	const user = await checkClientAuth(url.searchParams);
-	if (!user) {
+export const load: PageServerLoad = async ({ url, params, setHeaders, cookies }) => {
+	const session = await authenticateUser(cookies, url.searchParams);
+	if (!session) {
 		throw error(401, 'Unauthorized');
 	}
 
@@ -47,6 +47,6 @@ export const load: PageServerLoad = async ({ url, params, setHeaders }) => {
 	return {
 		items: menu?.items ?? [],
 		day,
-		name: await getName(user.id)
+		name: await getName(session.tgId + '')
 	};
 };
