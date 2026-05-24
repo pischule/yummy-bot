@@ -37,11 +37,11 @@ services:
       BOT_TOKEN: 'токен телеграм-бота'
       BOT_PROXY: 'socks://127.0.0.1:1080' # optional, remove if not behind a proxy
       APP_URL: 'url приложения'
-      SECRET: 'секрет для доступа к админке'
+      ADMIN_CHAT_IDS: 'id чатов с админами'
       DB_URL: 'file:/app/data/db.sqlite3'
       COOKIE_ENCRYPTION_KEY: 'generate using <openssl rand -base64 32>'
     volumes:
       - './data:/app/data'
 ```
 
-Админка доступна по url `/_/SECRET/edit`. Позволяет добавлять и управлять локациями, задавать меню для каждой и отправлять кнопки заказа в соответствующие чаты.
+Создайте Telegram-чат для админов, отключите в нём возможность делиться (sharing), пригласите бота. Узнайте чат-айди бота командой `/chatid`, укажите его в `ADMIN_CHAT_IDS`. Для входа в админку — команда `/admin`, бот пришлёт кнопку входа с авторизацией через Telegram.
