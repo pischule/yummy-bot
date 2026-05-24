@@ -1,7 +1,9 @@
 import { env } from '$env/dynamic/private';
-import { Bot } from 'grammy';
+import { Bot, type CommandContext, Context } from 'grammy';
+import { logger } from '$lib/server/logger';
+import { adminChatIds } from '$lib/server/config';
 
-const { BOT_TOKEN } = env;
+const { BOT_TOKEN, APP_URL } = env;
 
 export let bot: Bot;
 
@@ -29,12 +31,46 @@ export const sendOrder = async (order: Order, userId: number, chatId: string): P
 	return sent.message_id;
 };
 
+async function sendChatId(ctx: CommandContext<Context>) {
+	try {
+		await ctx.reply(`Chat ID: <code>${ctx.chatId}</code>`, { parse_mode: 'HTML' });
+		logger.info('Replied with chatid');
+	} catch (e) {
+		logger.warn('Failed to reply with chatid');
+	}
+}
+
+async function sendAdminButton(ctx: CommandContext<Context>) {
+	const chatId = ctx.chatId;
+	const sender = ctx.from?.username;
+	const ctxLogger = logger.child({ chatId, sender });
+	if (!adminChatIds.includes(chatId)) {
+		ctxLogger.warn('Rejected sending admin button');
+		return ctx.reply('Не твой уровень, дорогой!');
+	}
+	const button = {
+		text: 'Войти в админку',
+		login_url: {
+			url: `${APP_URL}/_/edit`
+		}
+	};
+
+	try {
+		const result = await bot.api.sendMessage(chatId, 'Вход в панель управления по кнопке ниже', {
+			reply_markup: { inline_keyboard: [[button]] }
+		});
+		const messageId = result.message_id;
+		ctxLogger.info({ messageId }, 'Sent login button');
+	} catch (e) {
+		ctxLogger.error(e, 'Failed to send admin button');
+	}
+}
+
 export const init = () => {
 	if (bot) return;
 	bot = new Bot(BOT_TOKEN);
-	bot.command('chatid', (ctx) =>
-		ctx.reply(`Chat ID: <code>${ctx.chatId}</code>`, { parse_mode: 'HTML' })
-	);
+	bot.command('chatid', sendChatId);
+	bot.command('admin', sendAdminButton);
 	bot.start().then();
 };
 

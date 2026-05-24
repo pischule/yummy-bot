@@ -4,15 +4,11 @@ import { logger } from '$lib/server/logger';
 import { Duration } from '@js-joda/core';
 import { decrypt, encrypt } from '$lib/server/encryption';
 
-const { BOT_TOKEN, SECRET, COOKIE_ENCRYPTION_KEY } = env;
+const { BOT_TOKEN, COOKIE_ENCRYPTION_KEY } = env;
 
 const tgUrlAuthTtlMilli = Duration.ofSeconds(60).toMillis();
 const cookieTtlMilli = Duration.ofHours(18).toMillis();
 const cookieName = 'session';
-
-export function checkAdminAuth(params: { secret: string }) {
-	if (params.secret !== SECRET) throw error(404, 'Not Found');
-}
 
 const createHmac = async (secret: ArrayBuffer, data: ArrayBuffer) => {
 	const algorithm = { name: 'HMAC', hash: 'SHA-256' };
@@ -54,6 +50,7 @@ function deserializeSession(ciphertext: string): Session | null {
 }
 
 async function getSessionFromUrl(
+	roles: Role[],
 	searchParams: URLSearchParams | undefined
 ): Promise<Session | null> {
 	if (searchParams == null) return null;
@@ -83,7 +80,7 @@ async function getSessionFromUrl(
 
 	return {
 		tgId: id,
-		roles: ['user'],
+		roles,
 		authDate: Date.now()
 	};
 }
@@ -108,10 +105,10 @@ function getSessionFromCookie(cookies: Cookies): Session | null {
 	return session;
 }
 
-function storeSessionToCookie(session: Session, cookies: Cookies) {
+function storeSessionToCookie(session: Session, cookies: Cookies, path: string) {
 	cookies.set(cookieName, serializeSession(session), {
 		expires: new Date(session.authDate + cookieTtlMilli),
-		path: '/order',
+		path,
 		httpOnly: true,
 		secure: true,
 		sameSite: 'lax'
@@ -119,11 +116,24 @@ function storeSessionToCookie(session: Session, cookies: Cookies) {
 }
 
 export async function authenticateUser(cookies: Cookies, searchParams?: URLSearchParams) {
-	const urlSession = await getSessionFromUrl(searchParams);
+	const urlSession = await getSessionFromUrl(['user'], searchParams);
 	if (urlSession != null) {
-		storeSessionToCookie(urlSession, cookies);
+		storeSessionToCookie(urlSession, cookies, '/order');
 		return urlSession;
 	} else {
 		return getSessionFromCookie(cookies);
+	}
+}
+
+export async function authenticateAdmin(cookies: Cookies, searchParams?: URLSearchParams) {
+	let session = await getSessionFromUrl(['admin'], searchParams);
+	if (session != null) {
+		storeSessionToCookie(session, cookies, '/_/edit');
+	} else {
+		session = getSessionFromCookie(cookies);
+	}
+
+	if (session == null || !session.roles.includes('admin')) {
+		throw error(401, 'Unauthorized');
 	}
 }
