@@ -8,7 +8,7 @@ WORKDIR /app
 COPY --chown=app build build
 COPY --chown=app package.json pnpm-lock.yaml ./
 COPY --chown=app drizzle drizzle
-RUN corepack enable && pnpm install --frozen-lockfile --prod
+RUN npm install -g pnpm@latest-11 && pnpm install --frozen-lockfile --prod
 RUN mkdir data && chown -R app data
 
 USER app:app
