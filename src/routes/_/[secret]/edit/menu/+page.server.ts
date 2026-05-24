@@ -5,6 +5,7 @@ import { logger } from '$lib/server/logger';
 import { sendMenuLink } from '$lib/server/menu-link';
 import { getLocationById } from '$lib/server/location';
 import { markMenuAsPosted, setMenuForLocation, type Menu } from '$lib/server/menu';
+import type { PageServerLoad } from './$types';
 
 function parseItems(data: FormData): string[] {
 	const raw = (data.get('items') as string) || '';
@@ -37,7 +38,7 @@ async function saveMenuCore(data: FormData, params: Params): Promise<SaveResult 
 	return { locationId, receiptDate, items, menu };
 }
 
-export async function load({ url, parent, params }) {
+export const load: PageServerLoad = async ({ url, parent, params }) => {
 	checkAdminAuth(params);
 	const { locations } = await parent();
 	const locationId = url.searchParams.get('locationId');
@@ -50,7 +51,7 @@ export async function load({ url, parent, params }) {
 
 	const loc = locations.find((l) => l.id === locationId) ?? null;
 	return { selectedLocation: loc };
-}
+};
 
 async function saveMenu({ request, params }: { request: Request; params: Params }) {
 	const result = await saveMenuCore(await request.formData(), params);

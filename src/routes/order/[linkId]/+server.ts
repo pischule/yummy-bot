@@ -9,7 +9,7 @@ import { saveOrder } from '$lib/server/order';
 
 const usedNonces = new Set();
 
-export const POST = (async ({ request, params, url }) => {
+export const POST: RequestHandler = async ({ request, params, url }) => {
 	const user = await checkClientAuth(url.searchParams);
 	if (!user) {
 		throw error(401, 'Unauthorized');
@@ -45,4 +45,4 @@ export const POST = (async ({ request, params, url }) => {
 	}
 	logger.info({ userId: user.id, order, locationId }, 'created order.ts');
 	return new Response(null, { status: 201 });
-}) satisfies RequestHandler;
+};

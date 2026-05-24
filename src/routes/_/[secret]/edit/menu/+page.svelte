@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import type { PageProps } from './$types';
 	import Button from '$lib/Button.svelte';
 
-	let { data, form } = $props();
+	let { data, form }: PageProps = $props();
 
 	let menuText = $state('');
 	let menuDate = $state('');

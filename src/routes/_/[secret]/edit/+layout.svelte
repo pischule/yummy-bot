@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import type { LayoutProps } from './$types';
 
-	let { data, children } = $props();
+	let { data, children }: LayoutProps = $props();
 
 	let url = $derived(page.url);
 

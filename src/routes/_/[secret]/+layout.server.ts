@@ -1,5 +1,6 @@
 import { checkAdminAuth } from '$lib/server/auth';
+import type { LayoutServerLoad } from './$types';
 
-export function load({ params }) {
+export const load: LayoutServerLoad = ({ params }) => {
 	checkAdminAuth(params);
-}
+};

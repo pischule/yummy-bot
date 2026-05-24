@@ -16,7 +16,7 @@ const WEEKDAYS = [
 	'воскресенье'
 ];
 
-export const load = (async ({ url, params, setHeaders }) => {
+export const load: PageServerLoad = async ({ url, params, setHeaders }) => {
 	const user = await checkClientAuth(url.searchParams);
 	if (!user) {
 		throw error(401, 'Unauthorized');
@@ -49,4 +49,4 @@ export const load = (async ({ url, params, setHeaders }) => {
 		day,
 		name: await getName(user.id)
 	};
-}) satisfies PageServerLoad;
+};
