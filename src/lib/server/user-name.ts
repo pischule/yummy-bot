@@ -1,10 +1,10 @@
+import { db } from '$lib/server/db/store';
+import { namesTable } from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
-import { db } from './db/store';
-import { namesTable } from './db/schema';
 
 export async function getName(id: string) {
-	const row = (await db.select().from(namesTable).where(eq(namesTable.telegramId, id)).limit(1))[0];
-	return row?.name;
+	const row = await db.select().from(namesTable).where(eq(namesTable.telegramId, id)).limit(1);
+	return row[0]?.name;
 }
 
 export async function setName(id: string, name: string) {

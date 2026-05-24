@@ -1,12 +1,13 @@
 import { LocalDate } from '@js-joda/core';
 import { APP_TZ } from '$lib/server/utils';
-import { getMenuFromLocation, isMenuPostedToday } from '$lib/server/database';
 import { checkAdminAuth } from '$lib/server/auth';
 import { bot } from '$lib/server/bot';
 import { logger } from '$lib/server/logger';
 import { getLocations } from '$lib/server/location';
+import { getMenuFromLocation, isMenuPostedToday } from '$lib/server/menu';
+import type { LayoutServerLoad } from './$types';
 
-export async function load({ params }) {
+export const load: LayoutServerLoad = async ({ params }) => {
 	checkAdminAuth(params);
 	const locations = await getLocations();
 	const todayLocalDate = LocalDate.now(APP_TZ);
@@ -35,4 +36,4 @@ export async function load({ params }) {
 	});
 
 	return { locations: enriched, today, botUsername };
-}
+};

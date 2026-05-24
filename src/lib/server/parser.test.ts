@@ -94,7 +94,7 @@ describe('ordersToTsv', () => {
 		expect(lines[2]).toBe('"Bob"\t3\t1\t');
 	});
 
-	it('should sort columns based on precedence derived from order items', async () => {
+	it('should sort columns based on precedence derived from order.ts items', async () => {
 		const text = `
     YummyOrderBot, [01.01.24 12:00]
     Alice:
@@ -135,7 +135,7 @@ describe('ordersToTsv', () => {
 		expect(headers).toBe('Имя\t"Burger"\t"Soda"\t"Fries"\t"Pizza"');
 	});
 
-	it('should derive column order from multiple orders with overlapping items', async () => {
+	it('should derive column order.ts from multiple orders with overlapping items', async () => {
 		const text = `
     YummyOrderBot, [01.01.24 12:00]
     Alice:
@@ -205,14 +205,14 @@ describe('orderByExample', () => {
 		expect(result).toEqual(['banana', 'date', 'fig', 'apple', 'cherry', 'grape']);
 	});
 
-	it('places elements not in the example list at the end in their original order', () => {
+	it('places elements not in the example list at the end in their original order.ts', () => {
 		const array = ['apple', 'banana', 'cherry'];
 		const example = ['banana'];
 		const result = orderByExample(array, example);
 		expect(result).toEqual(['banana', 'apple', 'cherry']);
 	});
 
-	it('handles an empty example list by keeping the original order', () => {
+	it('handles an empty example list by keeping the original order.ts', () => {
 		const array = ['apple', 'banana', 'cherry'];
 		const example: string[] = [];
 		const result = orderByExample(array, example);

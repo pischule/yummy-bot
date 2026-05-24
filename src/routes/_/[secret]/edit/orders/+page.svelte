@@ -3,8 +3,9 @@
 	import { goto } from '$app/navigation';
 	import { deriveOrderFromRelative, generateTsv } from '$lib/ordersTsv';
 	import Button from '$lib/Button.svelte';
+	import type { PageProps } from './$types';
 
-	let { data } = $props();
+	let { data }: PageProps = $props();
 
 	let ordersDate = $state(data.ordersDate);
 
