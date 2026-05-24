@@ -12,7 +12,7 @@ const escapeMarkdown = (s: string) => {
 	return s;
 };
 
-export const sendOrder = async (order: Order, userId: string, chatId: string): Promise<number> => {
+export const sendOrder = async (order: Order, userId: number, chatId: string): Promise<number> => {
 	const mention = `[${escapeMarkdown(order.name)}](tg://user?id=${userId})`;
 	const itemsString = order.orderedItems
 		.map((item) => {

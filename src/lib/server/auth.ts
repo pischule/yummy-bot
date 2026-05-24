@@ -1,9 +1,14 @@
-import { error } from '@sveltejs/kit';
+import { type Cookies, error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { logger } from '$lib/server/logger';
+import { Duration } from '@js-joda/core';
+import { decrypt, encrypt } from '$lib/server/encryption';
 
-const { BOT_TOKEN, SECRET } = env;
-const TG_AUTH_TTL_SECONDS = 24 * 60 * 60;
+const { BOT_TOKEN, SECRET, COOKIE_ENCRYPTION_KEY } = env;
+
+const tgUrlAuthTtlMilli = Duration.ofSeconds(60).toMillis();
+const cookieTtlMilli = Duration.ofHours(18).toMillis();
+const cookieName = 'session';
 
 export function checkAdminAuth(params: { secret: string }) {
 	if (params.secret !== SECRET) throw error(404, 'Not Found');
@@ -32,8 +37,26 @@ const isLinkSignatureValid = async (hash: string, data: string) => {
 	return hash === hex(digest);
 };
 
-export const checkClientAuth = async (searchParams: URLSearchParams) => {
-	if (!searchParams) return null;
+function serializeSession(session: Session): string {
+	const json = JSON.stringify(session);
+	return encrypt(json, COOKIE_ENCRYPTION_KEY!);
+}
+
+function deserializeSession(ciphertext: string): Session | null {
+	try {
+		const json = decrypt(ciphertext, COOKIE_ENCRYPTION_KEY!);
+		if (json == null) return null;
+		return JSON.parse(json) as Session;
+	} catch (e) {
+		logger.warn('Session deserialization failed');
+		return null;
+	}
+}
+
+async function getSessionFromUrl(
+	searchParams: URLSearchParams | undefined
+): Promise<Session | null> {
+	if (searchParams == null) return null;
 	const hash = searchParams.get('hash');
 	if (!hash) return null;
 
@@ -47,14 +70,60 @@ export const checkClientAuth = async (searchParams: URLSearchParams) => {
 		return null;
 	}
 
-	const id = searchParams.get('id')!;
+	const id = +searchParams.get('id')!;
 
-	const authDate: number = +searchParams.get('auth_date')!;
-	const nowDate: number = new Date().getTime() / 1000;
-	if (nowDate - authDate > TG_AUTH_TTL_SECONDS) {
+	const authDateRaw = searchParams.get('auth_date');
+	if (authDateRaw == null) return null;
+	const authDate: number = +authDateRaw * 1000;
+	const nowDate: number = Date.now();
+	if (nowDate - authDate > tgUrlAuthTtlMilli) {
 		logger.warn({ userId: id }, 'Stale tg auth');
 		return null;
 	}
 
-	return { id };
-};
+	return {
+		tgId: id,
+		roles: ['user'],
+		authDate: Date.now()
+	};
+}
+
+function getSessionFromCookie(cookies: Cookies): Session | null {
+	const cookie = cookies.get(cookieName);
+	if (cookie == null) return null;
+
+	let session = deserializeSession(cookie);
+	if (session == null) {
+		return null;
+	}
+
+	if (session.authDate == null) return null;
+	const authDate = +session.authDate;
+	const now = Date.now();
+	if (authDate + cookieTtlMilli < now) {
+		return null;
+	}
+
+	if (session.tgId == null) return null;
+	return session;
+}
+
+function storeSessionToCookie(session: Session, cookies: Cookies) {
+	cookies.set(cookieName, serializeSession(session), {
+		expires: new Date(session.authDate + cookieTtlMilli),
+		path: '/order',
+		httpOnly: true,
+		secure: true,
+		sameSite: 'lax'
+	});
+}
+
+export async function authenticateUser(cookies: Cookies, searchParams?: URLSearchParams) {
+	const urlSession = await getSessionFromUrl(searchParams);
+	if (urlSession != null) {
+		storeSessionToCookie(urlSession, cookies);
+		return urlSession;
+	} else {
+		return getSessionFromCookie(cookies);
+	}
+}
