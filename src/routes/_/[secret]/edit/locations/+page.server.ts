@@ -1,16 +1,15 @@
 import { fail } from '@sveltejs/kit';
-import { authenticateAdmin } from '$lib/server/auth';
+import { checkAdminAuth } from '$lib/server/auth';
 import {
 	addLocation,
 	deleteLocation,
 	getLocationByChatId,
 	updateLocation
 } from '$lib/server/location';
-import type { Actions } from './$types';
 
 export const actions = {
-	addLocation: async ({ cookies, request }) => {
-		await authenticateAdmin(cookies);
+	addLocation: async ({ request, params }) => {
+		checkAdminAuth(params);
 		const data = await request.formData();
 		const name = (data.get('name') as string)?.trim();
 		const chatId = (data.get('chatId') as string)?.trim();
@@ -31,8 +30,8 @@ export const actions = {
 		return { type: 'addLocation', location: { id, name, chatId } };
 	},
 
-	updateLocation: async ({ request, cookies }) => {
-		await authenticateAdmin(cookies);
+	updateLocation: async ({ request, params }) => {
+		checkAdminAuth(params);
 		const data = await request.formData();
 		const id = data.get('id') as string;
 		const name = (data.get('name') as string)?.trim();
@@ -53,8 +52,8 @@ export const actions = {
 		return { type: 'updateLocation', id, name, chatId };
 	},
 
-	deleteLocation: async ({ request, cookies }) => {
-		await authenticateAdmin(cookies);
+	deleteLocation: async ({ request, params }) => {
+		checkAdminAuth(params);
 		const data = await request.formData();
 		const id = data.get('id') as string;
 
@@ -65,4 +64,4 @@ export const actions = {
 		await deleteLocation(id);
 		return { type: 'deleteLocation', id };
 	}
-} satisfies Actions;
+};
