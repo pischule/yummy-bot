@@ -35,6 +35,7 @@ services:
     init: true
     environment:
       BOT_TOKEN: 'токен телеграм-бота'
+      BOT_PROXY: 'socks://127.0.0.1:1080' # optional, remove if not behind a proxy
       APP_URL: 'url приложения'
       SECRET: 'секрет для доступа к админке'
       DB_URL: 'file:/app/data/db.sqlite3'

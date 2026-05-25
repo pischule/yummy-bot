@@ -1,7 +1,8 @@
 import { env } from '$env/dynamic/private';
 import { Bot } from 'grammy';
+import { SocksProxyAgent } from 'socks-proxy-agent';
 
-const { BOT_TOKEN } = env;
+const { BOT_TOKEN, BOT_PROXY } = env;
 
 export let bot: Bot;
 
@@ -31,7 +32,22 @@ export const sendOrder = async (order: Order, userId: number, chatId: string): P
 
 export const init = () => {
 	if (bot) return;
-	bot = new Bot(BOT_TOKEN);
+
+	if (BOT_PROXY) {
+		const agent = new SocksProxyAgent(BOT_PROXY);
+
+		bot = new Bot(BOT_TOKEN, {
+			client: {
+				baseFetchConfig: {
+					agent,
+					compress: true
+				}
+			}
+		});
+	} else {
+		bot = new Bot(BOT_TOKEN);
+	}
+
 	bot.command('chatid', (ctx) =>
 		ctx.reply(`Chat ID: <code>${ctx.chatId}</code>`, { parse_mode: 'HTML' })
 	);
