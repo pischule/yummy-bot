@@ -27,7 +27,8 @@ export const sendOrder = async (order: Order, userId: number, chatId: string): P
 
 	const message = `${mention}:\n${itemsString}`;
 	const sent = await bot.api.sendMessage(chatId, message, {
-		parse_mode: 'MarkdownV2'
+		parse_mode: 'MarkdownV2',
+		disable_notification: true,
 	});
 	return sent.message_id;
 };
