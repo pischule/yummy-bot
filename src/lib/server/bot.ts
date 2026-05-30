@@ -54,12 +54,15 @@ async function sendAdminButton(ctx: CommandContext<Context>) {
 		text: 'Войти в админку',
 		login_url: {
 			url: `${APP_URL}/_/edit`
-		}
+		},
+		style: 'danger'
 	};
 
 	try {
 		const result = await bot.api.sendMessage(chatId, 'Вход в панель управления по кнопке ниже', {
-			reply_markup: { inline_keyboard: [[button]] }
+			// @ts-ignore
+			reply_markup: { inline_keyboard: [[button]] },
+			disable_notification: true
 		});
 		const messageId = result.message_id;
 		ctxLogger.info({ messageId }, 'Sent login button');

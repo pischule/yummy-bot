@@ -3,11 +3,11 @@ import { env } from '$env/dynamic/private';
 import { logger } from '$lib/server/logger';
 import { Duration } from '@js-joda/core';
 import { decrypt, encrypt } from '$lib/server/encryption';
+import { nextMidnight } from '$lib/server/utils';
 
 const { BOT_TOKEN, COOKIE_ENCRYPTION_KEY } = env;
 
 const tgUrlAuthTtlMilli = Duration.ofSeconds(60).toMillis();
-const cookieTtlMilli = Duration.ofHours(18).toMillis();
 const cookieName = 'session';
 
 const createHmac = async (secret: ArrayBuffer, data: ArrayBuffer) => {
@@ -81,7 +81,7 @@ async function getSessionFromUrl(
 	return {
 		tgId: id,
 		roles,
-		authDate: Date.now()
+		validUntil: nextMidnight()
 	};
 }
 
@@ -94,10 +94,9 @@ function getSessionFromCookie(cookies: Cookies): Session | null {
 		return null;
 	}
 
-	if (session.authDate == null) return null;
-	const authDate = +session.authDate;
+	if (session.validUntil == null) return null;
 	const now = Date.now();
-	if (authDate + cookieTtlMilli < now) {
+	if (session.validUntil < now) {
 		return null;
 	}
 
@@ -107,7 +106,7 @@ function getSessionFromCookie(cookies: Cookies): Session | null {
 
 function storeSessionToCookie(session: Session, cookies: Cookies, path: string) {
 	cookies.set(cookieName, serializeSession(session), {
-		expires: new Date(session.authDate + cookieTtlMilli),
+		expires: new Date(session.validUntil),
 		path,
 		httpOnly: true,
 		secure: true,

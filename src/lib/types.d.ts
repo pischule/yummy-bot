@@ -16,6 +16,6 @@ type Role = 'admin' | 'user';
 interface Session {
 	tgId: number;
 	roles: Role[];
-	// epoch milli
-	authDate: number;
+	// epoch milli until which the session is valid
+	validUntil: number;
 }
