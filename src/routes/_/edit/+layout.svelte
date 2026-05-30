@@ -45,6 +45,12 @@
 				>
 					Заказы
 				</a>
+				<a
+					href="/_/parser"
+					class:active={url.pathname.startsWith('/_/parser')}
+				>
+					Парсер
+				</a>
 			</nav>
 		</div>
 	</header>
@@ -111,6 +117,8 @@
 		justify-content: space-between;
 		width: 100%;
 		margin: 0 auto;
+		flex-wrap: wrap;
+		gap: 0.5rem;
 	}
 	header h1 {
 		margin: 0;
