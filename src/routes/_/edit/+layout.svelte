@@ -45,12 +45,7 @@
 				>
 					Заказы
 				</a>
-				<a
-					href="/_/parser"
-					class:active={url.pathname.startsWith('/_/parser')}
-				>
-					Парсер
-				</a>
+				<a href="/_/parser" class:active={url.pathname.startsWith('/_/parser')}> Парсер </a>
 			</nav>
 		</div>
 	</header>
@@ -76,9 +71,9 @@
 				{/each}
 			</ul>
 			<div class="sidebar-footer">
-				<a href="./locations" class="settings-link">
+				<a href="./locations" class="settings-link" title="Управление локациями">
 					<span class="icon-inline">{@html icons.settings}</span>
-					Управление локациями
+					<span>Управление локациями</span>
 				</a>
 			</div>
 		</aside>
@@ -272,8 +267,11 @@
 			border-bottom: 1px solid var(--color-subtle);
 			padding: 0.4rem 0.5rem;
 			height: auto;
-			overflow-y: visible;
-			gap: 0.5rem;
+			overflow: hidden;
+			flex-direction: row;
+			align-items: center;
+			gap: 0;
+			min-width: 0;
 		}
 		.sidebar-header {
 			display: none;
@@ -284,6 +282,7 @@
 			padding-bottom: 0;
 			-webkit-overflow-scrolling: touch;
 			scrollbar-width: none;
+			min-width: 0;
 		}
 		aside ul::-webkit-scrollbar {
 			display: none;
