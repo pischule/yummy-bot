@@ -15,7 +15,7 @@
 		const loc = data.selectedLocation;
 		if (!loc) return 'Сначала выберите локацию.';
 		if (!loc.hasActiveMenu) return 'Меню не задано.';
-		if (loc.postedAt) {
+		if (loc.isPosted && loc.postedAt) {
 			const t = new Date(loc.postedAt).toLocaleTimeString('ru-RU', {
 				hour: '2-digit',
 				minute: '2-digit'
@@ -94,7 +94,7 @@
 	</div>
 
 	{#if data.selectedLocation}
-		<div class="status-badge" class:published={data.selectedLocation.postedAt}>
+		<div class="status-badge" class:published={data.selectedLocation.isPosted}>
 			<span class="icon-inline">{@html icons.info}</span>
 			{menuStatusText}
 		</div>
