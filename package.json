@@ -34,8 +34,6 @@
 		"vitest": "^4.1.7"
 	},
 	"dependencies": {
-		"@js-joda/core": "^5.7.0",
-		"@js-joda/timezone": "^2.25.1",
 		"@libsql/client": "^0.17.3",
 		"drizzle-orm": "^0.45.2",
 		"grammy": "^1.43.0",

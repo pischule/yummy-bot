@@ -1,10 +1,8 @@
-import { ZoneId, LocalDate } from '@js-joda/core';
-import '@js-joda/timezone';
-
-export const APP_TZ = ZoneId.of('Europe/Minsk');
+export const APP_TZ = 'Europe/Minsk';
 
 export function nextMidnight(): number {
-	return LocalDate.now(APP_TZ).plusDays(1).atStartOfDay(APP_TZ).toInstant().toEpochMilli();
+	return Temporal.Now.zonedDateTimeISO(APP_TZ).round({ smallestUnit: 'day', roundingMode: 'ceil' })
+		.epochMilliseconds;
 }
 
 export function groupBy<T, K>(array: T[], keyMapper: (item: T) => K): Map<K, T[]> {

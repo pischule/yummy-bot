@@ -1,6 +1,5 @@
 import { ordersTable } from '$lib/server/db/schema';
 import { db } from './db/store';
-import { LocalDate } from '@js-joda/core';
 import { APP_TZ } from '$lib/server/utils';
 import { and, eq, gte, lt } from 'drizzle-orm';
 
@@ -17,10 +16,9 @@ export async function saveOrder(order: {
 }
 
 export async function getOrders(locationId: string, date: string) {
-	const localDate = LocalDate.parse(date);
-	const start = localDate.atStartOfDay(APP_TZ).toInstant().toString();
-	const end = localDate.plusDays(1).atStartOfDay(APP_TZ).toInstant().toString();
-
+	const localDate = Temporal.PlainDate.from(date);
+	const start = localDate.toZonedDateTime(APP_TZ).toInstant().toJSON();
+	const end = localDate.add({ days: 1 }).toZonedDateTime(APP_TZ).toInstant().toJSON();
 	return db
 		.select()
 		.from(ordersTable)

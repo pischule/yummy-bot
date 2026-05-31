@@ -1,4 +1,3 @@
-import { LocalDate } from '@js-joda/core';
 import { APP_TZ } from '$lib/server/utils';
 import { bot } from '$lib/server/bot';
 import { logger } from '$lib/server/logger';
@@ -10,8 +9,7 @@ import { authenticateAdmin } from '$lib/server/auth';
 export const load: LayoutServerLoad = async ({ cookies, url }) => {
 	await authenticateAdmin(cookies, url.searchParams);
 	const locations = await getLocations();
-	const todayLocalDate = LocalDate.now(APP_TZ);
-	const today = todayLocalDate.toString();
+	const today = Temporal.Now.plainDateISO(APP_TZ).toJSON();
 	let botUsername: string | undefined;
 	try {
 		botUsername = bot.botInfo.username;

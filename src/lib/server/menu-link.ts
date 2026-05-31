@@ -1,7 +1,6 @@
 import { env } from '$env/dynamic/private';
 import { db } from '$lib/server/db/store';
 import { menuLinkTable } from '$lib/server/db/schema';
-import { Instant, Duration } from '@js-joda/core';
 import { eq, inArray, lt } from 'drizzle-orm';
 import { bot } from '$lib/server/bot';
 import { groupBy, sleep } from '$lib/server/utils';
@@ -28,8 +27,8 @@ export async function sendMenuLink(locationId: string, chatId: string): Promise<
 }
 
 async function deleteOldMenuLinks() {
-	const ttl = Duration.ofHours(24);
-	const createdBefore = Instant.now().minus(ttl).toJSON();
+	const ttl = Temporal.Duration.from({ hours: 18 });
+	const createdBefore = Temporal.Now.instant().subtract(ttl).toJSON();
 
 	const links = await db
 		.select()
@@ -72,7 +71,7 @@ async function deleteOldLinksWithErrorLog() {
 
 export function scheduleOldLinkDeletion() {
 	if (messageDeletionTimer) return;
-	const frequency = Duration.ofHours(12).toMillis();
+	const frequency = Temporal.Duration.from({ hours: 4 }).total('millisecond');
 	messageDeletionTimer = setInterval(deleteOldLinksWithErrorLog, frequency);
 }
 
@@ -84,7 +83,7 @@ async function createMenuLink(locationId: string, chatId: number): Promise<strin
 			id: linkId,
 			chatId: chatId,
 			locationId: locationId,
-			createdAt: Instant.now().toJSON()
+			createdAt: Temporal.Now.instant().toJSON()
 		})
 		.execute();
 	return linkId;

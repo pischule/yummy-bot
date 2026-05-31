@@ -1,5 +1,4 @@
 import { error } from '@sveltejs/kit';
-import { Instant, LocalDate } from '@js-joda/core';
 import { APP_TZ } from '$lib/server/utils';
 import { authenticateAdmin } from '$lib/server/auth';
 import { getOrders } from '$lib/server/order';
@@ -13,7 +12,7 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
 		error(404);
 	}
 
-	const today = LocalDate.now(APP_TZ).toJSON();
+	const today = Temporal.Now.plainDateISO(APP_TZ).toJSON();
 	const ordersDate = url.searchParams.get('date') || today;
 
 	const orders = await getOrders(locationId, ordersDate);
@@ -22,7 +21,11 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
 			id: o.id,
 			name: o.name,
 			items: o.orderedItems as { name: string; qty: number }[],
-			createdAt: Instant.parse(o.createdAt).atZone(APP_TZ).toLocalTime().toString().substring(0, 5)
+			createdAt: Temporal.Instant.from(o.createdAt)
+				.toZonedDateTimeISO(APP_TZ)
+				.toPlainTime()
+				.toJSON()
+				.substring(0, 5)
 		})),
 		totalItems: orders.reduce((sum, o) => sum + o.orderedItems.reduce((a, b) => a + b.qty, 0), 0)
 	};

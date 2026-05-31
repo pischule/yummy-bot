@@ -8,12 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@js-joda/core':
-        specifier: ^5.7.0
-        version: 5.7.0
-      '@js-joda/timezone':
-        specifier: ^2.25.1
-        version: 2.25.1(@js-joda/core@5.7.0)
       '@libsql/client':
         specifier: ^0.17.3
         version: 0.17.3
@@ -704,14 +698,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
-
-  '@js-joda/core@5.7.0':
-    resolution: {integrity: sha512-WBu4ULVVxySLLzK1Ppq+OdfP+adRS4ntmDQT915rzDJ++i95gc2jZkM5B6LWEAwN3lGXpfie3yPABozdD3K3Vg==}
-
-  '@js-joda/timezone@2.25.1':
-    resolution: {integrity: sha512-s79ts8bXrWqM9dIBKc0AdgGuAUFpu9gmzYhOCPHJlks/Sf7FSbJHRauWlFYUwjSTZevimqthEvJycrwrVz5m4g==}
-    peerDependencies:
-      '@js-joda/core': '>=5.7.0'
 
   '@libsql/client@0.17.3':
     resolution: {integrity: sha512-HXk9wiAoJbKFbyBH4O+aEhN6ir5ERXuXvwE5OD2eR4/5RUa3Pw/8L9zrnVdU+iNJitRvisPWaIwmhkO3bH7giA==}
@@ -2049,12 +2035,6 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
-
-  '@js-joda/core@5.7.0': {}
-
-  '@js-joda/timezone@2.25.1(@js-joda/core@5.7.0)':
-    dependencies:
-      '@js-joda/core': 5.7.0
 
   '@libsql/client@0.17.3':
     dependencies:

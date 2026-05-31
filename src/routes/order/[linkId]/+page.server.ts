@@ -2,7 +2,6 @@ import type { PageServerLoad } from './$types';
 import { getName } from '$lib/server/database';
 import { error } from '@sveltejs/kit';
 import { authenticateUser } from '$lib/server/auth';
-import { ZonedDateTime } from '@js-joda/core';
 import { APP_TZ } from '$lib/server/utils';
 import { getMenuByLinkId } from '$lib/server/menu';
 
@@ -36,12 +35,12 @@ export const load: PageServerLoad = async ({ url, params, setHeaders, cookies })
 	}
 
 	const receiptDate = menu.receiptDate;
-	const tomorrow = ZonedDateTime.now(APP_TZ).toLocalDate().plusDays(1);
+	const tomorrow = Temporal.Now.plainDateISO(APP_TZ).add({ days: 1 });
 	let day: string;
-	if (menu.receiptDate.isEqual(tomorrow)) {
+	if (menu.receiptDate.equals(tomorrow)) {
 		day = 'завтра';
 	} else {
-		day = WEEKDAYS[receiptDate.dayOfWeek().ordinal()];
+		day = WEEKDAYS[receiptDate.dayOfWeek - 1];
 	}
 
 	return {

@@ -1,5 +1,4 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { Instant, LocalDate } from '@js-joda/core';
 import { authenticateAdmin } from '$lib/server/auth';
 import { logger } from '$lib/server/logger';
 import { sendMenuLink } from '$lib/server/menu-link';
@@ -28,8 +27,8 @@ async function saveMenuCore(data: FormData): Promise<SaveResult | null> {
 	if (!locationId || !receiptDate) return null;
 	const menu: Menu = {
 		items,
-		updatedAt: Instant.now(),
-		receiptDate: LocalDate.parse(receiptDate),
+		updatedAt: Temporal.Now.instant(),
+		receiptDate: Temporal.PlainDate.from(receiptDate),
 		postedAt: null
 	};
 	await setMenuForLocation(locationId, menu);

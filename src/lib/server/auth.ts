@@ -1,13 +1,12 @@
 import { type Cookies, error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { logger } from '$lib/server/logger';
-import { Duration } from '@js-joda/core';
 import { decrypt, encrypt } from '$lib/server/encryption';
 import { nextMidnight } from '$lib/server/utils';
 
 const { BOT_TOKEN, COOKIE_ENCRYPTION_KEY } = env;
 
-const tgUrlAuthTtlMilli = Duration.ofSeconds(60).toMillis();
+const tgUrlAuthTtlMilli = 60_000;
 const cookieName = 'session';
 
 const createHmac = async (secret: ArrayBuffer, data: ArrayBuffer) => {
