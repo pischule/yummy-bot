@@ -5,6 +5,7 @@ import { setName } from '$lib/server/database';
 import { logger } from '$lib/server/logger';
 import { authenticateUser } from '$lib/server/auth';
 import { getLocationByLinkId } from '$lib/server/location';
+import { getMenuFromLocation } from '$lib/server/menu';
 import { saveOrder } from '$lib/server/order';
 
 const usedNonces = new Set();
@@ -27,12 +28,19 @@ export const POST: RequestHandler = async ({ request, params, cookies }) => {
 	if (!loc) throw error(404, 'Location not found');
 	const locationId = loc.id;
 
+	const menu = getMenuFromLocation(loc);
+	const priceByItem = new Map(menu?.items.map((it) => [it.name, it.price]) ?? []);
+	const orderedItems = order.orderedItems.map((item) => {
+		const price = priceByItem.get(item.name);
+		return price !== undefined ? { ...item, price } : item;
+	});
+
 	const messageId = await bot.sendOrder(order, session.tgId, loc.chatId);
 	await saveOrder({
 		locationId,
 		telegramId: session.tgId + '',
 		name: order.name,
-		orderedItems: order.orderedItems,
+		orderedItems,
 		receiptDate: loc.receiptDate,
 		createdAt: new Date().toISOString(),
 		messageId

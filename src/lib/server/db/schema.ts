@@ -35,7 +35,7 @@ export const ordersTable = sqliteTable('orders', {
 	name: text().notNull(),
 	orderedItems: text('ordered_items', { mode: 'json' })
 		.notNull()
-		.$type<{ name: string; qty: number }[]>(),
+		.$type<{ name: string; qty: number; price?: number }[]>(),
 	receiptDate: text('receipt_date').notNull().default(''),
 	createdAt: text('created_at').notNull(),
 	messageId: integer('message_id')

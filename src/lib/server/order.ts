@@ -7,7 +7,7 @@ export async function saveOrder(order: {
 	locationId: string;
 	telegramId: string;
 	name: string;
-	orderedItems: { name: string; qty: number }[];
+	orderedItems: { name: string; qty: number; price?: number }[];
 	receiptDate: string;
 	createdAt: string;
 	messageId?: number;
