@@ -1,14 +1,29 @@
-import { APP_TZ, getMenuItemNames } from '$lib/server/utils';
+import { APP_TZ } from '$lib/server/utils';
 import { type DbLocation, getLocationByLinkId } from '$lib/server/location';
-import { locationsTable } from '$lib/server/db/schema';
+import { locationsTable, type MenuItem } from '$lib/server/db/schema';
 import { db } from '$lib/server/db/store';
 import { eq } from 'drizzle-orm';
 
 export interface Menu {
 	updatedAt: Temporal.Instant;
 	receiptDate: Temporal.PlainDate;
-	items: string[];
+	items: MenuItem[];
 	postedAt: Temporal.Instant | null;
+}
+
+export function normalizeMenuItems(items: string[] | MenuItem[]): MenuItem[] {
+	return items.map((item) => (typeof item === 'string' ? { name: item, price: 0 } : item));
+}
+
+export function menuItemsToDisplay(items: string[] | MenuItem[]): string {
+	return normalizeMenuItems(items)
+		.map((item) => {
+			if (item.price > 0) {
+				return `${item.name} ${item.price} BYN`;
+			}
+			return item.name;
+		})
+		.join('\n');
 }
 
 export function isMenuPostedToday(loc: DbLocation): boolean {
@@ -42,7 +57,7 @@ export function getMenuFromLocation(loc: DbLocation): Menu | null {
 
 	const postedAt = loc.postedAt ? Temporal.Instant.from(loc.postedAt) : null;
 
-	const items = getMenuItemNames(loc.menu);
+	const items = normalizeMenuItems(loc.menu);
 
 	return { updatedAt, receiptDate, items, postedAt };
 }
