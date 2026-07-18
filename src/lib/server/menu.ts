@@ -1,4 +1,4 @@
-import { APP_TZ } from '$lib/server/utils';
+import { APP_TZ, getMenuItemNames } from '$lib/server/utils';
 import { type DbLocation, getLocationByLinkId } from '$lib/server/location';
 import { locationsTable } from '$lib/server/db/schema';
 import { db } from '$lib/server/db/store';
@@ -42,7 +42,9 @@ export function getMenuFromLocation(loc: DbLocation): Menu | null {
 
 	const postedAt = loc.postedAt ? Temporal.Instant.from(loc.postedAt) : null;
 
-	return { updatedAt, receiptDate, items: loc.menu, postedAt };
+	const items = getMenuItemNames(loc.menu);
+
+	return { updatedAt, receiptDate, items, postedAt };
 }
 
 export async function getMenuByLinkId(linkId: string): Promise<Menu | null> {

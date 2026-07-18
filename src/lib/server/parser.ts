@@ -1,5 +1,6 @@
 import { deriveOrderFromRelative, generateTsv, getAllItemNames, type Order } from '$lib/ordersTsv';
 import { getLocations } from '$lib/server/location';
+import { getMenuItemNames } from '$lib/server/utils';
 
 export async function ordersToTsv(rawText: string): Promise<string> {
 	const orders = parseOrders(rawText);
@@ -16,16 +17,17 @@ async function deriveItemsOrderByGuessingMenu(orders: Order[]): Promise<string[]
 
 	const winner = locations.reduce<{ score: number; menu: string[] | null }>(
 		(best, current) => {
-			const menuSet = new Set(current.menu);
+			const currentItemNames = getMenuItemNames(current.menu);
+			const menuSet = new Set(currentItemNames);
 			const score = itemsFromOrders.filter((name) => menuSet.has(name)).length;
-			return score > best.score ? { score, menu: current.menu } : best;
+			return score > best.score ? { score, menu: currentItemNames } : best;
 		},
 		{ score: 0, menu: null }
 	);
 
 	if (winner.score == 0 || !winner.menu) return null;
 
-	return orderByExample(getAllItemNames(orders), winner.menu);
+	return orderByExample(getAllItemNames(orders), getMenuItemNames(winner.menu));
 }
 
 interface Item {
