@@ -145,7 +145,7 @@
 								{/each}
 							</div>
 						</td>
-						<td class="price-col">{order.total > 0 ? order.total + ' BYN' : ''}</td>
+						<td class="price-col">{order.total > 0 ? order.total.toFixed(2) + ' BYN' : ''}</td>
 						<td class="time-col">{order.createdAt}</td>
 					</tr>
 				{/each}
@@ -153,7 +153,7 @@
 		</tbody>
 	</table>
 	{#if data.initialOrders.totalSum > 0}
-		<div class="total-sum">Всего: {data.initialOrders.totalSum} BYN</div>
+		<div class="total-sum">Всего: {data.initialOrders.totalSum.toFixed(2)} BYN</div>
 	{/if}
 </div>
 

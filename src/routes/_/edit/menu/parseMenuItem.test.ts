@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { parseMenuItem, menuItemToString } from '$lib/server/menuItemParser';
 
 describe('parseMenuItem', () => {
@@ -53,6 +53,13 @@ describe('parseMenuItem', () => {
 	it('does not parse number at the start as price', () => {
 		expect(parseMenuItem('2 Coffee')).toEqual({ name: '2 Coffee', price: 0 });
 	});
+
+	it('skips price parsing when FEATURE_DISABLE_PRICE_PARSING=true', async () => {
+		vi.resetModules();
+		process.env.FEATURE_DISABLE_PRICE_PARSING = 'true';
+		const { parseMenuItem: p } = await import('$lib/server/menuItemParser');
+		expect(p('Latte 5,50 BYN')).toEqual({ name: 'Latte 5,50 BYN', price: 0 });
+	});
 });
 
 describe('menuItemToString', () => {
@@ -61,17 +68,17 @@ describe('menuItemToString', () => {
 	});
 
 	it('returns name and price with BYN suffix when price > 0', () => {
-		expect(menuItemToString({ name: 'Latte', price: 5.5 })).toBe('Latte 5.5 BYN');
+		expect(menuItemToString({ name: 'Latte', price: 5.5 })).toBe('Latte 5.50 BYN');
 	});
 });
 
 describe('round-trip', () => {
 	it('parsed then stringified equals original', () => {
 		const inputs = [
-			{ input: 'Latte 5,50 BYN', expected: 'Latte 5.5 BYN' },
+			{ input: 'Latte 5,50 BYN', expected: 'Latte 5.50 BYN' },
 			{ input: 'Burger meal 12.99', expected: 'Burger meal 12.99 BYN' },
 			{ input: 'Espresso', expected: 'Espresso' },
-			{ input: 'Combo 3 7,50 BYN', expected: 'Combo 3 7.5 BYN' }
+			{ input: 'Combo 3 7,50 BYN', expected: 'Combo 3 7.50 BYN' }
 		];
 		for (const { input, expected } of inputs) {
 			expect(menuItemToString(parseMenuItem(input))).toBe(expected);

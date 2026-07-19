@@ -2,6 +2,7 @@ import { APP_TZ } from '$lib/server/utils';
 import { type DbLocation, getLocationByLinkId } from '$lib/server/location';
 import { locationsTable, type MenuItem } from '$lib/server/db/schema';
 import { db } from '$lib/server/db/store';
+import { formatPrice } from '$lib/server/menuItemParser';
 import { eq } from 'drizzle-orm';
 
 export interface Menu {
@@ -19,7 +20,7 @@ export function menuItemsToDisplay(items: string[] | MenuItem[]): string {
 	return normalizeMenuItems(items)
 		.map((item) => {
 			if (item.price > 0) {
-				return `${item.name} ${item.price} BYN`;
+				return `${item.name} ${formatPrice(item.price)} BYN`;
 			}
 			return item.name;
 		})
