@@ -10,7 +10,13 @@
 	let ordersDate = $state(data.ordersDate);
 
 	let orders = $state<
-		{ id: number; name: string; items: { name: string; qty: number }[]; createdAt: string }[]
+		{
+			id: number;
+			name: string;
+			items: { name: string; qty: number }[];
+			total: number;
+			createdAt: string;
+		}[]
 	>(data.initialOrders.orders);
 
 	let copyStatusVisible = $state(false);
@@ -107,6 +113,7 @@
 					Клиент
 				</th>
 				<th>Позиции</th>
+				<th class="price-col">Сумма</th>
 				<th class="time-col">
 					<span class="icon-inline">{@html icons.clock}</span>
 					Время
@@ -116,11 +123,11 @@
 		<tbody>
 			{#if !data.selectedLocationId}
 				<tr>
-					<td colspan="3" class="empty-state">Выберите локацию для просмотра заказов.</td>
+					<td colspan="4" class="empty-state">Выберите локацию для просмотра заказов.</td>
 				</tr>
 			{:else if orders.length === 0}
 				<tr>
-					<td colspan="3" class="empty-state">На эту дату заказов пока нет.</td>
+					<td colspan="4" class="empty-state">На эту дату заказов пока нет.</td>
 				</tr>
 			{:else}
 				{#each orders as order (order.id)}
@@ -138,12 +145,16 @@
 								{/each}
 							</div>
 						</td>
+						<td class="price-col">{order.total > 0 ? order.total.toFixed(2) + ' BYN' : ''}</td>
 						<td class="time-col">{order.createdAt}</td>
 					</tr>
 				{/each}
 			{/if}
 		</tbody>
 	</table>
+	{#if data.initialOrders.totalSum > 0}
+		<div class="total-sum">Всего: {data.initialOrders.totalSum.toFixed(2)} BYN</div>
+	{/if}
 </div>
 
 <style>
@@ -293,6 +304,22 @@
 		text-align: right;
 	}
 
+	.price-col {
+		width: 100px;
+		text-align: right;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.total-sum {
+		text-align: right;
+		padding: 0.65rem 0.85rem;
+		font-weight: 600;
+		font-size: 0.875rem;
+		color: var(--color-fg);
+		border-top: 1px solid var(--color-subtle);
+		font-variant-numeric: tabular-nums;
+	}
+
 	.empty-state {
 		padding: 2.5rem 1rem !important;
 		text-align: center;
@@ -316,6 +343,10 @@
 		}
 
 		.time-col {
+			display: none;
+		}
+
+		.price-col {
 			display: none;
 		}
 	}

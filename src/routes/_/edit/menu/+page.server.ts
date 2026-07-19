@@ -4,21 +4,20 @@ import { logger } from '$lib/server/logger';
 import { sendMenuLink } from '$lib/server/menu-link';
 import { getLocationById } from '$lib/server/location';
 import { markMenuAsPosted, setMenuForLocation, type Menu } from '$lib/server/menu';
+import { type MenuItem } from '$lib/server/db/schema';
+import { parseMenuItem } from '$lib/server/menuItemParser';
 import type { PageServerLoad, Actions } from './$types';
 
-function parseItems(data: FormData): string[] {
+function parseItems(data: FormData): MenuItem[] {
 	const raw = (data.get('items') as string) || '';
-	return [
-		...new Set(
-			raw
-				.split('\n')
-				.map((s) => s.trim())
-				.filter(Boolean)
-		)
-	];
+	return raw
+		.split('\n')
+		.map((s) => s.trim())
+		.filter(Boolean)
+		.map(parseMenuItem);
 }
 
-type SaveResult = { locationId: string; receiptDate: string; items: string[]; menu: Menu };
+type SaveResult = { locationId: string; receiptDate: string; items: MenuItem[]; menu: Menu };
 
 async function saveMenuCore(data: FormData): Promise<SaveResult | null> {
 	const locationId = data.get('locationId') as string;

@@ -1,3 +1,5 @@
+import type { MenuItem } from './db/schema';
+
 export const APP_TZ = 'Europe/Minsk';
 
 export function nextMidnight(): number {
@@ -18,6 +20,10 @@ export function groupBy<T, K>(array: T[], keyMapper: (item: T) => K): Map<K, T[]
 
 		return map;
 	}, new Map<K, T[]>());
+}
+
+export function getMenuItemNames(items: string[] | MenuItem[]): string[] {
+	return items.map((item) => (typeof item === 'string' ? item : item.name));
 }
 
 export function sleep(ms: number): Promise<void> {

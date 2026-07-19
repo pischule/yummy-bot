@@ -17,17 +17,25 @@ export const load: PageServerLoad = async ({ cookies, url }) => {
 
 	const orders = await getOrders(locationId, ordersDate);
 	const initialOrders = {
-		orders: orders.map((o) => ({
-			id: o.id,
-			name: o.name,
-			items: o.orderedItems as { name: string; qty: number }[],
-			createdAt: Temporal.Instant.from(o.createdAt)
-				.toZonedDateTimeISO(APP_TZ)
-				.toPlainTime()
-				.toJSON()
-				.substring(0, 5)
-		})),
-		totalItems: orders.reduce((sum, o) => sum + o.orderedItems.reduce((a, b) => a + b.qty, 0), 0)
+		orders: orders.map((o) => {
+			const items = o.orderedItems as { name: string; qty: number; price?: number }[];
+			return {
+				id: o.id,
+				name: o.name,
+				items,
+				total: items.reduce((sum, it) => sum + (it.price ?? 0) * it.qty, 0),
+				createdAt: Temporal.Instant.from(o.createdAt)
+					.toZonedDateTimeISO(APP_TZ)
+					.toPlainTime()
+					.toJSON()
+					.substring(0, 5)
+			};
+		}),
+		totalItems: orders.reduce((sum, o) => sum + o.orderedItems.reduce((a, b) => a + b.qty, 0), 0),
+		totalSum: orders.reduce((sum, o) => {
+			const items = o.orderedItems as { name: string; qty: number; price?: number }[];
+			return sum + items.reduce((s, it) => s + (it.price ?? 0) * it.qty, 0);
+		}, 0)
 	};
 
 	return { initialOrders, ordersDate, selectedLocationId: locationId };

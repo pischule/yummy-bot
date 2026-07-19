@@ -7,8 +7,8 @@
 
 	let { data }: PageProps = $props();
 
-	function toItemWithQty(items: string[]): Item[] {
-		return items.map((name: string) => ({ name, qty: 0 })) ?? [];
+	function toItemWithQty(items: { name: string; price: number }[]): Item[] {
+		return items.map(({ name }) => ({ name, qty: 0 })) ?? [];
 	}
 
 	let currentStep = $state(0);

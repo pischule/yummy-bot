@@ -46,7 +46,7 @@
 	$effect(() => {
 		const loc = data.selectedLocation;
 		if (loc?.hasActiveMenu) {
-			menuText = loc.items.join('\n');
+			menuText = loc.items;
 			menuDate = loc.receiptDate;
 		} else {
 			menuText = '';

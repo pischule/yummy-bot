@@ -77,7 +77,7 @@ export const init = () => {
 	if (BOT_PROXY) {
 		const agent = new SocksProxyAgent(BOT_PROXY);
 
-		bot = new Bot(BOT_TOKEN, {
+		bot = new Bot(BOT_TOKEN!!, {
 			client: {
 				baseFetchConfig: {
 					agent,
@@ -86,7 +86,7 @@ export const init = () => {
 			}
 		});
 	} else {
-		bot = new Bot(BOT_TOKEN);
+		bot = new Bot(BOT_TOKEN!!);
 	}
 
 	bot.command('chatid', sendChatId);

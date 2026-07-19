@@ -2,7 +2,7 @@ import { APP_TZ } from '$lib/server/utils';
 import { bot } from '$lib/server/bot';
 import { logger } from '$lib/server/logger';
 import { getLocations } from '$lib/server/location';
-import { getMenuFromLocation, isMenuPostedToday } from '$lib/server/menu';
+import { getMenuFromLocation, isMenuPostedToday, menuItemsToDisplay } from '$lib/server/menu';
 import type { LayoutServerLoad } from './$types';
 import { authenticateAdmin } from '$lib/server/auth';
 
@@ -23,7 +23,7 @@ export const load: LayoutServerLoad = async ({ cookies, url }) => {
 			id: loc.id,
 			name: loc.name,
 			chatId: loc.chatId,
-			items: loc.menu as string[],
+			items: menuItemsToDisplay(loc.menu),
 			receiptDate: loc.receiptDate,
 			updatedAt: loc.updatedAt,
 			postedAt: loc.postedAt,
