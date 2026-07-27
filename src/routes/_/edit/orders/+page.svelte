@@ -13,7 +13,7 @@
 		{
 			id: number;
 			name: string;
-			items: { name: string; qty: number }[];
+			items: { name: string; qty: number; price?: number }[];
 			total: number;
 			createdAt: string;
 		}[]
@@ -98,9 +98,8 @@
 <div class="banner warning">
 	{@html icons.alert}
 	<span>
-		Внимание! Бот не отслеживает удаление сообщений в чате. Если заказ был отменён удалением
-		сообщения, он всё равно останется в этом списке. Пока для точности лучше пользоваться
-		<a href="/_/parser">парсером</a> — он видит только те сообщения, которые были переданы.
+		Бот не знает, удалили сообщение в чате или нет — удалённый заказ останется здесь. Пока точная
+		инфа только через <a href="/_/parser">парсер</a>.
 	</span>
 </div>
 
@@ -136,7 +135,11 @@
 						<td class="items-cell">
 							<div class="items-list">
 								{#each order.items as item}
-									<span class="order-item">
+									<span
+										class="order-item"
+										class:zero-price={order.total > 0 && item.price == null}
+										title={order.total > 0 && item.price == null ? 'Нет цены' : undefined}
+									>
 										{item.name}
 										{#if item.qty > 1}
 											<span class="qty">×{item.qty}</span>
@@ -289,6 +292,13 @@
 		border-radius: 3px;
 		font-size: 0.8rem;
 		border: 1px solid var(--color-subtle);
+	}
+
+	.order-item.zero-price {
+		background: var(--color-danger-bg);
+		border-color: var(--color-danger-border);
+		color: var(--color-danger-strong);
+		cursor: help;
 	}
 
 	.qty {

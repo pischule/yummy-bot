@@ -20,6 +20,8 @@ html {
 	--color-warning-strong: #92400e;
 	--color-danger: #dc2626;
 	--color-danger-bg: #fef2f2;
+	--color-danger-border: #fecaca;
+	--color-danger-strong: #b91c1c;
 	--color-hover-bg: hsl(0 0% 0% / 0.05);
 	--color-surface-bg: hsl(0 0% 0% / 0.04);
 
@@ -47,6 +49,8 @@ html {
 		--color-warning-strong: #fcd34d;
 		--color-danger: #f87171;
 		--color-danger-bg: #1c0505;
+		--color-danger-border: #7f1d1d;
+		--color-danger-strong: #fca5a5;
 		--color-hover-bg: hsl(0 0% 100% / 0.08);
 		--color-surface-bg: hsl(0 0% 100% / 0.08);
 
