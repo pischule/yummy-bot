@@ -15,7 +15,8 @@ export async function sendMenuLink(locationId: string, chatId: string): Promise<
 		text: 'Создать заказ',
 		login_url: {
 			url: `${env.APP_URL}/order/${linkId}`
-		}
+		},
+		style: 'primary'
 	};
 	const button2 = {
 		text: 'Создать заказ (мини-апп)',
