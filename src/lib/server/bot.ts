@@ -62,8 +62,7 @@ async function sendAdminButton(ctx: CommandContext<Context>) {
 		text: 'Войти через мини-апп',
 		web_app: {
 			url: `${APP_URL}/login/_/edit`
-		},
-		style: 'danger'
+		}
 	};
 
 	const keyboard =
