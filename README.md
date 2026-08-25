@@ -41,6 +41,7 @@ services:
       DB_URL: 'file:/app/data/db.sqlite3'
       COOKIE_ENCRYPTION_KEY: 'generate using <openssl rand -base64 32>'
       FEATURE_DISABLE_PRICE_PARSING: 'true' # optional, skip price parsing in menu items
+      FEATURE_DISABLE_MINIAPP: 'true' # optional, hide miniapp (web_app) login/order buttons
     volumes:
       - './data:/app/data'
 ```

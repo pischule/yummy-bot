@@ -50,7 +50,7 @@ async function sendAdminButton(ctx: CommandContext<Context>) {
 		ctxLogger.warn('Rejected sending admin button');
 		return ctx.reply('Не твой уровень, дорогой!');
 	}
-	const button = {
+	const button1 = {
 		text: 'Войти в админку',
 		login_url: {
 			url: `${APP_URL}/_/edit`
@@ -58,10 +58,21 @@ async function sendAdminButton(ctx: CommandContext<Context>) {
 		style: 'danger'
 	};
 
+	const button2 = {
+		text: 'Войти через мини-апп',
+		web_app: {
+			url: `${APP_URL}/login/_/edit`
+		},
+		style: 'danger'
+	};
+
+	const keyboard =
+		process.env.FEATURE_DISABLE_MINIAPP === 'true' ? [[button1]] : [[button1], [button2]];
+
 	try {
 		const result = await bot.api.sendMessage(chatId, 'Вход в панель управления по кнопке ниже', {
 			// @ts-ignore
-			reply_markup: { inline_keyboard: [[button]] },
+			reply_markup: { inline_keyboard: keyboard },
 			disable_notification: true
 		});
 		const messageId = result.message_id;

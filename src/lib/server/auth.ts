@@ -9,6 +9,8 @@ const { BOT_TOKEN, COOKIE_ENCRYPTION_KEY } = env;
 const tgUrlAuthTtlMilli = 60_000;
 const cookieName = 'session';
 
+const enc = new TextEncoder();
+
 const createHmac = async (secret: ArrayBuffer, data: ArrayBuffer) => {
 	const algorithm = { name: 'HMAC', hash: 'SHA-256' };
 	const key = await crypto.subtle.importKey('raw', secret, algorithm, false, ['sign']);
@@ -25,12 +27,38 @@ const hex = (data: ArrayBuffer) => {
 		.join('');
 };
 
+// Login widget: secret = SHA256(BOT_TOKEN)
 const isLinkSignatureValid = async (hash: string, data: string) => {
-	const enc = new TextEncoder();
 	const secretKey = await createHash(enc.encode(BOT_TOKEN).buffer);
 	const digest = await createHmac(secretKey, enc.encode(data).buffer);
 	return hash === hex(digest);
 };
+
+// Miniapp initData: secret = HMAC_SHA256(key="WebAppData", data=BOT_TOKEN)
+const isWebAppSignatureValid = async (hash: string, data: string) => {
+	const secretKey = await createHmac(enc.encode('WebAppData').buffer, enc.encode(BOT_TOKEN).buffer);
+	const digest = await createHmac(secretKey, enc.encode(data).buffer);
+	return hash === hex(digest);
+};
+
+function buildDataCheckString(params: URLSearchParams): string | null {
+	if (params.get('hash') == null) return null;
+	return [...params.keys()]
+		.filter((key) => key !== 'hash')
+		.sort()
+		.map((key) => `${key}=${params.get(key)}`)
+		.join('\n');
+}
+
+function isAuthDateFresh(authDateRaw: string | null, userId: number): boolean {
+	if (authDateRaw == null) return false;
+	const authDate = +authDateRaw * 1000;
+	if (Date.now() - authDate > tgUrlAuthTtlMilli) {
+		logger.warn({ userId }, 'Stale tg auth');
+		return false;
+	}
+	return true;
+}
 
 function serializeSession(session: Session): string {
 	const json = JSON.stringify(session);
@@ -53,27 +81,54 @@ async function getSessionFromUrl(
 	searchParams: URLSearchParams | undefined
 ): Promise<Session | null> {
 	if (searchParams == null) return null;
-	const hash = searchParams.get('hash');
-	if (!hash) return null;
+	const dataCheckString = buildDataCheckString(searchParams);
+	if (dataCheckString == null) return null;
 
-	const dataCheckString = [...searchParams.keys()]
-		.filter((key) => key !== 'hash')
-		.sort()
-		.map((key) => `${key}=${searchParams.get(key)}`)
-		.join('\n');
-
-	if (!(await isLinkSignatureValid(hash, dataCheckString))) {
+	if (!(await isLinkSignatureValid(searchParams.get('hash')!, dataCheckString))) {
 		return null;
 	}
 
 	const id = +searchParams.get('id')!;
 
-	const authDateRaw = searchParams.get('auth_date');
-	if (authDateRaw == null) return null;
-	const authDate: number = +authDateRaw * 1000;
-	const nowDate: number = Date.now();
-	if (nowDate - authDate > tgUrlAuthTtlMilli) {
-		logger.warn({ userId: id }, 'Stale tg auth');
+	if (!isAuthDateFresh(searchParams.get('auth_date'), id)) {
+		return null;
+	}
+
+	return {
+		tgId: id,
+		roles,
+		validUntil: nextMidnight()
+	};
+}
+
+export async function validateWebAppInitData(
+	initData: string,
+	roles: Role[]
+): Promise<Session | null> {
+	const params = new URLSearchParams(initData);
+	const dataCheckString = buildDataCheckString(params);
+	if (dataCheckString == null) return null;
+
+	if (!(await isWebAppSignatureValid(params.get('hash')!, dataCheckString))) {
+		logger.warn('Invalid webapp initData signature');
+		return null;
+	}
+
+	const userRaw = params.get('user');
+	if (userRaw == null) return null;
+
+	let user: { id?: unknown };
+	try {
+		user = JSON.parse(userRaw);
+	} catch {
+		logger.warn('Invalid webapp user payload');
+		return null;
+	}
+
+	if (typeof user.id !== 'number') return null;
+	const id = user.id;
+
+	if (!isAuthDateFresh(params.get('auth_date'), id)) {
 		return null;
 	}
 
@@ -103,7 +158,7 @@ function getSessionFromCookie(cookies: Cookies): Session | null {
 	return session;
 }
 
-function storeSessionToCookie(session: Session, cookies: Cookies, path: string) {
+export function storeSessionToCookie(session: Session, cookies: Cookies, path: string) {
 	cookies.set(cookieName, serializeSession(session), {
 		expires: new Date(session.validUntil),
 		path,

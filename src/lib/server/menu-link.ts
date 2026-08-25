@@ -11,14 +11,24 @@ let messageDeletionTimer: NodeJS.Timeout | null = null;
 export async function sendMenuLink(locationId: string, chatId: string): Promise<void> {
 	const linkId = await createMenuLink(locationId, +chatId);
 
-	const button = {
+	const button1 = {
 		text: 'Создать заказ',
 		login_url: {
 			url: `${env.APP_URL}/order/${linkId}`
 		}
 	};
+	const button2 = {
+		text: 'Создать заказ (мини-апп)',
+		web_app: {
+			url: `${env.APP_URL}/login/order/${linkId}`
+		}
+	};
+
+	const keyboard =
+		process.env.FEATURE_DISABLE_MINIAPP === 'true' ? [[button1]] : [[button1], [button2]];
+
 	const result = await bot.api.sendMessage(chatId, 'Нажмите на кнопку ниже, чтобы создать заказ', {
-		reply_markup: { inline_keyboard: [[button]] }
+		reply_markup: { inline_keyboard: keyboard }
 	});
 
 	const messageId = result.message_id;
