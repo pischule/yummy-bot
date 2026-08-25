@@ -53,13 +53,6 @@ describe('parseMenuItem', () => {
 	it('does not parse number at the start as price', () => {
 		expect(parseMenuItem('2 Coffee')).toEqual({ name: '2 Coffee', price: 0 });
 	});
-
-	it('skips price parsing when FEATURE_DISABLE_PRICE_PARSING=true', async () => {
-		vi.resetModules();
-		process.env.FEATURE_DISABLE_PRICE_PARSING = 'true';
-		const { parseMenuItem: p } = await import('$lib/server/menuItemParser');
-		expect(p('Latte 5,50 BYN')).toEqual({ name: 'Latte 5,50 BYN', price: 0 });
-	});
 });
 
 describe('menuItemToString', () => {
@@ -83,5 +76,14 @@ describe('round-trip', () => {
 		for (const { input, expected } of inputs) {
 			expect(menuItemToString(parseMenuItem(input))).toBe(expected);
 		}
+	});
+});
+
+describe('parseMenuItem with FEATURE_DISABLE_PRICE_PARSING', () => {
+	it('skips price parsing when FEATURE_DISABLE_PRICE_PARSING=true', async () => {
+		vi.resetModules();
+		process.env.FEATURE_DISABLE_PRICE_PARSING = 'true';
+		const { parseMenuItem: p } = await import('$lib/server/menuItemParser');
+		expect(p('Latte 5,50 BYN')).toEqual({ name: 'Latte 5,50 BYN', price: 0 });
 	});
 });
