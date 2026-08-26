@@ -2,7 +2,11 @@
 // for information about these interfaces
 declare global {
 	namespace App {
-		// interface Error {}
+		interface Error {
+			message: string;
+			botUsername?: string;
+			linkId?: string;
+		}
 		// interface Locals {}
 		// interface PageData {}
 		// interface PageState {}

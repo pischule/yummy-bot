@@ -3,6 +3,8 @@ import { SocksProxyAgent } from 'socks-proxy-agent';
 import { Bot, type CommandContext, Context } from 'grammy';
 import { logger } from '$lib/server/logger';
 import { adminChatIds } from '$lib/server/config';
+import { getMenuByLinkId } from '$lib/server/menu';
+import { trackMessageToDelete } from '$lib/server/message-deletion';
 
 const { BOT_TOKEN, BOT_PROXY, APP_URL } = env;
 
@@ -33,6 +35,38 @@ export const sendOrder = async (order: Order, userId: number, chatId: string): P
 	return sent.message_id;
 };
 
+export async function getBotUsername(): Promise<string> {
+	if (bot.botInfo?.username) return bot.botInfo.username;
+	const me = await bot.api.getMe();
+	return me.username;
+}
+
+async function handleStart(ctx: CommandContext<Context>) {
+	const linkId = ctx.match?.trim();
+	if (!linkId || ctx.chat?.type !== 'private') return;
+
+	const menu = await getMenuByLinkId(linkId);
+	if (!menu) {
+		return ctx.reply('Меню не найдено или ссылка устарела.');
+	}
+
+	const button = {
+		text: 'Заказать через мини-апп',
+		web_app: {
+			url: `${APP_URL}/login/order/${linkId}`
+		}
+	};
+
+	const sent = await ctx.reply(
+		'Эта кнопка открывает меню напрямую внутри Telegram без использования браузера. ' +
+			'Нажмите её, если основная ссылка не сработала.',
+		{
+			reply_markup: { inline_keyboard: [[button]] }
+		}
+	);
+	await trackMessageToDelete(ctx.chat!.id, sent.message_id);
+}
+
 async function sendChatId(ctx: CommandContext<Context>) {
 	try {
 		await ctx.reply(`Chat ID: <code>${ctx.chatId}</code>`, { parse_mode: 'HTML' });
@@ -50,7 +84,7 @@ async function sendAdminButton(ctx: CommandContext<Context>) {
 		ctxLogger.warn('Rejected sending admin button');
 		return ctx.reply('Не твой уровень, дорогой!');
 	}
-	const button1 = {
+	const button = {
 		text: 'Войти в админку',
 		login_url: {
 			url: `${APP_URL}/_/edit`
@@ -58,20 +92,10 @@ async function sendAdminButton(ctx: CommandContext<Context>) {
 		style: 'danger'
 	};
 
-	const button2 = {
-		text: 'Войти через мини-апп',
-		web_app: {
-			url: `${APP_URL}/login/_/edit`
-		}
-	};
-
-	const keyboard =
-		process.env.FEATURE_DISABLE_MINIAPP === 'true' ? [[button1]] : [[button1], [button2]];
-
 	try {
 		const result = await bot.api.sendMessage(chatId, 'Вход в панель управления по кнопке ниже', {
 			// @ts-ignore
-			reply_markup: { inline_keyboard: keyboard },
+			reply_markup: { inline_keyboard: [[button]] },
 			disable_notification: true
 		});
 		const messageId = result.message_id;
@@ -101,6 +125,7 @@ export const init = () => {
 
 	bot.command('chatid', sendChatId);
 	bot.command('admin', sendAdminButton);
+	bot.command('start', handleStart);
 	bot.start().then();
 };
 

@@ -4,6 +4,7 @@ import { error } from '@sveltejs/kit';
 import { authenticateUser } from '$lib/server/auth';
 import { APP_TZ } from '$lib/server/utils';
 import { getMenuByLinkId } from '$lib/server/menu';
+import { getBotUsername } from '$lib/server/bot';
 
 const WEEKDAYS = [
 	'понедельник',
@@ -16,12 +17,12 @@ const WEEKDAYS = [
 ];
 
 export const load: PageServerLoad = async ({ url, params, setHeaders, cookies }) => {
+	const { linkId } = params;
+
 	const session = await authenticateUser(cookies, url.searchParams);
 	if (!session) {
-		throw error(401, 'Unauthorized');
+		throw error(401, { message: 'Unauthorized', botUsername: await getBotUsername(), linkId });
 	}
-
-	const { linkId } = params;
 
 	setHeaders({ 'Cache-Control': 'max-age=0' });
 

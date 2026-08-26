@@ -2,7 +2,7 @@ import { env } from '$env/dynamic/private';
 import { db } from '$lib/server/db/store';
 import { menuLinkTable } from '$lib/server/db/schema';
 import { eq, inArray, lt } from 'drizzle-orm';
-import { bot } from '$lib/server/bot';
+import { bot, getBotUsername } from '$lib/server/bot';
 import { groupBy, sleep } from '$lib/server/utils';
 import { logger } from '$lib/server/logger';
 
@@ -11,25 +11,20 @@ let messageDeletionTimer: NodeJS.Timeout | null = null;
 export async function sendMenuLink(locationId: string, chatId: string): Promise<void> {
 	const linkId = await createMenuLink(locationId, +chatId);
 
-	const button1 = {
+	const button = {
 		text: 'Создать заказ',
 		login_url: {
 			url: `${env.APP_URL}/order/${linkId}`
 		},
-		style: 'primary'
 	};
-	const button2 = {
-		text: 'Создать заказ (мини-апп)',
-		web_app: {
-			url: `${env.APP_URL}/login/order/${linkId}`
+
+	let messageText: string = 'Нажмите на кнопку ниже, чтобы создать заказ';
+	const result = await bot.api.sendMessage(chatId, messageText, {
+		reply_markup: { inline_keyboard: [[button]] },
+		parse_mode: 'MarkdownV2',
+		link_preview_options: {
+			is_disabled: true
 		}
-	};
-
-	const keyboard =
-		process.env.FEATURE_DISABLE_MINIAPP === 'true' ? [[button1]] : [[button1], [button2]];
-
-	const result = await bot.api.sendMessage(chatId, 'Нажмите на кнопку ниже, чтобы создать заказ', {
-		reply_markup: { inline_keyboard: keyboard }
 	});
 
 	const messageId = result.message_id;

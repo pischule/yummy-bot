@@ -8,8 +8,12 @@
 
 <main>
 	<h1>{page.status} {page.error?.message ?? ''}</h1>
-	{#if page.status === 401}
-		<p>Не получается войти? Попробуйте мини-апп</p>
+	{#if page.status === 401 && page.error?.botUsername && page.error?.linkId}
+		<p>
+			<a href={`https://t.me/${page.error.botUsername}/?start=${page.error.linkId}`}>
+				Проблемы с входом?
+			</a>
+		</p>
 	{/if}
 </main>
 
@@ -25,7 +29,8 @@
 		font-size: 1.25rem;
 	}
 
-	p {
+	p,
+	a {
 		font-family: system-ui, sans-serif;
 		line-height: 1.5;
 	}

@@ -23,6 +23,13 @@ export const menuLinkTable = sqliteTable('menu_link', {
 	createdAt: text('created_at').notNull()
 });
 
+export const messagesToDeleteTable = sqliteTable('messages_to_delete', {
+	id: integer().primaryKey(),
+	chatId: integer('chat_id').notNull(),
+	messageId: integer('message_id').notNull(),
+	createdAt: text('created_at').notNull()
+});
+
 export const namesTable = sqliteTable('name', {
 	telegramId: text('telegram_id').primaryKey(),
 	name: text('name').notNull()

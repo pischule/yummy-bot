@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { logger } from '$lib/server/logger';
 import { storeSessionToCookie, validateWebAppInitData } from '$lib/server/auth';
 
 type Scope = {
@@ -44,5 +45,8 @@ export const POST: RequestHandler = async ({ request, params, cookies }) => {
 	}
 
 	storeSessionToCookie(session, cookies, scope.cookiePath);
+
+	logger.info({ userId: session.tgId, roles: scope.roles, target }, 'Mini-app login succeeded');
+
 	return json({ ok: true, redirectTo: `/${target}` });
 };
