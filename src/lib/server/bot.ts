@@ -58,8 +58,7 @@ async function handleStart(ctx: CommandContext<Context>) {
 	};
 
 	const sent = await ctx.reply(
-		'Эта кнопка открывает меню напрямую внутри Telegram без использования браузера. ' +
-			'Нажмите её, если основная ссылка не сработала.',
+		'Если обычная ссылка не сработала — жмите сюда. Меню откроется сразу в приложении.',
 		{
 			reply_markup: { inline_keyboard: [[button]] }
 		}

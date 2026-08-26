@@ -42,7 +42,10 @@ async function deleteOldTrackedMessages() {
 	}
 
 	const messageIds = messages.map((message) => message.id);
-	await db.delete(messagesToDeleteTable).where(inArray(messagesToDeleteTable.id, messageIds)).execute();
+	await db
+		.delete(messagesToDeleteTable)
+		.where(inArray(messagesToDeleteTable.id, messageIds))
+		.execute();
 
 	logger.info(`Deleted ${messages.length} tracked messages`);
 }

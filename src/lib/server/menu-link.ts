@@ -15,7 +15,7 @@ export async function sendMenuLink(locationId: string, chatId: string): Promise<
 		text: 'Создать заказ',
 		login_url: {
 			url: `${env.APP_URL}/order/${linkId}`
-		},
+		}
 	};
 
 	let messageText: string = 'Нажмите на кнопку ниже, чтобы создать заказ';
