@@ -2,7 +2,7 @@ import { env } from '$env/dynamic/private';
 import { db } from '$lib/server/db/store';
 import { menuLinkTable } from '$lib/server/db/schema';
 import { eq, inArray, lt } from 'drizzle-orm';
-import { bot, getBotUsername } from '$lib/server/bot';
+import { bot } from '$lib/server/bot';
 import { groupBy, sleep } from '$lib/server/utils';
 import { logger } from '$lib/server/logger';
 

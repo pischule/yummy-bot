@@ -50,10 +50,15 @@ function buildDataCheckString(params: URLSearchParams): string | null {
 		.join('\n');
 }
 
-function isAuthDateFresh(authDateRaw: string | null, userId: number): boolean {
+export function isAuthDateStale(authDateRaw: string | null): boolean {
 	if (authDateRaw == null) return false;
 	const authDate = +authDateRaw * 1000;
-	if (Date.now() - authDate > tgUrlAuthTtlMilli) {
+	return Date.now() - authDate > tgUrlAuthTtlMilli;
+}
+
+function isAuthDateFresh(authDateRaw: string | null, userId: number): boolean {
+	if (authDateRaw == null) return false;
+	if (isAuthDateStale(authDateRaw)) {
 		logger.warn({ userId }, 'Stale tg auth');
 		return false;
 	}
@@ -76,28 +81,38 @@ function deserializeSession(ciphertext: string): Session | null {
 	}
 }
 
+export type UrlAuthFailureReason = 'missing-params' | 'invalid-signature' | 'stale';
+
+type UrlAuthResult = {
+	session: Session | null;
+	reason: UrlAuthFailureReason | null;
+};
+
 async function getSessionFromUrl(
 	roles: Role[],
 	searchParams: URLSearchParams | undefined
-): Promise<Session | null> {
-	if (searchParams == null) return null;
+): Promise<UrlAuthResult> {
+	if (searchParams == null) return { session: null, reason: 'missing-params' };
 	const dataCheckString = buildDataCheckString(searchParams);
-	if (dataCheckString == null) return null;
+	if (dataCheckString == null) return { session: null, reason: 'missing-params' };
 
 	if (!(await isLinkSignatureValid(searchParams.get('hash')!, dataCheckString))) {
-		return null;
+		return { session: null, reason: 'invalid-signature' };
 	}
 
 	const id = +searchParams.get('id')!;
 
 	if (!isAuthDateFresh(searchParams.get('auth_date'), id)) {
-		return null;
+		return { session: null, reason: 'stale' };
 	}
 
 	return {
-		tgId: id,
-		roles,
-		validUntil: nextMidnight()
+		session: {
+			tgId: id,
+			roles,
+			validUntil: nextMidnight()
+		},
+		reason: null
 	};
 }
 
@@ -168,18 +183,27 @@ export function storeSessionToCookie(session: Session, cookies: Cookies, path: s
 	});
 }
 
-export async function authenticateUser(cookies: Cookies, searchParams?: URLSearchParams) {
-	const urlSession = await getSessionFromUrl(['user'], searchParams);
-	if (urlSession != null) {
-		storeSessionToCookie(urlSession, cookies, '/order');
-		return urlSession;
-	} else {
-		return getSessionFromCookie(cookies);
+export async function authenticateUser(
+	cookies: Cookies,
+	searchParams?: URLSearchParams
+): Promise<{ session: Session | null; reason: UrlAuthFailureReason | null }> {
+	const urlAuth = await getSessionFromUrl(['user'], searchParams);
+	if (urlAuth.session != null) {
+		storeSessionToCookie(urlAuth.session, cookies, '/order');
+		return { session: urlAuth.session, reason: null };
 	}
+
+	const cookieSession = getSessionFromCookie(cookies);
+	if (cookieSession != null) {
+		return { session: cookieSession, reason: null };
+	}
+
+	return { session: null, reason: urlAuth.reason };
 }
 
 export async function authenticateAdmin(cookies: Cookies, searchParams?: URLSearchParams) {
-	let session = await getSessionFromUrl(['admin'], searchParams);
+	const urlAuth = await getSessionFromUrl(['admin'], searchParams);
+	let session = urlAuth.session;
 	if (session != null) {
 		storeSessionToCookie(session, cookies, '/_/edit');
 	} else {

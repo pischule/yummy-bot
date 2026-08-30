@@ -11,7 +11,7 @@ import { saveOrder } from '$lib/server/order';
 const usedNonces = new Set();
 
 export const POST: RequestHandler = async ({ request, params, cookies }) => {
-	const session = await authenticateUser(cookies);
+	const { session } = await authenticateUser(cookies);
 	if (!session) {
 		throw error(401, 'Unauthorized');
 	}
