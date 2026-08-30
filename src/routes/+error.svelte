@@ -2,6 +2,7 @@
 	import { page } from '$app/state';
 
 	const heading = $derived(page.error?.description ?? page.error?.message ?? 'Ошибка');
+	const timestamp = new Date().toISOString();
 	const helpUrl = $derived(
 		page.status === 401 &&
 			page.error?.showLoginHelp === true &&
@@ -28,6 +29,8 @@
 			прямо в приложении
 		</p>
 	{/if}
+
+	<time datetime={timestamp}>{timestamp}</time>
 </main>
 
 <style>
@@ -38,8 +41,17 @@
 	}
 
 	p,
-	a {
+	a,
+	time {
 		font-family: system-ui, sans-serif;
 		line-height: 1.5;
+	}
+
+	time {
+		display: block;
+		margin-top: 1rem;
+		font-size: 0.85rem;
+		color: #666;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 	}
 </style>
