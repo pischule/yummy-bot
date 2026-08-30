@@ -1,18 +1,31 @@
 <script lang="ts">
 	import { page } from '$app/state';
+
+	const heading = $derived(page.error?.description ?? page.error?.message ?? 'Ошибка');
+	const helpUrl = $derived(
+		page.status === 401 &&
+			page.error?.showLoginHelp === true &&
+			page.error?.botUsername != null &&
+			page.error?.linkId != null
+			? `https://t.me/${page.error.botUsername}/?start=${page.error.linkId}`
+			: null
+	);
 </script>
 
 <svelte:head>
-	<title>{page.status}</title>
+	<title>Ошибка</title>
 </svelte:head>
 
 <main>
-	<h1>{page.status} {page.error?.message ?? ''}</h1>
-	{#if page.status === 401 && page.error?.botUsername && page.error?.linkId}
+	{#if helpUrl == null}
+		<p>{heading}</p>
+	{/if}
+
+	{#if helpUrl != null}
 		<p>
-			<a href={`https://t.me/${page.error.botUsername}/?start=${page.error.linkId}`}>
-				Проблемы с входом?
-			</a>
+			Упс, магия не сработала —
+			<a href={helpUrl}>попробуем другой способ</a>
+			прямо в приложении
 		</p>
 	{/if}
 </main>
@@ -22,11 +35,6 @@
 		max-width: min(65ch, 100% - 1rem);
 		margin-inline: auto;
 		padding: 1rem;
-	}
-
-	h1 {
-		font-family: system-ui, sans-serif;
-		font-size: 1.25rem;
 	}
 
 	p,

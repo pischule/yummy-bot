@@ -6,6 +6,8 @@ declare global {
 			message: string;
 			botUsername?: string;
 			linkId?: string;
+			description?: string;
+			showLoginHelp?: boolean;
 		}
 		// interface Locals {}
 		// interface PageData {}

@@ -3,8 +3,11 @@ import { getName } from '$lib/server/database';
 import { error } from '@sveltejs/kit';
 import { authenticateUser } from '$lib/server/auth';
 import { APP_TZ } from '$lib/server/utils';
-import { getMenuByLinkId } from '$lib/server/menu';
+import { getMenuFromLocation } from '$lib/server/menu';
+import { getLocationByLinkId } from '$lib/server/location';
 import { getBotUsername } from '$lib/server/bot';
+
+const STALE_LINK_MESSAGE = 'Ссылка устарела. Нажмите кнопку «Создать заказ» в чате ещё раз';
 
 const WEEKDAYS = [
 	'понедельник',
@@ -19,14 +22,28 @@ const WEEKDAYS = [
 export const load: PageServerLoad = async ({ url, params, setHeaders, cookies }) => {
 	const { linkId } = params;
 
-	const session = await authenticateUser(cookies, url.searchParams);
+	const location = await getLocationByLinkId(linkId);
+	if (!location) {
+		throw error(404, {
+			message: 'Not Found',
+			description: STALE_LINK_MESSAGE
+		});
+	}
+
+	const { session, reason } = await authenticateUser(cookies, url.searchParams);
 	if (!session) {
-		throw error(401, { message: 'Unauthorized', botUsername: await getBotUsername(), linkId });
+		throw error(401, {
+			message: 'Unauthorized',
+			description: reason === 'stale' ? STALE_LINK_MESSAGE : undefined,
+			showLoginHelp: reason === 'missing-params' || reason === 'invalid-signature',
+			botUsername: await getBotUsername(),
+			linkId
+		});
 	}
 
 	setHeaders({ 'Cache-Control': 'max-age=0' });
 
-	const menu = await getMenuByLinkId(linkId);
+	const menu = getMenuFromLocation(location);
 	if (!menu?.items) {
 		return {
 			items: [],
