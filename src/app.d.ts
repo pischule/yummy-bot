@@ -17,6 +17,8 @@ declare global {
 		Telegram?: {
 			WebApp?: {
 				initData: string;
+				version: string;
+				platform: string;
 				ready: () => void;
 				expand: () => void;
 			};

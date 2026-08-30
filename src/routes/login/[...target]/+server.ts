@@ -28,9 +28,18 @@ export const POST: RequestHandler = async ({ request, params, cookies }) => {
 	}
 
 	let initData = '';
+	let version = '';
+	let platform = '';
+	let userAgent = request.headers.get('User-Agent');
 	try {
-		const body = (await request.json()) as { initData?: unknown };
+		const body = (await request.json()) as {
+			initData?: unknown;
+			version: string;
+			platform: string;
+		};
 		initData = typeof body.initData === 'string' ? body.initData : '';
+		version = body.version;
+		platform = body.platform;
 	} catch {
 		return json({ ok: false }, { status: 400 });
 	}
@@ -46,7 +55,10 @@ export const POST: RequestHandler = async ({ request, params, cookies }) => {
 
 	storeSessionToCookie(session, cookies, scope.cookiePath);
 
-	logger.info({ userId: session.tgId, roles: scope.roles, target }, 'Mini-app login succeeded');
+	logger.info(
+		{ userId: session.tgId, roles: scope.roles, target, version, platform, userAgent },
+		'Mini-app login succeeded'
+	);
 
 	return json({ ok: true, redirectTo: `/${target}` });
 };

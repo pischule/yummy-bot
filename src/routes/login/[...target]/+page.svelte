@@ -23,11 +23,14 @@
 		const target = page.params.target;
 		const initData = await getInitData();
 
+		const version = webApp?.version;
+		const platform = webApp?.platform;
+
 		try {
 			const res = await fetch(`/login/${target}`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ initData })
+				body: JSON.stringify({ initData, version, platform })
 			});
 			if (res.ok) {
 				const body = (await res.json()) as { redirectTo: string };
