@@ -51,14 +51,14 @@ async function handleStart(ctx: CommandContext<Context>) {
 	}
 
 	const button = {
-		text: 'Заказать через мини-апп',
+		text: 'Сделать заказ',
 		web_app: {
 			url: `${APP_URL}/login/order/${linkId}`
 		}
 	};
 
 	const sent = await ctx.reply(
-		'Если обычная ссылка не сработала — жмите сюда. Меню откроется сразу в приложении.',
+		'Пойдём другим путём! Нажмите на кнопку ниже, и всё откроется прямо тут, в Telegram',
 		{
 			reply_markup: { inline_keyboard: [[button]] }
 		}
