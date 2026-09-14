@@ -11,21 +11,11 @@ let messageDeletionTimer: NodeJS.Timeout | null = null;
 export async function sendMenuLink(locationId: string, chatId: string): Promise<void> {
 	const linkId = await createMenuLink(locationId, +chatId);
 
-	const button = {
-		text: 'Создать заказ',
-		login_url: {
-			url: `${env.APP_URL}/order/${linkId}`
-		}
-	};
+	const botUsername = bot.botInfo.username;
+	const url = `https://t.me/${botUsername}/order?startapp=${linkId}`;
 
-	let messageText: string = 'Нажмите на кнопку ниже, чтобы создать заказ';
-	const result = await bot.api.sendMessage(chatId, messageText, {
-		reply_markup: { inline_keyboard: [[button]] },
-		parse_mode: 'MarkdownV2',
-		link_preview_options: {
-			is_disabled: true
-		}
-	});
+	let messageText: string = `<a href="${url}">Сделать заказ</a> `;
+	const result = await bot.api.sendMessage(chatId, messageText, { parse_mode: 'HTML' });
 
 	const messageId = result.message_id;
 

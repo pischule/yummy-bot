@@ -19,14 +19,8 @@ function resolveScope(target: string): Scope | null {
 	return null;
 }
 
-export const POST: RequestHandler = async ({ request, params, cookies }) => {
-	const target = params.target ?? '';
-
-	const scope = resolveScope(target);
-	if (scope == null) {
-		return json({ ok: false }, { status: 404 });
-	}
-
+export const POST: RequestHandler = async ({ request, cookies }) => {
+	const scope: Scope = { roles: ['user'], cookiePath: '/order' };
 	let initData = '';
 	let version = '';
 	let platform = '';
@@ -56,9 +50,9 @@ export const POST: RequestHandler = async ({ request, params, cookies }) => {
 	storeSessionToCookie(session, cookies, scope.cookiePath);
 
 	logger.info(
-		{ userId: session.tgId, roles: scope.roles, target, version, platform, userAgent },
+		{ userId: session.tgId, roles: scope.roles, version, platform, userAgent },
 		'Mini-app login succeeded'
 	);
 
-	return json({ ok: true, redirectTo: `/${target}` });
+	return json({ ok: true });
 };

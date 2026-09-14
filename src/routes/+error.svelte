@@ -18,17 +18,7 @@
 </svelte:head>
 
 <main>
-	{#if helpUrl == null}
-		<p>{heading}</p>
-	{/if}
-
-	{#if helpUrl != null}
-		<p>
-			Упс, магия не сработала —
-			<a href={helpUrl}>попробуем другой способ</a>
-			прямо в приложении
-		</p>
-	{/if}
+	<p>{heading}</p>
 
 	<time datetime={timestamp}>{timestamp}</time>
 </main>

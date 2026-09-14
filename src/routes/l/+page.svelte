@@ -20,21 +20,23 @@
 		webApp?.ready();
 		webApp?.expand();
 
-		const target = page.params.target;
 		const initData = await getInitData();
 
 		const version = webApp?.version;
 		const platform = webApp?.platform;
 
 		try {
-			const res = await fetch(`/login/${target}`, {
+			const res = await fetch(`/l`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ initData, version, platform })
 			});
+
 			if (res.ok) {
-				const body = (await res.json()) as { redirectTo: string };
-				location.assign(body.redirectTo);
+				const linkId = page.url.searchParams.get('tgWebAppStartParam');
+				const redirectUrl = `/order/${linkId}`;
+				console.log({ redirectUrl });
+				location.assign(redirectUrl);
 				return;
 			}
 			status = 'error';
